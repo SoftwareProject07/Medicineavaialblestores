@@ -127,13 +127,18 @@ th, td {
 
 /* navbar fixed the content  */
 
-body {
+/* body {
   padding-top: 70px; /* navbar height */
-}
+*/
+
 .navbar {
   position: sticky;
   top: 0;
   z-index: 1030;
     /* z-index: 1000; */
 
+}
+
+body {
+  overflow-x: hidden;
 }

@@ -52,10 +52,13 @@ export default function Contact() {
           </ul>
 
           <div className="d-flex align-items-center gap-3">
-            <Link className="text-primary fw-semibold" to="/login">
-              Login / Signup
-            </Link>
-
+            <Link to="/login" className="btn btn-success">
+                       Login / Signup
+                     </Link><br></br>
+                     {/* <a href="#" className="position-relative">
+                         🛒
+                         <span className="badge bg-danger text-white cart-badge">0</span>
+                       </a> */}
             <div className="position-relative">
               🛒
               <span className="badge bg-danger text-white cart-badge">0</span>

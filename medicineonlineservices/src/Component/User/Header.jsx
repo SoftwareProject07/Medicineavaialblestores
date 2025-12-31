@@ -1,28 +1,17 @@
 import React, { useEffect, useState } from "react";
-import "../styles/headers.css";
 import { Link } from "react-router-dom";
+import "../styles/headers.css";
 import "../styles/noscroll.css";
 
 export default function Header() {
   const [search, setSearch] = useState("");
- // searching the data
- // 🔍 SEARCH FILTER LOGIC
-  // 🔹 SEARCH FILTER
-  // const filteredMedicines = medicines.filter(
-  //   (med) =>
-  //     med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     med.manufacturer.toLowerCase().includes(searchTerm.toLowerCase())
-  // );
-// fjjfj
 
   const [location, setLocation] = useState({
     city: "Detecting...",
     pincode: "",
   });
-  
 
-
-   const categories = [
+  const categories = [
     "Medicines",
     "Personal Care",
     "Health Conditions",
@@ -42,12 +31,12 @@ export default function Header() {
     { name: "Skin Ointment", price: 50 },
   ];
 
-// 🔍 SEARCH FILTER LOGIC
-const filteredMeds = meds.filter((med) =>
-  med?.name?.toLowerCase().includes(search.trim().toLowerCase())
-);
+  // 🔍 SEARCH FILTER
+  const filteredMeds = meds.filter((med) =>
+    med.name.toLowerCase().includes(search.trim().toLowerCase())
+  );
 
-  /* 🔹 Detect city by GPS */
+  // 📍 Auto detect location
   useEffect(() => {
     if (!navigator.geolocation) return;
 
@@ -73,7 +62,7 @@ const filteredMeds = meds.filter((med) =>
     });
   }, []);
 
-  /* 🔹 PINCODE → CITY */
+  // 📮 PINCODE → CITY
   const handlePincodeChange = async (e) => {
     const pin = e.target.value.replace(/\D/g, "");
     setLocation((prev) => ({ ...prev, pincode: pin }));
@@ -101,86 +90,59 @@ const filteredMeds = meds.filter((med) =>
 
   return (
     <>
-      {/* NAVBAR */}
-      {/* <nav className="navbar navbar-expand-lg navbar-light bg-light px-3 shadow-sm w-100"> */}
-      <nav className="navbar navbar-expand-lg navbar-light bg-light px-3 shadow-sm fixed-top w-100">
-
+      {/* 🔹 NAVBAR */}
+      <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm fixed-top w-100 px-3">
         <a className="navbar-brand d-flex align-items-center" href="#">
           <img
             src="/AKMedizostore.png"
             alt="AKMedizostore"
-            className="img-fluid"
             style={{ width: "40px", marginRight: "8px" }}
           />
           AKMedizostore
         </a>
 
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-
-        <div className="collapse navbar-collapse" id="navbarNav">
+        <div className="collapse navbar-collapse">
           <ul className="navbar-nav me-auto">
             <li className="nav-item"><a className="nav-link" href="#top">Home</a></li>
             <li className="nav-item"><a className="nav-link" href="#medicineOrder">Medicine Order</a></li>
             <li className="nav-item"><a className="nav-link" href="#Aboutn">About</a></li>
-            {/* <li className="nav-item"><a className="nav-link" href="/contact">Contact Us</a></li> */}
             <li className="nav-item">
-  <Link className="nav-link" to="/contact">
-    Contact Us
-  </Link>
-</li>
+              <Link className="nav-link" to="/contact">Contact Us</Link>
+            </li>
           </ul>
 
-       <div className="d-flex align-items-center gap-3 ms-3">
-            {/*    <a href="/login" className="text-primary fw-semibold">Login / Signup</a> */}
-   {/* <li className="nav-item"> */}
-<Link to="/login" className="btn btn-success">
-Login / Signup
-        </Link>
-
-
-{/* </li> */}
-            <a href="#" className="position-relative">
+          <Link to="/login" className="btn btn-success">
+            Login / Signup
+          </Link><br></br>
+          {/* <a href="#" className="position-relative">
               🛒
               <span className="badge bg-danger text-white cart-badge">0</span>
-            </a>
-          </div>
+            </a> */}
+             <div className="position-relative">
+              🛒
+              <span className="badge bg-danger text-white cart-badge">0</span>
+            </div>
         </div>
       </nav>
-      <section className="hero-section w-100" id="top">
-        <div className="container text-center">
 
-          <h1 className="fw-bold mb-3 hero-title">
-            Say Goodbye to high medicine prices
-          </h1>
+      {/* 🔹 HERO */}
+      <section className="hero-section text-center mt-5 pt-5" id="top">
+        <h1 className="fw-bold">Say Goodbye to high medicine prices</h1>
+        <p className="text-muted">
+          Compare prices and save up to 51% on medicines
+        </p>
 
-          <p className="text-muted mb-4">
-            Compare prices and save up to 51% on your medicines.
-          </p>
+        <div className="d-flex flex-wrap justify-content-center mb-3">
+          {categories.map((cat, i) => (
+            <button key={i} className="btn btn-link text-muted">
+              {cat}
+            </button>
+          ))}
+        </div>
+      </section>
 
-          {/* CATEGORY MENU */}
-          <div className="d-flex flex-wrap justify-content-center mb-4">
-            {categories.map((cat, i) => (
-              <button
-                key={i}
-                className="btn btn-link text-decoration-none text-muted mx-2 my-1"
-                style={{ fontSize: "0.9rem" }}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-          </div>
-    </section>
-
-      {/* 🔍 SEARCH + LOCATION */}
-      <div className="search-wrapper d-flex align-items-center gap-2 p-3">
+      {/* 🔍 SEARCH BAR */}
+      <div className="search-wrapper d-flex align-items-center gap-2 p-3 justify-content-center">
         <button className="btn btn-link">
           Deliver to <b>{location.city}</b>
         </button>
@@ -194,35 +156,49 @@ Login / Signup
           className="form-control"
           style={{ width: "120px" }}
         />
-{/* <div className="search-wrapper d-flex "> */}
+
         <input
           type="text"
           placeholder="Search medicines"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="form-control"
+          style={{ maxWidth: "1200px" }}
         />
-</div>
-{/* </div> */}
-        {/* <input
-            type="text"
-            placeholder="Search by name or manufacturer..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <i className="bi bi-search"></i>
+      </div>
+
+      {/* 🔍 SEARCH RESULTS (ONLY WHEN SEARCH IS TYPED) */}
+      {search && (
+        <div className="container mt-4">
+          <div className="row">
+            {filteredMeds.length > 0 ? (
+              filteredMeds.map((med, index) => (
+                <div className="col-md-4 mb-3" key={index}>
+                  <div className="card h-100 shadow-sm">
+                    <img
+                      src="https://via.placeholder.com/200"
+                      className="card-img-top"
+                      alt={med.name}
+                    />
+                    <div className="card-body text-center">
+                      <h5>{med.name}</h5>
+                      <p>₹{med.price}</p>
+                      <button className="btn btn-primary w-100">
+                        Add to Cart
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="col-12 text-center">
+                <p className="text-muted fs-5">No medicine found</p>
               </div>
-              */}
-{filteredMeds.map((name)=> (
-  <div className="col-md-4 mb-3">
-    <div className="card h-100">
-    
-    </div>
-  </div>
- ))} 
-
-
-      {/* 📦 ORDER VIA */}
+            )}
+          </div>
+        </div>
+      )}
+     {/* 📦 ORDER VIA */}
       <div className="mt-5 text-center">
         <p className="text-uppercase text-muted mb-3">
           Place your order via
@@ -246,47 +222,32 @@ Login / Signup
           </button>
         </div>
       </div>
-
-
-      {/* 💊 MEDICINE GRID */}
-      <div className="container mt-4">
-        <h3>All Medicines</h3>
-
-        <div className="row">
-          {meds.map((med, index) => (
-            <div className="col-md-4 mb-3" key={index}>
-              <div className="card h-100">
-                <img
-                  src="https://via.placeholder.com/200"
-                  className="card-img-top"
-                  alt={med.name}
-                />
-                <div className="card-body">
-                  <h5>{med.name}</h5>
-                  <p>₹{med.price}</p>
-                  <button className="btn btn-primary w-100">
-                    Add to Cart
-                  </button>
+      {/* 💊 ALL MEDICINES (ONLY WHEN SEARCH IS EMPTY) */}
+      {!search && (
+        <div className="container mt-4">
+          <h3>All Medicines</h3>
+          <div className="row">
+            {meds.map((med, index) => (
+              <div className="col-md-4 mb-3" key={index}>
+                <div className="card h-100">
+                  <img
+                    src="https://via.placeholder.com/200"
+                    className="card-img-top"
+                    alt={med.name}
+                  />
+                  <div className="card-body text-center">
+                    <h5>{med.name}</h5>
+                    <p>₹{med.price}</p>
+                    <button className="btn btn-primary w-100">
+                      Add to Cart
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-           
-            //serch div
-          ))}
-
+            ))}
+          </div>
         </div>
-        
-      </div>
+      )}
     </>
   );
 }
-
-{/* ❌ No Data Found */}
-    // {filteredMeds.length === 0 && (
-    //   <div className="col-12 text-center">
-    //     <p className="text-muted fs-5 mt-3">
-    //       No medicine found
-    //     </p>
-    //   </div>
-    // )}
-  

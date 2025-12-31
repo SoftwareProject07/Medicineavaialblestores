@@ -11,55 +11,42 @@ export default function Medicine() {
   const [unitPrice, setUnitPrice] = useState("");
   const [discount, setDiscount] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [expiryDate, setExpiryDate] = useState(""); // ✅ FIX
-  const[imageurl,setImageUrl]=useState("");
-// const [imageurl, setImageUrl] = useState(null); // File store karega
-// const [imagePreview, setImagePreview] = useState("");
+  const [expiryDate, setExpiryDate] = useState(""); // YYYY-MM-DD from input
+  const [imageFile, setImageFile] = useState(null);
 
-
-// const handleImageChange = (e) => {
-//   const file = e.target.files[0];
-//   if (!file) return;
-
-//   setImageUrl(file); // 👈 file yahin store hogi
-//   setImagePreview(URL.createObjectURL(file));
-// };
+  const toDdMmYyyy = (yyyyMmDd) => {
+    if (!yyyyMmDd) return "";
+    const [yyyy, mm, dd] = yyyyMmDd.split("-");
+    return `${dd}/${mm}/${yyyy}`;
+  };
 
   const handleSave = async () => {
-    if ( !name || !manufacturer || !unitPrice || !quantity || !expiryDate|| !imageurl) {
+    if (!name || !manufacturer || !unitPrice || !quantity || !expiryDate || !imageFile) {
       alert("Please fill all required fields");
       return;
     }
 
-// const handleSave = async () => {
-//   if (!imageurl) {
-//     alert("Please select image");
-//     return;
-//   }
-    const data = {
-      //Id:id,
-      name: name,
-      manufacturer: manufacturer,
-      unitPrice: Number(unitPrice),
-      discount: Number(discount || 0),
-      quantity: Number(quantity),
-      expiryDate: expiryDate, // yyyy-mm-dd
-    imageurl:imageurl,
-      status: 1 // ✅ IMPORTANT
-    };
-
+    const formData = new FormData();
+    formData.append("Name", name);
+    formData.append("Manufacturer", manufacturer);
+    formData.append("UnitPrice", unitPrice);   // let server parse decimals
+    formData.append("Discount", discount || 0);
+    formData.append("Quantity", quantity);
+    formData.append("ExpiryDate", toDdMmYyyy(expiryDate)); // match backend regex
+    formData.append("STATUS", "1"); // optional; backend sets this anyway
+    formData.append("image", imageFile); // must match controller parameter name
 
     try {
       await axios.post(
-      
-      "https://ecommerencesite-api.onrender.com/api/MEDICINE/CreateMedicine",
-
-        data,
-        { headers: { "Content-Type": "application/json" } }
+        "https://ecommerencesite-api.onrender.com/api/MEDICINE/CreateMedicine",
+        formData,
+        {
+          // DO NOT set Content-Type manually; let the browser set multipart boundary
+          // headers: { "Content-Type": "multipart/form-data" }
+        }
       );
-
       alert("Add Medicine Successful");
-      navigate("/deshboard");
+      navigate("/deshboardpanel");
     } catch (error) {
       console.error("API Error:", error.response?.data || error.message);
       alert("Add Medicine Failed");
@@ -78,34 +65,19 @@ export default function Medicine() {
           <input type="number" placeholder="Discount" value={discount} onChange={e => setDiscount(e.target.value)} />
           <input type="number" placeholder="Quantity" value={quantity} onChange={e => setQuantity(e.target.value)} />
           <input type="date" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} />
-           {/* <input type="file"     value={imageurl} onChange={e => setImageUrl(e.target.value)} /> */}
 
-            
-{/* <input
-  type="file"
-  accept="image/*"
-  onChange={handleImageChange}
-/> */}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={e => setImageFile(e.target.files?.[0] || null)}
+          />
+        
 
           <button className="btn btn-success w-100" onClick={handleSave}>
             Add Medicines
           </button>
-
-
-          
         </fieldset>
       </div>
-      {/* {imagePreview && (
-  <img
-    src={imagePreview}
-    alt="preview"
-    width="80"
-    height="80"
-    style={{ marginTop: 8, borderRadius: 6 }}
-  />
-)} */}
-
     </Fragment>
-    
   );
 }

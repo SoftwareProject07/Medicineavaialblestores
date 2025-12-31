@@ -56,7 +56,8 @@ export default function Login() {
   response.data.status === true
 ) {
   alert("Login Successful ✅");
-  navigate("/deshboard");
+ // navigate("/deshboardpanel");
+  navigate("/dashboards");
 }
  else {
           alert(
@@ -78,10 +79,10 @@ export default function Login() {
         <h2 className="login-title">Login</h2>
 
         <div className="input-group">
-          <label>Email</label>
+          <label>Email/Mobile</label>
           <input
             type="email"
-            placeholder="Enter Email"
+            placeholder="Enter Email/Mobile"
             value={email}  
             onChange={(e) => setEmail(e.target.value) }  required
           />

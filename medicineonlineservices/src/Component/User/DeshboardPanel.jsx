@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from "react";
 import "../styles/deshboards.css";
 import "../styles/noscroll.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { useState, useEffect } from "react";
 
-export default function Dashboard() {
+export default function DeshboardPanel() {
   const [medicines, setMedicines] = useState([]);
   const [editingMedicine, setEditingMedicine] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [openDashboard, setOpenDashboard] = useState(false);
 
-  // 🔹 Pagination State
+  // 🔹 Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const firstPageSize = 5;
   const pageSize = 10;
@@ -22,6 +23,8 @@ export default function Dashboard() {
     discount: "",
     quantity: "",
     expiryDate: "",
+    image: null,
+    imageurl: ""
   });
 
   // 🔹 Normalize API response
@@ -34,9 +37,10 @@ export default function Dashboard() {
       discount: m.discount ?? m.Discount,
       quantity: m.quantity ?? m.Quantity,
       expiryDate: m.expiryDate ?? m.ExpiryDate,
+      imageurl: m.image ?? m.Image ?? m.imageurl ?? m.ImageUrl
     }));
 
-  // 🔹 GET MEDICINES
+  // 🔹 GET Medicines
   useEffect(() => {
     axios
       .get("https://ecommerencesite-api.onrender.com/api/MEDICINE/AllListMedicineProduct")
@@ -47,27 +51,20 @@ export default function Dashboard() {
       .catch(() => setMedicines([]));
   }, []);
 
-  // 🔹 SEARCH FILTER
+  // 🔹 Search Filter
   const filteredMedicines = medicines.filter(
     (m) =>
-      m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      m.manufacturer.toLowerCase().includes(searchTerm.toLowerCase())
+      m.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      m.manufacturer?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // 🔹 Pagination Logic
   const getPageSize = (page) => (page === 1 ? firstPageSize : pageSize);
-
   const startIndex =
-    currentPage === 1
-      ? 0
-      : firstPageSize + (currentPage - 2) * pageSize;
-
+    currentPage === 1 ? 0 : firstPageSize + (currentPage - 2) * pageSize;
   const endIndex = startIndex + getPageSize(currentPage);
-
   const paginatedMedicines = filteredMedicines.slice(startIndex, endIndex);
-
   const remainingItems = Math.max(filteredMedicines.length - firstPageSize, 0);
-
   const totalPages =
     filteredMedicines.length <= firstPageSize
       ? 1
@@ -82,44 +79,65 @@ export default function Dashboard() {
       unitPrice: med.unitPrice,
       discount: med.discount,
       quantity: med.quantity,
-      expiryDate: med.expiryDate?.split("T")[0],
+      expiryDate: med.expiryDate?.split("T")[0] || "",
+      image: null,
+      imageurl: med.imageurl
     });
   };
 
   // 🔹 Input Change
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    const { name, value, files } = e.target;
+    if (name === "image") {
+      setFormData({ ...formData, image: files[0] });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   // 🔹 Update Medicine
   const handleUpdate = async (id) => {
     try {
-      const payload = {
-        Id: id,
-        Name: formData.name,
-        Manufacturer: formData.manufacturer,
-        UnitPrice: Number(formData.unitPrice),
-        Discount: Number(formData.discount),
-        Quantity: Number(formData.quantity),
-        ExpiryDate: new Date(formData.expiryDate).toISOString(),
-      };
+      const data = new FormData();
+      data.append("Id", id);
+      data.append("Name", formData.name);
+      data.append("Manufacturer", formData.manufacturer);
+      data.append("UnitPrice", formData.unitPrice);
+      data.append("Discount", formData.discount);
+      data.append("Quantity", formData.quantity);
+      data.append("ExpiryDate", formData.expiryDate);
+
+      if (formData.image) {
+        data.append("image", formData.image);
+      }
 
       const res = await axios.put(
         "https://ecommerencesite-api.onrender.com/api/MEDICINE/UpdateMedicine",
-        payload
+        data
       );
 
-      if (res.data.status) {
+      if (res.data?.status) {
         setMedicines((prev) =>
-          prev.map((m) => (m.id === id ? { ...m, ...formData } : m))
+          prev.map((m) =>
+            m.id === id
+              ? {
+                  ...m,
+                  ...formData,
+                  imageurl:
+                    res.data.imageUrl ||
+                    res.data.ImageUrl ||
+                    m.imageurl
+                }
+              : m
+          )
         );
         setEditingMedicine(null);
         alert("Updated successfully");
       } else {
-        alert(res.data.responseMessage || "Update failed");
+        alert(res.data?.responseMessage || "Update failed");
       }
-    } catch {
+    } catch (err) {
+      console.error(err);
       alert("Update failed");
     }
   };
@@ -127,17 +145,15 @@ export default function Dashboard() {
   // 🔹 Delete Medicine
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure?")) return;
-
     try {
       const res = await axios.delete(
         `https://ecommerencesite-api.onrender.com/api/MEDICINE/DeleteMedicine/${id}`
       );
-
-      if (res.data.status) {
+      if (res.data?.status) {
         setMedicines((prev) => prev.filter((m) => m.id !== id));
         alert("Deleted successfully");
       } else {
-        alert(res.data.responseMessage);
+        alert(res.data?.responseMessage || "Delete failed");
       }
     } catch {
       alert("Delete failed");
@@ -148,27 +164,40 @@ export default function Dashboard() {
     <div className="dashboard-container">
       {/* ---------- SIDEBAR ---------- */}
       <div className="sidebar">
-        <a className="navbar-brand d-flex align-items-center" href="#">
+        <div className="brand">
           <img src="/AKMedizostore.png" alt="logo" width="45" />
-          <span className="ms-2">AKMedizostore</span>
-        </a>
+          <span>AKMedizostore</span>
+        </div>
 
-        <ul className="menu mt-4">
-          <Link to="/deshboard" className="btn btn-success mb-2">
-            Admin Dashboard
-          </Link>
+        <ul>
+          <li className="menu-group">
+            <span
+              className="menu-title btn btn-success mb-2"
+              onClick={() => setOpenDashboard(!openDashboard)}
+            >
+              Dashboard {openDashboard ? "▾" : "▸"}
+            </span>
 
-          <Link to="/header" className="btn btn-success mb-2">
-            Medicines
-          </Link>
+            {openDashboard && (
+              <ul className="submenu">
+                <li><Link to="/medication-tracker">Medication Tracker</Link></li>
+                <li><Link to="/test-reports">Test Reports</Link></li>
+                <li><Link to="/health-history">Health History</Link></li>
+                <li><Link to="/monthly-progress">Monthly Progress</Link></li>
+                <li><Link to="/prescriptions">Prescriptions</Link></li>
+                <li><Link to="/history">History</Link></li>
+                <li><Link to="/support">Help & Support</Link></li>
+                <li><Link to="/settings">Settings</Link></li>
+              </ul>
+            )}
+          </li>
 
+          <li><Link to="/deshboardpanel">Admin Dashboard</Link></li>
+          <li><Link to="/header">Medicines</Link></li>
           <li>Orders</li>
           <li>Cart</li>
           <li>Profile</li>
-
-          <Link to="/header" className="btn btn-danger mt-3">
-            Logout
-          </Link>
+          <li><Link to="/logout">Log Out</Link></li>
         </ul>
       </div>
 
@@ -176,12 +205,11 @@ export default function Dashboard() {
       <div className="content">
         <div className="topbar d-flex justify-content-between">
           <h2>Medicines</h2>
-          <Link to="/deshboard/medicines" className="btn btn-success">
+          <Link to="/deshboardpanel/medicines" className="btn btn-success">
             Add Medicine
           </Link>
         </div>
 
-        {/* 🔹 Search */}
         <input
           className="form-control my-3"
           placeholder="Search by name or manufacturer"
@@ -192,7 +220,6 @@ export default function Dashboard() {
           }}
         />
 
-        {/* 🔹 Table */}
         <table className="table table-hover">
           <thead>
             <tr>
@@ -202,14 +229,14 @@ export default function Dashboard() {
               <th>Discount</th>
               <th>Qty</th>
               <th>Expiry</th>
+              <th>Photo</th>
               <th>Action</th>
             </tr>
           </thead>
-
           <tbody>
             {paginatedMedicines.length === 0 ? (
               <tr>
-                <td colSpan="7" className="text-center">
+                <td colSpan="8" className="text-center">
                   No medicines found
                 </td>
               </tr>
@@ -221,8 +248,29 @@ export default function Dashboard() {
                   <td>{editingMedicine === med.id ? <input name="unitPrice" value={formData.unitPrice} onChange={handleChange} /> : med.unitPrice}</td>
                   <td>{editingMedicine === med.id ? <input name="discount" value={formData.discount} onChange={handleChange} /> : med.discount}</td>
                   <td>{editingMedicine === med.id ? <input name="quantity" value={formData.quantity} onChange={handleChange} /> : med.quantity}</td>
-                  <td>{editingMedicine === med.id ? <input type="date" name="expiryDate" value={formData.expiryDate} onChange={handleChange} /> : new Date(med.expiryDate).toLocaleDateString()}</td>
-
+                  <td>
+                    {editingMedicine === med.id ? (
+                      <input type="date" name="expiryDate" value={formData.expiryDate} onChange={handleChange} />
+                    ) : med.expiryDate ? (
+                      new Date(med.expiryDate).toLocaleDateString()
+                    ) : (
+                      "N/A"
+                    )}
+                  </td>
+                  <td>
+                    {editingMedicine === med.id ? (
+                      <>
+                        <input type="file" name="image" onChange={handleChange} />
+                        {formData.imageurl && (
+                          <img src={formData.imageurl} alt="preview" width="60" height="60" />
+                        )}
+                      </>
+                    ) : med.imageurl ? (
+                      <img src={med.imageurl} alt="medicine" width="60" height="60" />
+                    ) : (
+                      "No Image"
+                    )}
+                  </td>
                   <td>
                     {editingMedicine === med.id ? (
                       <>
@@ -242,20 +290,13 @@ export default function Dashboard() {
           </tbody>
         </table>
 
-        {/* 🔹 Pagination */}
         <div className="d-flex justify-content-center gap-2">
           <button disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)}>Prev</button>
-
           {[...Array(totalPages)].map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentPage(i + 1)}
-              style={{ fontWeight: currentPage === i + 1 ? "bold" : "normal" }}
-            >
+            <button key={i} onClick={() => setCurrentPage(i + 1)} style={{ fontWeight: currentPage === i + 1 ? "bold" : "normal" }}>
               {i + 1}
             </button>
           ))}
-
           <button disabled={currentPage === totalPages} onClick={() => setCurrentPage((p) => p + 1)}>Next</button>
         </div>
       </div>

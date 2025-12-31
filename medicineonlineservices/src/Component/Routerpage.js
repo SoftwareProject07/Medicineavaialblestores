@@ -3,10 +3,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./Component/Login.jsx";
 import Registeration from "./Component/Registeration.jsx";
 import Header from './User/Header.jsx';
-import Dashboard from './User/Deshboard.jsx';
+import DeshboardPanel from './User/DeshboardPanel.jsx';
 import Contact from './Contact.jsx';
 import Medicine from "./Admin/Medicine.jsx";
-import UpdateMedicine from "./Component/Admin/UpdateMedicine.jsx";
+import Dashboard from './DeshboardsMedicine/Dashboard.jsx';
+//import UpdateMedicine from "./Component/Admin/UpdateMedicine.jsx";
 
 //import Deskboard from './User/Deskboard.jsx';
 
@@ -36,9 +37,10 @@ export default function Routerpage() {
         <Route path="/login" element={<Login />} />
         <Route path="/registeration" element={<Registeration />} /> 
         <Route Path="/header" element={<Header/>}/>
-        <Route Path="/deshboard" element={<Dashboard />}/>
+        <Route Path="/deshboardpanel" element={<DeshboardPanel />}/>
         <Route Path="/contact" element={<Contact />}/>
-        <Route Path="/deshboard/medicines" element={<Medicine />} />
+        <Route Path="/deshboardpanel/medicines" element={<Medicine />} />
+        <Route Path="/dashboards" element={<Dashboard />} />
 
        {/* <Route path="/Deskboard" element={<Deskboard />} />
         <Route path="/Orders" element={<Orders />} />
