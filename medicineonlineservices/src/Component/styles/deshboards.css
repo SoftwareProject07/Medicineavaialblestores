@@ -338,7 +338,7 @@ header {
 }
 
 .sidebar li {
-  padding: 12px 10px;
+  padding: 11px 12px;
   margin-bottom: 10px;
   border-radius: 5px;
   display: flex;
@@ -365,7 +365,7 @@ header {
   cursor: pointer;
   display: block;
   margin-bottom: 8px;
-  font-size: 16px;
+  font-size: 100px;
 }
 
 .submenu {

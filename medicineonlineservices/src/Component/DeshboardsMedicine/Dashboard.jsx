@@ -39,10 +39,17 @@ const bpData = [
 
 const COLORS = ["#0088FE", "#00C49F", "#FF8042"];
 
-export default function DashboardUI() {
+export default function Dashboard() {
   const [openDashboard, setOpenDashboard] = useState(false);
   const [medications, setMedications] = useState([]);
-
+  const [user, setUser] = useState(null);
+/* ---------- LOAD USER ---------- */
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
   useEffect(() => {
     const saved = localStorage.getItem("medications");
     if (saved) {
@@ -71,16 +78,27 @@ export default function DashboardUI() {
     <div className="app-container">
       {/* ---------- SIDEBAR ---------- */}
       <div className="sidebar">
-        <div className="logo">AKMedizostore</div>
-        <ul>
+<div className="brand">
+          <img src="/AKMedizostore.png" alt="logo" width="45px" />
+          <span>AKMedizostore</span>
+        </div>        <ul>
           {/* Dashboard Dropdown */}
           <li className="menu-group">
-            <span
+            {/* <span
               className="menu-title   btn btn-success mb-2"
               onClick={() => setOpenDashboard(!openDashboard)}
             >
               Dashboard {openDashboard ? "▾" : "▸"}
-            </span>
+            </span> */}
+
+            <Link
+              to="/dashboards"
+              className="menu-title btn btn-success mb-2 d-flex justify-content-between align-items-center"
+              onClick={() => setOpenDashboard(!openDashboard)}
+            >
+              Dashboard
+              <span>{openDashboard ? "▾" : "▸"}</span>
+            </Link>
             {openDashboard && (
               <ul className="submenu">
                 <li><Link to="/medication-tracker">Medication Tracker</Link></li>
@@ -104,7 +122,7 @@ export default function DashboardUI() {
           {/* <li><Link to="/history">History</Link></li>
           <li><Link to="/support">Help & Support</Link></li>
           <li><Link to="/settings">Settings</Link></li> */}
-          <li><Link to="/logout">Log Out</Link></li>
+          <li><Link to="/header" className="btn btn-success mb-2">Log Out</Link></li>
         </ul>
       </div>
 
@@ -115,7 +133,8 @@ export default function DashboardUI() {
         </header>
 
         <div className="medicines-page">
-          <h2>Welcome back, Suvashini</h2>
+          {/* <h2>Welcome back, Suvashini</h2> */}
+            Welcome back, {user?.firstName} {user?.lastName}
 
           {/* Summary Cards */}
           <div className="cards">

@@ -105,7 +105,7 @@ export default function Header() {
           <ul className="navbar-nav me-auto">
             <li className="nav-item"><a className="nav-link" href="#top">Home</a></li>
             <li className="nav-item"><a className="nav-link" href="#medicineOrder">Medicine Order</a></li>
-            <li className="nav-item"><a className="nav-link" href="#Aboutn">About</a></li>
+            <li className="nav-item"><a className="nav-link" href="#About">About</a></li>
             <li className="nav-item">
               <Link className="nav-link" to="/contact">Contact Us</Link>
             </li>

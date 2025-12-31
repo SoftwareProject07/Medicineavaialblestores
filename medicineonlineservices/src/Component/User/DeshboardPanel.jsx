@@ -165,18 +165,28 @@ export default function DeshboardPanel() {
       {/* ---------- SIDEBAR ---------- */}
       <div className="sidebar">
         <div className="brand">
-          <img src="/AKMedizostore.png" alt="logo" width="45" />
+          <img src="/AKMedizostore.png" alt="logo" width="45px" />
           <span>AKMedizostore</span>
         </div>
 
         <ul>
-          <li className="menu-group">
-            <span
+         <li className="menu-group"> 
+         {/*   <span
               className="menu-title btn btn-success mb-2"
               onClick={() => setOpenDashboard(!openDashboard)}
             >
               Dashboard {openDashboard ? "▾" : "▸"}
-            </span>
+            </span> */}
+
+
+<Link
+  to="/dashboards"
+  className="menu-title btn btn-success mb-2 d-flex justify-content-between align-items-center"
+  onClick={() => setOpenDashboard(!openDashboard)}
+>
+  Dashboard
+  <span>{openDashboard ? "▾" : "▸"}</span>
+</Link>
 
             {openDashboard && (
               <ul className="submenu">
@@ -192,12 +202,12 @@ export default function DeshboardPanel() {
             )}
           </li>
 
-          <li><Link to="/deshboardpanel">Admin Dashboard</Link></li>
-          <li><Link to="/header">Medicines</Link></li>
+           <Link to="/deshboardpanel" className="btn btn-success mb-2">Admin Dashboard</Link>
+                               <Link to="/header" className="btn btn-success mb-2">Medicines</Link>
           <li>Orders</li>
           <li>Cart</li>
           <li>Profile</li>
-          <li><Link to="/logout">Log Out</Link></li>
+          <li><Link to="/logout" className="btn btn-success mb-2">Log Out</Link></li>
         </ul>
       </div>
 
