@@ -202,10 +202,16 @@ export default function DeshboardPanel() {
             )}
           </li>
 
-           <Link to="/deshboardpanel" className="btn btn-success mb-2">Admin Dashboard</Link>
+           <Link to="/admindashboard" className="btn btn-success mb-2">Admin Dashboard</Link>
                                <Link to="/header" className="btn btn-success mb-2">Medicines</Link>
-          <li>Orders</li>
-          <li>Cart</li>
+                                         <li>Cart</li>
+                                         <li>Patience Details</li>
+
+          <li>OrdersPayment</li>
+
+          <li>CustomerTracking/OrderList</li>
+
+
           <li>Profile</li>
           <li><Link to="/logout" className="btn btn-success mb-2">Log Out</Link></li>
         </ul>

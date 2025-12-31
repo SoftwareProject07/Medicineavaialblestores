@@ -7,6 +7,7 @@ import DeshboardPanel from "./Component/User/DeshboardPanel.jsx";
 import Contact from "./Component/Contact.jsx";
 import Medicine from "./Component/Admin/Medicine.jsx";
 import Dashboard from "./Component/DeshboardsMedicine/Dashboard.jsx";
+import AdminDashboard from "./Component/Admin/AdminDeshboard.jsx";
 
 function App() {
   return (
@@ -20,7 +21,8 @@ function App() {
         <Route path="/dashboards" element={<Dashboard />} />
 
       <Route path="/contact" element={<Contact />} />
-      
+              <Route Path="/admindashboard" element={<AdminDashboard  />} />
+
     </Routes>
   );
 }
