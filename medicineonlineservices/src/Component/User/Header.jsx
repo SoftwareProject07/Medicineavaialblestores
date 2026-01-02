@@ -5,7 +5,6 @@ import "../styles/noscroll.css";
 
 export default function Header() {
   const [search, setSearch] = useState("");
-
   const [location, setLocation] = useState({
     city: "Detecting...",
     pincode: "",
@@ -31,9 +30,8 @@ export default function Header() {
     { name: "Skin Ointment", price: 50 },
   ];
 
-  // 🔍 SEARCH FILTER
-  const filteredMeds = meds.filter((med) =>
-    med.name.toLowerCase().includes(search.trim().toLowerCase())
+  const filteredMeds = meds.filter((m) =>
+    m.name.toLowerCase().includes(search.toLowerCase())
   );
 
   // 📍 Auto detect location
@@ -62,70 +60,58 @@ export default function Header() {
     });
   }, []);
 
-  // 📮 PINCODE → CITY
   const handlePincodeChange = async (e) => {
     const pin = e.target.value.replace(/\D/g, "");
-    setLocation((prev) => ({ ...prev, pincode: pin }));
+    setLocation((p) => ({ ...p, pincode: pin }));
 
     if (pin.length === 6) {
-      try {
-        const res = await fetch(
-          `https://api.postalpincode.in/pincode/${pin}`
-        );
-        const data = await res.json();
-
-        if (data[0].Status === "Success") {
-          setLocation((prev) => ({
-            ...prev,
-            city: data[0].PostOffice[0].District,
-          }));
-        } else {
-          setLocation((prev) => ({ ...prev, city: "Invalid Pincode" }));
-        }
-      } catch {
-        setLocation((prev) => ({ ...prev, city: "Error" }));
+      const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+      const data = await res.json();
+      if (data[0].Status === "Success") {
+        setLocation((p) => ({
+          ...p,
+          city: data[0].PostOffice[0].District,
+        }));
       }
     }
   };
 
   return (
     <>
-      {/* 🔹 NAVBAR */}
-      <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm fixed-top w-100 px-3">
-        <a className="navbar-brand d-flex align-items-center" href="#">
-          <img
-            src="/AKMedizostore.png"
-            alt="AKMedizostore"
-            style={{ width: "40px", marginRight: "8px" }}
-          />
-          AKMedizostore
-        </a>
+      {/* NAVBAR */}
+      <nav className="navbar navbar-expand-lg fixed-top bg-white shadow-sm px-3">
+        <Link to="/" className="navbar-brand d-flex align-items-center">
+          <img src="/AKMedizostore.png" width="36" alt="logo" />
+          <span className="ms-2 fw-bold">AKMedizostore</span>
+        </Link>
 
-        <div className="collapse navbar-collapse">
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#mainNavbar"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+
+        <div className="collapse navbar-collapse" id="mainNavbar">
           <ul className="navbar-nav me-auto">
-            <li className="nav-item"><a className="nav-link" href="#top">Home</a></li>
-            <li className="nav-item"><a className="nav-link" href="#medicineOrder">Medicine Order</a></li>
-            <li className="nav-item"><a className="nav-link" href="#About">About</a></li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/contact">Contact Us</Link>
-            </li>
+            <li className="nav-item"><a href="#top" className="nav-link">Home</a></li>
+            <li className="nav-item"><a href="#medicineOrder" className="nav-link">Medicine Order</a></li>
+            <li className="nav-item"><a href="#about" className="nav-link">About</a></li>
+            <li className="nav-item"><Link to="/contact" className="nav-link">Contact Us</Link></li>
           </ul>
 
-          <Link to="/login" className="btn btn-success">
-            Login / Signup
-          </Link><br></br>
-          {/* <a href="#" className="position-relative">
-              🛒
-              <span className="badge bg-danger text-white cart-badge">0</span>
-            </a> */}
-             <div className="position-relative">
-              🛒
-              <span className="badge bg-danger text-white cart-badge">0</span>
+          <div className="d-flex gap-3 align-items-center">
+            <Link to="/login" className="btn btn-success">Login / Signup</Link>
+            <div className="cart-icon">
+              🛒 <span className="badge bg-danger">0</span>
             </div>
+          </div>
         </div>
       </nav>
 
-      {/* 🔹 HERO */}
+    {/* 🔹 HERO */}
       <section className="hero-section text-center mt-5 pt-5" id="top">
         <h1 className="fw-bold">Say Goodbye to high medicine prices</h1>
         <p className="text-muted">
