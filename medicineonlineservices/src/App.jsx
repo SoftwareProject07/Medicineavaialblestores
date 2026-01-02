@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import {HashRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "./Component/Login.jsx";
 import Registeration from "./Component/Registeration.jsx";
@@ -11,6 +11,7 @@ import AdminDashboard from "./Component/Admin/AdminDeshboard.jsx";
 
 function App() {
   return (
+    <HashRouter>
     <Routes>
       <Route path="/" element={<Navigate to="/header" />} />
       <Route path="/login" element={<Login />} />
@@ -24,6 +25,7 @@ function App() {
               <Route Path="/admindashboard" element={<AdminDashboard  />} />
 
     </Routes>
+    </HashRouter>
   );
 }
 
