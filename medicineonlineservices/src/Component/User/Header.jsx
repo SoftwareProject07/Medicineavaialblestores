@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/headers.css";
 import "../styles/noscroll.css";
+import   "../User/Header.jsx";
 
 export default function Header() {
   const [value, setValue] = useState("");
