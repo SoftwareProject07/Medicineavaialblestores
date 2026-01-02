@@ -122,7 +122,7 @@ export default function Dashboard() {
           {/* <li><Link to="/history">History</Link></li>
           <li><Link to="/support">Help & Support</Link></li>
           <li><Link to="/settings">Settings</Link></li> */}
-          <li><Link to="/header" className="btn btn-success mb-2">Log Out</Link></li>
+          <li><Link to="/header"><i class="fas fa-sign-out-alt"></i></Link></li>
         </ul>
       </div>
 

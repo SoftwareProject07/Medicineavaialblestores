@@ -4,12 +4,22 @@ import "../styles/headers.css";
 import "../styles/noscroll.css";
 
 export default function Header() {
+  const [value, setValue] = useState("");
+
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState({
     city: "Detecting...",
     pincode: "",
   });
+  // account drop down opeion
+ const handleChange = (e) => {
+    const value = e.target.value;
+    setAccount(value);
 
+    if (value === "login") navigate("/login");
+    if (value === "register") navigate("/register");
+  };
+  // =============
   const categories = [
     "Medicines",
     "Personal Care",
@@ -34,16 +44,23 @@ export default function Header() {
     m.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  // 📍 Auto detect location
+  // 📍 Auto location detect
   useEffect(() => {
     if (!navigator.geolocation) return;
 
     navigator.geolocation.getCurrentPosition(async (pos) => {
       try {
         const { latitude, longitude } = pos.coords;
+
         const res = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+          {
+            headers: {
+              "User-Agent": "AKMedizostore/1.0",
+            },
+          }
         );
+
         const data = await res.json();
 
         setLocation({
@@ -60,14 +77,18 @@ export default function Header() {
     });
   }, []);
 
+  // 📮 Pincode handler
   const handlePincodeChange = async (e) => {
     const pin = e.target.value.replace(/\D/g, "");
     setLocation((p) => ({ ...p, pincode: pin }));
 
     if (pin.length === 6) {
-      const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+      const res = await fetch(
+        `https://api.postalpincode.in/pincode/${pin}`
+      );
       const data = await res.json();
-      if (data[0].Status === "Success") {
+
+      if (data[0]?.Status === "Success") {
         setLocation((p) => ({
           ...p,
           city: data[0].PostOffice[0].District,
@@ -78,7 +99,7 @@ export default function Header() {
 
   return (
     <>
-      {/* NAVBAR */}
+      {/* 🔹 NAVBAR */}
       <nav className="navbar navbar-expand-lg fixed-top bg-white shadow-sm px-3">
         <Link to="/" className="navbar-brand d-flex align-items-center">
           <img src="/AKMedizostore.png" width="36" alt="logo" />
@@ -96,14 +117,33 @@ export default function Header() {
 
         <div className="collapse navbar-collapse" id="mainNavbar">
           <ul className="navbar-nav me-auto">
-            <li className="nav-item"><a href="#top" className="nav-link">Home</a></li>
-            <li className="nav-item"><a href="#medicineOrder" className="nav-link">Medicine Order</a></li>
-            <li className="nav-item"><a href="#about" className="nav-link">About</a></li>
-            <li className="nav-item"><Link to="/contact" className="nav-link">Contact Us</Link></li>
+            <li className="nav-item">
+              <a href="#top" className="nav-link">Home</a>
+            </li>
+            <li className="nav-item">
+              <a href="#medicineOrder" className="nav-link">Medicine Order</a>
+            </li>
+            <li className="nav-item">
+              <a href="#about" className="nav-link">About</a>
+            </li>
+            <li className="nav-item">
+              <Link to="/contact" className="nav-link">Contact Us</Link>
+            </li>
           </ul>
 
-          <div className="d-flex gap-3 align-items-center">
-            <Link to="/login" className="btn btn-success">Login / Signup</Link>
+          {/* 🔐 Login & Cart */}
+          <div className="d-flex gap-2 align-items-center">
+             <Link to="#" >
+           <i class="fas fa-toggle-on"></i>
+            </Link>
+            
+          <Link to="/login" >
+            <i class="fas fa-user"></i>
+            </Link> 
+
+
+      {/* USER ICON*/}
+   
             <div className="cart-icon">
               🛒 <span className="badge bg-danger">0</span>
             </div>
@@ -111,7 +151,7 @@ export default function Header() {
         </div>
       </nav>
 
-    {/* 🔹 HERO */}
+      {/* 🔹 HERO */}
       <section className="hero-section text-center mt-5 pt-5" id="top">
         <h1 className="fw-bold">Say Goodbye to high medicine prices</h1>
         <p className="text-muted">
@@ -153,13 +193,13 @@ export default function Header() {
         />
       </div>
 
-      {/* 🔍 SEARCH RESULTS (ONLY WHEN SEARCH IS TYPED) */}
+      {/* 🔍 SEARCH RESULTS */}
       {search && (
         <div className="container mt-4">
           <div className="row">
-            {filteredMeds.length > 0 ? (
-              filteredMeds.map((med, index) => (
-                <div className="col-md-4 mb-3" key={index}>
+            {filteredMeds.length ? (
+              filteredMeds.map((med, i) => (
+                <div className="col-md-4 mb-3" key={i}>
                   <div className="card h-100 shadow-sm">
                     <img
                       src="https://via.placeholder.com/200"
@@ -177,44 +217,21 @@ export default function Header() {
                 </div>
               ))
             ) : (
-              <div className="col-12 text-center">
-                <p className="text-muted fs-5">No medicine found</p>
-              </div>
+              <p className="text-center text-muted fs-5">
+                No medicine found
+              </p>
             )}
           </div>
         </div>
       )}
-     {/* 📦 ORDER VIA */}
-      <div className="mt-5 text-center">
-        <p className="text-uppercase text-muted mb-3">
-          Place your order via
-        </p>
 
-        <div className="d-flex justify-content-center flex-wrap gap-3">
-          <button className="btn btn-light shadow-sm">
-            <img
-              src="/doctor.png"
-              alt="doctor"
-              style={{ width: "80px" }}
-            />
-          </button>
-
-          <button className="btn btn-light shadow-sm">
-            📞 Call 08046800924
-          </button>
-
-          <button className="btn btn-light shadow-sm">
-            ⬆️ Upload prescription
-          </button>
-        </div>
-      </div>
-      {/* 💊 ALL MEDICINES (ONLY WHEN SEARCH IS EMPTY) */}
+      {/* 💊 ALL MEDICINES */}
       {!search && (
         <div className="container mt-4">
           <h3>All Medicines</h3>
           <div className="row">
-            {meds.map((med, index) => (
-              <div className="col-md-4 mb-3" key={index}>
+            {meds.map((med, i) => (
+              <div className="col-md-4 mb-3" key={i}>
                 <div className="card h-100">
                   <img
                     src="https://via.placeholder.com/200"

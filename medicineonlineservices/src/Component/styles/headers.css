@@ -134,10 +134,6 @@ th, td {
 
 } 
 
-/*body {
-  overflow-x: hidden;
-}
-*/
 body {
   overflow-x: hidden;
 }
@@ -219,3 +215,22 @@ body {
     width: 100%;
   } 
 }
+
+
+/* =======userdatalogin dropdown flexible====== */
+
+.user-select select {
+  padding: 6px 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.user-select select:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+

@@ -2,111 +2,132 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./styles/logins.css";
-//localStorage.setItem("token", response.token);
-
 
 export default function Login() {
- // const token = localStorage.getItem("token");
-
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSave = () => {
-    // 🔹 Blank check
-    if (email.trim() === "" || password.trim() === "") {
+  const handleSave = async (e) => {
+    e.preventDefault();
+
+    if (!email.trim() || !password.trim()) {
       alert("Please enter Email and Password");
       return;
     }
 
-    // 🔹 Email format check
-    // const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    // if (!emailPattern.test(email)) {
-    //   alert("Please enter a valid Email ID");
-    //   return;
-    // }
-
-    // // 🔹 Password length check
-    // if (password.length < 6) {
-    //   alert("Password must be at least 6 characters");
-    //   return;
-    // }
-
-    // ✅ API Data
     const data = {
       Email: email,
       Password: password,
     };
 
-    console.log("Sending 👉", data);
-
-    axios
-      .post(
+    try {
+      const response = await axios.post(
         "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/LOGINUserMedicine",
         data,
-        { headers: { "Content-Type": "application/json" } }
-      )
-      .then((response) => {
-        console.log("Response 👉", response.data);
-
-       if (
-  response.data.isSuccess === true ||
-  response.data.success === true ||
-  response.data.status === true
-) {
-  alert("Login Successful ✅");
- // navigate("/deshboardpanel");
-  navigate("/dashboards");
-}
- else {
-          alert(
-            response.data.responseMessage ||
-              response.data.message ||
-              "Invalid Email or Password"
-          );
+        {
+          headers: { "Content-Type": "application/json" },
         }
-      })
-      .catch((error) => {
-        console.error("API Error 👉", error);
-        alert("Server error, please try again later");
-      });
+      );
+
+      console.log("Login Response 👉", response.data);
+
+      if (
+        response.data?.isSuccess === true ||
+        response.data?.success === true ||
+        response.data?.status === true
+      ) {
+        if (response.data.token) {
+          localStorage.setItem("token", response.data.token);
+        }
+
+        alert("Login Successful ✅");
+        navigate("/dashboards");
+      } else {
+        alert(
+          response.data.responseMessage ||
+            response.data.message ||
+            "Invalid Email or Password"
+        );
+      }
+    } catch (error) {
+      console.error("Login Error 👉", error);
+      alert("Server error, please try again later");
+    }
   };
 
   return (
-    <div className="login-container">
-      <div className="login-box">
-        <h2 className="login-title">Login</h2>
-
-        <div className="input-group">
-          <label>Email/Mobile</label>
-          <input
-            type="email"
-            placeholder="Enter Email/Mobile"
-            value={email}  
-            onChange={(e) => setEmail(e.target.value) }  required
+    <>
+      <div className="login-page">
+        {/* LEFT IMAGE */}
+        <div className="login-left">
+          <img
+            src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
+            alt="illustration"
           />
         </div>
 
-        <div className="input-group">
-          <label>Password</label>
-          <input
-            type="password"
-            placeholder="Enter Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}  
-          />
+        {/* RIGHT FORM */}
+        <div className="login-right">
+          <div className="social">
+            <span>Sign in with</span>
+            <div className="icons">
+              <i className="fab fa-facebook-f"></i>
+              <i className="fab fa-twitter"></i>
+              <i className="fab fa-linkedin-in"></i>
+            </div>
+          </div>
+
+          <div className="divider">
+            <span>Or</span>
+          </div>
+
+          {/* ✅ ONLY onSubmit */}
+          <form onSubmit={handleSave}>
+            <input
+              type="email"
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <div className="options">
+              <label>
+                <input type="checkbox" /> Remember me
+              </label>
+              <a href="#">Forgot password?</a>
+            </div>
+
+            <button type="submit" className="login-btn">
+              LOGIN
+            </button>
+          </form>
+
+          <p className="register">
+            Don’t have an account?
+            <Link to="/registeration"> Register</Link>
+          </p>
         </div>
-
-        <button className="login-btn" onClick={handleSave}>
-          Login
-        </button>
-
-        <p className="register-text">
-          Don't have an account?
-          <Link to="/registeration"> Register </Link>
-        </p>
       </div>
-    </div>
+
+      {/* FOOTER */}
+      <footer className="footer">
+        <span>Copyright © 2026. All rights reserved.</span>
+        <div className="footer-icons">
+          <i className="fab fa-facebook"></i>
+          <i className="fab fa-twitter"></i>
+          <i className="fab fa-google"></i>
+          <i className="fab fa-linkedin-in"></i>
+        </div>
+      </footer>
+    </>
   );
 }

@@ -213,7 +213,8 @@ export default function DeshboardPanel() {
 
 
           <li>Profile</li>
-          <li><Link to="/logout" className="btn btn-success mb-2">Log Out</Link></li>
+           {/* className="btn btn-success mb-2" */}
+          <li><Link to="/header"><i class="fas fa-sign-out-alt"></i></Link></li>
         </ul>
       </div>
 
