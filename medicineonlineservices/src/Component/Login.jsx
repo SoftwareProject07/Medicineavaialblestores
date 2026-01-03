@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./styles/logins.css";
-import  './styles/Popup.css';
 // import Popup from './Popup';
 
 export default function Login() {
