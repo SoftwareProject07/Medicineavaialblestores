@@ -1,5 +1,5 @@
-import React, { Fragment, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, {useState } from "react";
+// import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // Patient details form
