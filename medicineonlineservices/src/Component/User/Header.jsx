@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/headers.css";
 import "../styles/noscroll.css";
-import   "../User/Header.jsx";
+// import   "../User/Header.jsx";
 
 export default function Header() {
-  const [value, setValue] = useState("");
+ // const [value, setValue] = useState("");
 
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState({
@@ -13,13 +13,13 @@ export default function Header() {
     pincode: "",
   });
   // account drop down opeion
- const handleChange = (e) => {
-    const value = e.target.value;
-    setAccount(value);
+//  const handleChange = (e) => {
+//     const value = e.target.value;
+//     setAccount(value);
 
-    if (value === "login") navigate("/login");
-    if (value === "register") navigate("/register");
-  };
+//     if (value === "login") navigate("/login");
+//     if (value === "register") navigate("/register");
+//   };
   // =============
   const categories = [
     "Medicines",
