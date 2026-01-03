@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./styles/logins.css";
+import  './styles/Popup.css';
+// import Popup from './Popup';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -57,6 +59,38 @@ export default function Login() {
     }
   };
 
+
+//   const handleSave = async (e) => {
+//   e.preventDefault();
+
+//   const trimmedEmail = email.trim();
+//   const trimmedPassword = password.trim();
+
+//   if (!trimmedEmail || !trimmedPassword) {
+//     // Instead of alert, show popup
+//     setPopupMessage("Please enter Email and Password");
+//     setShowPopup(true);
+//     return;
+//   }
+
+//   try {
+//     // Example: call your login API
+//     const response = await loginUser(trimmedEmail, trimmedPassword);
+
+//     if (response.success) {
+//       setPopupMessage("Login Successful ✅");
+//       setShowPopup(true);
+//     } else {
+//       setPopupMessage(response.message || "Login failed. Please try again.");
+//       setShowPopup(true);
+//     }
+//   } catch (error) {
+//     console.error("Login error:", error);
+//     setPopupMessage("Unexpected error occurred. Please try again later.");
+//     setShowPopup(true);
+//   }
+// };
+
   return (
     <>
       <div className="login-page">
@@ -109,6 +143,7 @@ export default function Login() {
             <button type="submit" className="login-btn">
               LOGIN
             </button>
+                  {/* {showPopup && <Popup message={popupMessage} onClose={() => setShowPopup(false)} />} */}
           </form>
 
           <p className="register">
@@ -122,7 +157,7 @@ export default function Login() {
       <footer className="footer">
         <span>Copyright © 2026. All rights reserved.</span>
         <div className="footer-icons">
-          <i className="fab fa-facebook"></i>
+      <i className="fab fa-facebook">  <Link to="/https://www.google.com/"/>  </i>
           <i className="fab fa-twitter"></i>
           <i className="fab fa-google"></i>
           <i className="fab fa-linkedin-in"></i>

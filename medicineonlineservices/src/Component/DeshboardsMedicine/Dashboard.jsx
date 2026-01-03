@@ -116,8 +116,13 @@ export default function Dashboard() {
           {/* Other menu items */}
                      <Link to="/deshboardpanel" className="btn btn-success mb-2">Admin Dashboard</Link>
                       <Link to="/header" className="btn btn-success mb-2">Medicines</Link>
-            <li>Orders</li>
             <li>Cart</li>
+                                                    <Link to="/customerdetails" className="btn btn-success mb-2">Patience Details</Link> 
+                                                              <li>OrdersPayment</li>
+          <li>CustomerTracking/OrderList</li>
+
+                       <li>Orders</li>
+
             <li>Profile</li>
           {/* <li><Link to="/history">History</Link></li>
           <li><Link to="/support">Help & Support</Link></li>

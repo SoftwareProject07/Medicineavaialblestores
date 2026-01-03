@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/headers.css";
 import "../styles/noscroll.css";
+// import { useState } from "react";
+
 // import   "../User/Header.jsx";
 
 export default function Header() {
- // const [value, setValue] = useState("");
+  const [adminOpen, setAdminOpen] = useState(false);
 
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState({
@@ -138,11 +140,26 @@ export default function Header() {
            <i class="fas fa-toggle-on"></i>
             </Link>
             
-          <Link to="/login" >
-            <i class="fas fa-user"></i>
-            </Link> 
+        
+ <div className="right-icons">
+        {/* Admin */}
+        <div className="admin-wrapper">
+          <div
+            className="admin-btn"
+            onClick={() => setAdminOpen(!adminOpen)}
+          >
+            <i className="fas fa-user"></i>
+            {/* <span> Admin</span> */}
+          </div>
 
-
+          {adminOpen && (
+            <div className="admin-dropdown">
+              <Link to="/login">Customer Login</Link>
+           <Link to="/deshboardpanel" className="btn btn-success mb-2">Admin Login</Link>
+            </div>
+          )}
+        </div>
+      </div>
       {/* USER ICON*/}
    
             <div className="cart-icon">

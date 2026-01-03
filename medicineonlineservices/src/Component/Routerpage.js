@@ -8,6 +8,11 @@ import Contact from './Contact.jsx';
 import Medicine from "./Admin/Medicine.jsx";
 import Dashboard from './DeshboardsMedicine/Dashboard.jsx';
 import AdminDashboard from './Admin/AdminDeshboard.jsx';
+import CartItem from './User/Cartitem.jsx';
+import Cart from './User/Carts.jsx';
+import AdminLogin from './Admin/AdminLogin.jsx';
+import AdminRegisteration from './Admin/AdminRegisteration.jsx';
+import CustomerDetails from './User/Customerdetails.jsx';
 //import UpdateMedicine from "./Component/Admin/UpdateMedicine.jsx";
 
 //import Deskboard from './User/Deskboard.jsx';
@@ -43,12 +48,19 @@ export default function Routerpage() {
         <Route Path="/deshboardpanel/medicines" element={<Medicine />} />
         <Route Path="/dashboards" element={<Dashboard />} />
         <Route Path="/admindashboard" element={<AdminDashboard  />} />
+        <Route Path="/cartitems" element={<CartItem />} />
+             <Route Path="/carts" element={<Cart />}/>
+             <Route Path="/adminlogins" element={<AdminLogin />} />
+             <Route Path="/adminregisteration" elemment={<AdminRegisteration />} />
+        <Route path="/customerdetails" element={<CustomerDetails />} /> 
 
-       {/* <Route path="/Deskboard" element={<Deskboard />} />
-        <Route path="/Orders" element={<Orders />} />
+             {/* <Route Path="/cart.controllers" element={<Cart./> }/> */}
+
+    {/* <Route path="/Deskboard" element={<Deskboard />} /> */}
+        {/* <Route path="/Orders" element={<Orders />} />
         <Route path="/Profile" element={<Profile />} />
         <Route path="/MedicineDisplay" element={<MedicineDisplay />} />
-        <Route path="/Carts" element={<Carts />} />
+        <Route path="/Carts" element={<Carts />} /> */}
 
         {/* Admin Routes */}
         {/* <Route path="/AdminDeskboard" element={<AdminDeskboard />} />

@@ -8,6 +8,11 @@ import Contact from "./Component/Contact.jsx";
 import Medicine from "./Component/Admin/Medicine.jsx";
 import Dashboard from "./Component/DeshboardsMedicine/Dashboard.jsx";
 import AdminDashboard from "./Component/Admin/AdminDeshboard.jsx";
+import CartItem from "./Component/User/Cartitem.jsx";
+import Cart from "./Component/User/Carts.jsx";
+import AdminLogin from "./Component/Admin/AdminLogin.jsx";
+import AdminRegisteration from "./Component/Admin/AdminRegisteration.jsx";
+import CustomerDetails from "./Component/User/Customerdetails.jsx";
 
 function App() {
   return (
@@ -22,7 +27,13 @@ function App() {
 
       <Route path="/contact" element={<Contact />} />
               <Route Path="/admindashboard" element={<AdminDashboard  />} />
+              <Route Path="/cartitems" element={<CartItem />}/>
+             <Route Path="/carts" element={<Cart />}/>
 
+
+              <Route Path="/adminlogins" element={<AdminLogin />} />
+                          <Route Path="/adminregisteration" elemment={<AdminRegisteration />} />
+                     <Route path="/customerdetails" element={<CustomerDetails />} /> 
     </Routes>
   );
 }
