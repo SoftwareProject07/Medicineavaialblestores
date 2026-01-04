@@ -51,7 +51,7 @@ export default function Routerpage() {
         <Route Path="/cartitems" element={<CartItem />} />
              <Route Path="/carts" element={<Cart />}/>
              <Route Path="/adminlogins" element={<AdminLogin />} />
-             <Route Path="/adminregisteration" elemment={<AdminRegisteration />} />
+             <Route Path="/adminregisteration" element={<AdminRegisteration />} />
         <Route path="/customerdetails" element={<CustomerDetails />} /> 
 
              {/* <Route Path="/cart.controllers" element={<Cart./> }/> */}
@@ -67,7 +67,7 @@ export default function Routerpage() {
         <Route path="/AdminHeader" element={<AdminHeader />} />
         <Route path="/AdminOrder" element={<AdminOrder />} />
         <Route path="/CustomerList" element={<CustomerList />} />
-        <Route path="/Medicine" element={<Medicine />} /> */} */
+        <Route path="/Medicine" element={<Medicine />} /> */}
 
       </Routes>
     </BrowserRouter>
