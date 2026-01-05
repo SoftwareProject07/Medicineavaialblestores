@@ -11,9 +11,9 @@ import AdminDashboard from "./Component/Admin/AdminDeshboard.jsx";
 // import CartItem from "./Component/User/Cartitem.jsx";
 
 import Cart from "./Component/User/Carts.jsx";
+// import AdminRegisteration from "./Component/Admin/AdminRegisteration.jsx";
+import CustomerDetails from "./Component/User/Customerdetails.jsx";//Patience name 
 import AdminLogin from "./Component/Admin/AdminLogin.jsx";
-import AdminRegisteration from "./Component/Admin/AdminRegisteration.jsx";
-import CustomerDetails from "./Component/User/Customerdetails.jsx";
 
 function App() {
   return (
@@ -32,9 +32,10 @@ function App() {
              <Route Path="/carts" element={<Cart />}/>
 
 
-              <Route Path="/adminlogins" element={<AdminLogin />} />
-                          <Route Path="/adminregisteration" elemment={<AdminRegisteration />} />
+                          {/* <Route Path="/adminregisteration" elemment={<AdminRegisteration />} /> */}
                      <Route path="/customerdetails" element={<CustomerDetails />} /> 
+                                   <Route path="/adminlogin" element={<AdminLogin />} />
+
     </Routes>
   );
 }

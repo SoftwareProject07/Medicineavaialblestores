@@ -11,7 +11,7 @@ import AdminDashboard from './Admin/AdminDeshboard.jsx';
 import CartItem from './User/Cartitem.jsx';
 import Cart from './User/Carts.jsx';
 import AdminLogin from './Admin/AdminLogin.jsx';
-import AdminRegisteration from './Admin/AdminRegisteration.jsx';
+// import AdminRegisteration from './Admin/AdminRegisteration.jsx';
 import CustomerDetails from './User/Customerdetails.jsx';
 //import UpdateMedicine from "./Component/Admin/UpdateMedicine.jsx";
 
@@ -50,8 +50,8 @@ export default function Routerpage() {
         <Route Path="/admindashboard" element={<AdminDashboard  />} />
         <Route Path="/cartitems" element={<CartItem />} />
              <Route Path="/carts" element={<Cart />}/>
-             <Route Path="/adminlogins" element={<AdminLogin />} />
-             <Route Path="/adminregisteration" element={<AdminRegisteration />} />
+             <Route Path="/adminlogin" element={<AdminLogin />} />
+             {/* <Route Path="/adminregisteration" element={<AdminRegisteration />} /> */}
         <Route path="/customerdetails" element={<CustomerDetails />} /> 
 
              {/* <Route Path="/cart.controllers" element={<Cart./> }/> */}

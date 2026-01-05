@@ -170,7 +170,7 @@ export default function DeshboardPanel() {
         </div>
 
         <ul>
-         <li className="menu-group"> 
+         {/* <li className="menu-group">  */}
          {/*   <span
               className="menu-title btn btn-success mb-2"
               onClick={() => setOpenDashboard(!openDashboard)}
@@ -179,7 +179,7 @@ export default function DeshboardPanel() {
             </span> */}
 
 
-<Link
+{/* <Link
   to="/dashboards"
   className="menu-title btn btn-success mb-2 d-flex justify-content-between align-items-center"
   onClick={() => setOpenDashboard(!openDashboard)}
@@ -200,23 +200,23 @@ export default function DeshboardPanel() {
                 <li><Link to="/settings">Settings</Link></li>
               </ul>
             )}
-          </li>
+          </li> */}
 
-           {/* <Link to="/admindashboard" className="btn btn-success mb-2">Admin Dashboard</Link> */}
-                               <Link to="/header" className="btn btn-success mb-2">Medicines</Link>
+           <Link to="/deshboardpanel" className="btn btn-success mb-2">Admin Dashboard</Link>
+                               {/* <Link to="/header" className="btn btn-success mb-2">Medicines</Link>
                                          <li>Cart</li>
                                         <Link to="/customerdetails" className="btn btn-success mb-2">Patience Details</Link> 
-                                         
+                                          */}
 
           <li>OrdersPayment</li>
 
-          <li>CustomerTracking/OrderList</li>
+          <li>CustomerLIST</li>
 
-                       <li>Orders</li>
+          <li>OrderList</li>
 
-          <li>Profile</li>
+          {/* <li>Customer Profile</li> */}
            {/* className="btn btn-success mb-2" */}
-          <li><Link to="/header"><i class="fas fa-sign-out-alt"></i></Link></li>
+          <li><Link to="/adminlogin"><i class="fas fa-sign-out-alt"></i> LogOut</Link></li>
         </ul>
       </div>
 

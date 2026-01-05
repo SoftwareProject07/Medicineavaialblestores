@@ -155,7 +155,8 @@ export default function Header() {
           {adminOpen && (
             <div className="admin-dropdown">
               <Link to="/login">Customer Login</Link>
-           <Link to="/deshboardpanel" className="btn btn-success mb-2">Admin Login</Link>
+              {/* className="btn btn-success mb-2" */}
+           <Link to="/adminlogin" >Admin Login</Link>
             </div>
           )}
         </div>

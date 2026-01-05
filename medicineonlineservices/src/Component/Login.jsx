@@ -59,36 +59,6 @@ export default function Login() {
   };
 
 
-//   const handleSave = async (e) => {
-//   e.preventDefault();
-
-//   const trimmedEmail = email.trim();
-//   const trimmedPassword = password.trim();
-
-//   if (!trimmedEmail || !trimmedPassword) {
-//     // Instead of alert, show popup
-//     setPopupMessage("Please enter Email and Password");
-//     setShowPopup(true);
-//     return;
-//   }
-
-//   try {
-//     // Example: call your login API
-//     const response = await loginUser(trimmedEmail, trimmedPassword);
-
-//     if (response.success) {
-//       setPopupMessage("Login Successful ✅");
-//       setShowPopup(true);
-//     } else {
-//       setPopupMessage(response.message || "Login failed. Please try again.");
-//       setShowPopup(true);
-//     }
-//   } catch (error) {
-//     console.error("Login error:", error);
-//     setPopupMessage("Unexpected error occurred. Please try again later.");
-//     setShowPopup(true);
-//   }
-// };
 
   return (
     <>
