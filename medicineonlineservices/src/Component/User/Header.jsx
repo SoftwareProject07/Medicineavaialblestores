@@ -155,7 +155,7 @@ export default function Header() {
             <div className="admin-dropdown">
               <Link to="/login">Customer Login</Link>
               {/* className="btn btn-success mb-2" */}
-           <Link to="/adminlogin" >Admin Login</Link>
+           <Link to="/adminlogin" className="btn btn-success mb-2" >Admin Login</Link>
             </div>
           )}
         </div>
