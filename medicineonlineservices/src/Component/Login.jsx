@@ -10,19 +10,22 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const[mobile, setMobile]=useState("");
   const [showPassword, setShowPassword] = useState(false);
+
 
   const handleSave = async (e) => {
     e.preventDefault();
 
     if (!email.trim() || !password.trim()) {
-      Swal.fire("Warning", "Please enter Email and Password", "warning");
+      Swal.fire("Warning", "Please enter Email Address  or  MobileNumber and Password", "warning");
       return;
     }
 
     const data = {
       Email: email,
       Password: password,
+      MobileNumber:mobile
     };
 
     try {
@@ -51,7 +54,7 @@ export default function Login() {
           "Login Failed",
           response.data?.responseMessage ||
             response.data?.message ||
-            "Invalid Email or Password",
+            "Invalid Email/MobileNumber or Password",
           "error"
         );
       }
@@ -100,10 +103,10 @@ export default function Login() {
 
           <form onSubmit={handleSave}>
             <input
-              type="email"
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="email || mobile"
+              placeholder="Email address/MobileNumber"
+              value={email || mobile}
+              onChange={(e) => (setEmail(e.target.value)|| setMobile(e.target.value))}
             />
 
             {/* PASSWORD WITH SHOW/HIDE */}

@@ -11,13 +11,15 @@ export default function AdminLogin() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+    const[mobile, setMobile]=useState("");
+  
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSave = async (e) => {
     e.preventDefault();
 
     if (!email.trim() || !password.trim()) {
-         Swal.fire("Warning", "Please enter Email and Password", "warning");
+         Swal.fire("Warning", "Please enter Email Address  or  MobileNumber and Password", "warning");
          return;
        }
    
@@ -25,6 +27,8 @@ export default function AdminLogin() {
     const data = {
       Email: email,
       Password: password,
+            MobileNumber:mobile
+
     };
 
     try {
@@ -64,7 +68,7 @@ export default function AdminLogin() {
             "Admin Login Failed",
             response.data?.responseMessage ||
               response.data?.message ||
-              "Invalid Email or Password",
+              "Invalid Email/MobileNumber or Password",
             "error"
           );
         }
@@ -77,11 +81,24 @@ export default function AdminLogin() {
   return (
     <section className="vh-100">
       <div className="container-fluid">
+
+
+
+
         <div className="row">
 
           {/* LEFT SECTION */}
           <div className="col-sm-6 text-black">
+           
             <div className="px-5 ms-xl-4">
+                <span
+        className="d-flex align-items-center text-secondary fw-semibold"
+        style={{ cursor: "pointer" }}
+        onClick={() => console.log("Skip clicked")}
+      >
+        <i className="fas fa-times me-2"></i>
+        Skip
+      </span>
               <i
                 className="fas fa-crow fa-2x me-3 pt-5 mt-xl-4"
                 style={{ color: "#709085" }}
@@ -102,23 +119,15 @@ export default function AdminLogin() {
 
                 <div className="form-outline mb-4">
                   <input
-                    type="email"
+                    type="email || mobile"
                     className="form-control form-control-lg"
-                    placeholder="Enter email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Email address/MobileNumber"
+                    value={email || mobile}
+                    onChange={(e) => (setEmail(e.target.value)|| setMobile(e.target.value))}
                   />
                 </div>
 
-                {/* <div className="form-outline mb-4">
-                  <input
-                    type="password"
-                    className="form-control form-control-lg"
-                    placeholder="Enter password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div> */}
+           
                         <div style={{ position: "relative", width: "370px" }}>
 
             <input
@@ -153,18 +162,7 @@ export default function AdminLogin() {
                   </button>
                 </div>
 
-                {/* <p className="small mb-4">
-                  <a className="text-muted" href="#">
-                    Forgot password?
-                  </a>
-                </p> */}
-
-                {/* <p>
-                  Don’t have an account?{" "}
-                  <a href="#" className="link-info">
-                    Register here
-                  </a>
-                </p> */}
+               
 
               </form>
             </div>

@@ -12,6 +12,7 @@ export default function Registeration() {
   const [lastname, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
 
   // ✅ decimal safe
   const [found, setFound] = useState(0);
@@ -27,6 +28,7 @@ const handleSave = async () => {
     LastName: lastname,
     Password: password,
     Email: email,
+    MobileNumber:mobile,
     Fund: 0,
     Type: "User",
     CreateOn: new Date().toISOString(), // ✅ VERY IMPORTANT
@@ -103,6 +105,13 @@ const handleSave = async () => {
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                  />
+                    <input
+                    type="mobile"
+                    className="form-control mb-3"
+                    placeholder="MobileNumber"
+                    value={mobile}
+                    onChange={(e) => setMobile(e.target.value)}
                   />
                   <input type="hidden"  value={found} onChange={(e)=>setFound(e.target.value)}  />
                                     <input type="hidden"  value={type} onChange={(e)=>setType(e.target.value)}  />

@@ -65,10 +65,12 @@ export default function Medicine() {
           <input type="number" placeholder="Discount" value={discount} onChange={e => setDiscount(e.target.value)} />
           <input type="number" placeholder="Quantity" value={quantity} onChange={e => setQuantity(e.target.value)} />
           <input type="date" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} />
+          {/* <input type="file" value={imageFile} onChange={e => setImageFile(e.target.value)} /> */}
 
           <input
             type="file"
             accept="image/*"
+            value={imageFile}
             onChange={e => setImageFile(e.target.files?.[0] || null)}
           />
         
