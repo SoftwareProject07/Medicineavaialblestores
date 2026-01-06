@@ -8,11 +8,12 @@ import Contact from './Contact.jsx';
 import Medicine from "./Admin/Medicine.jsx";
 import Dashboard from './DeshboardsMedicine/Dashboard.jsx';
 import AdminDashboard from './Admin/AdminDeshboard.jsx';
-import CartItem from './User/Cartitem.jsx';
 import Cart from './User/Carts.jsx';
 import AdminLogin from './Admin/AdminLogin.jsx';
 // import AdminRegisteration from './Admin/AdminRegisteration.jsx';
 import CustomerDetails from './User/Customerdetails.jsx';
+import CartItem from './User/CartItem.jsx';
+import MedicineDisplay from './User/MedicineDisplay.jsx';
 //import UpdateMedicine from "./Component/Admin/UpdateMedicine.jsx";
 
 //import Deskboard from './User/Deskboard.jsx';
@@ -49,11 +50,12 @@ export default function Routerpage() {
         <Route Path="/dashboards" element={<Dashboard />} />
         <Route Path="/admindashboard" element={<AdminDashboard  />} />
         <Route Path="/cartitems" element={<CartItem />} />
-             <Route Path="/carts" element={<Cart />}/>
+             <Route path="/carts" element={<Cart />}/>
              <Route Path="/adminlogin" element={<AdminLogin />} />
              {/* <Route Path="/adminregisteration" element={<AdminRegisteration />} /> */}
-        <Route path="/customerdetails" element={<CustomerDetails />} /> 
-
+        <Route Pathath="/customerdetails" element={<CustomerDetails />} /> 
+{/* <Route Path="/cartcontexts" element={<CartContext/>}/> */}
+<Route Path="/medicinedisplay" element={<MedicineDisplay />}/>
              {/* <Route Path="/cart.controllers" element={<Cart./> }/> */}
 
     {/* <Route path="/Deskboard" element={<Deskboard />} /> */}

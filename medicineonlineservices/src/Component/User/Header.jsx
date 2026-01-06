@@ -2,26 +2,25 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/headers.css";
 import "../styles/noscroll.css";
+import { useCart } from "./CartContext";
+
 // import { useState } from "react";
 
 // import   "../User/Header.jsx";
 
 export default function Header() {
   const [adminOpen, setAdminOpen] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
 
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState({
     city: "Detecting...",
     pincode: "",
   });
-  // account drop down opeion
-//  const handleChange = (e) => {
-//     const value = e.target.value;
-//     setAccount(value);
-
-//     if (value === "login") navigate("/login");
-//     if (value === "register") navigate("/register");
-//   };
+//=================Add to cart flow=======
+ const handleAddToCart = (med) => {
+    setCartItems([...cartItems, med]);
+  };
   // =============
   const categories = [
     "Medicines",
@@ -163,9 +162,20 @@ export default function Header() {
       </div>
       {/* USER ICON*/}
    
-            <div className="cart-icon">
-              🛒 <span className="badge bg-danger">0</span>
-            </div>
+          <div className="d-flex justify-content-end mb-3">
+        <div className="cart-icon position-relative">
+          🛒
+          <span className="badge bg-danger position-absolute top-0 start-100 translate-middle">
+            {cartItems.length}
+          </span>
+        </div>
+       </div>
+      {/* //   <Link to="/carts" className="position-relative">
+      //   🛒
+      //   <span className="badge bg-danger position-absolute top-0 start-100 translate-middle">
+      //     {cartItems.reduce((t, i) => t + i.quantity, 0)}
+      //   </span>
+      // </Link> */}
           </div>
         </div>
       </nav>
@@ -228,9 +238,12 @@ export default function Header() {
                     <div className="card-body text-center">
                       <h5>{med.name}</h5>
                       <p>₹{med.price}</p>
-                      <button className="btn btn-primary w-100">
-                        Add to Cart
-                      </button>
+                      <button
+                  className="btn btn-primary w-100"
+                  onClick={() => handleAddToCart(med)}
+                >
+                  Add to Cart
+                </button>
                     </div>
                   </div>
                 </div>
@@ -260,14 +273,36 @@ export default function Header() {
                   <div className="card-body text-center">
                     <h5>{med.name}</h5>
                     <p>₹{med.price}</p>
-                    <button className="btn btn-primary w-100">
+                    {/* <button className="btn btn-primary w-100">
                       Add to Cart
-                    </button>
+                    </button> */}
+                     <button
+                  className="btn btn-primary w-100"
+                  onClick={() => handleAddToCart(med)}
+                >
+                  Add to Cart
+                </button>
                   </div>
                 </div>
               </div>
             ))}
           </div>
+
+
+          
+      {/* 🔹 ADDED MEDICINE NAMES
+      {cartItems.length > 0 && (
+        <div className="mt-4">
+          <h5>Added to Cart:</h5>
+          <ul className="list-group">
+            {cartItems.map((item, index) => (
+              <li key={index} className="list-group-item">
+                {item.name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}  */}
         </div>
       )}
     </>

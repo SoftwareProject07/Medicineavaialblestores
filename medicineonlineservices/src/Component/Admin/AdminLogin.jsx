@@ -2,20 +2,25 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/Adminlogin.css";
+import Swal from "sweetalert2";
+
+ //import "../styles/responsive-common.css";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSave = async (e) => {
     e.preventDefault();
 
     if (!email.trim() || !password.trim()) {
-      alert("Please enter Email and Password");
-      return;
-    }
+         Swal.fire("Warning", "Please enter Email and Password", "warning");
+         return;
+       }
+   
 
     const data = {
       Email: email,
@@ -40,15 +45,34 @@ export default function AdminLogin() {
           localStorage.setItem("token", response.data.token);
         }
 
-        alert("Admin Login Successful ✅");
-        navigate("/deshboardpanel");
-      } else {
-        alert(response.data.message || "Invalid Email or Password");
+  //       alert("Admin Login Successful ✅");
+  //       navigate("/deshboardpanel");
+  //     } else {
+  //       alert(response.data.message || "Invalid Email or Password");
+  //     }
+  //   } catch (error) {
+  //     alert("Server error, please try again later");
+  //   }
+  // };
+   Swal.fire({
+            icon: "success",
+            title: "Admin Login Successful",
+            text: "Welcome to deshboardpanel",
+          }).then(() => navigate("/deshboardpanel"));
+        } else {
+          Swal.fire(
+            "Admin Login Failed",
+            response.data?.responseMessage ||
+              response.data?.message ||
+              "Invalid Email or Password",
+            "error"
+          );
+        }
+      } catch (error) {
+        console.error(error);
+        Swal.fire("Server Error", "Please try again later", "error");
       }
-    } catch (error) {
-      alert("Server error, please try again later");
-    }
-  };
+    };
 
   return (
     <section className="vh-100">
@@ -86,7 +110,7 @@ export default function AdminLogin() {
                   />
                 </div>
 
-                <div className="form-outline mb-4">
+                {/* <div className="form-outline mb-4">
                   <input
                     type="password"
                     className="form-control form-control-lg"
@@ -94,29 +118,53 @@ export default function AdminLogin() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                </div>
+                </div> */}
+                        <div style={{ position: "relative", width: "370px" }}>
+
+            <input
+        type={showPassword ? "text" : "password"}
+        placeholder="Password"
+         className="form-control form-control-lg"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        style={{ width: "100%", paddingRight: "40px" }}
+      />
+   <span
+        onClick={() => setShowPassword(!showPassword)}
+        style={{
+          position: "absolute",
+          right: "10px",
+          top: "50%",
+          transform: "translateY(-50%)",
+          cursor: "pointer",
+          userSelect: "none",
+        }}
+      >
+        {showPassword ? "🙈" : "👁️"}
+      </span>
+    </div>
 
                 <div className="pt-1 mb-4">
                   <button
                     className="btn btn-info btn-lg btn-block w-100"
                     type="submit"
                   >
-                    Login
+                    Admin Login
                   </button>
                 </div>
 
-                <p className="small mb-4">
+                {/* <p className="small mb-4">
                   <a className="text-muted" href="#">
                     Forgot password?
                   </a>
-                </p>
+                </p> */}
 
-                <p>
+                {/* <p>
                   Don’t have an account?{" "}
                   <a href="#" className="link-info">
                     Register here
                   </a>
-                </p>
+                </p> */}
 
               </form>
             </div>

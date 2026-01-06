@@ -18,17 +18,6 @@ export default function Registeration() {
   const [type,setType] = useState("");
   const [createon,setCreateOn] = useState(null);
 
-  // const handleSave = () => {
-  //   const data = {
-  //     FirstName: firstname,
-  //     MiddleName: middlename,
-  //     LastName: lastname,
-  //     Password: password,
-  //     Email: email,
-  //     Fund: found,
-  //     Type: type,
-  //     CreateOn: createon
-  //   };
 
   // ✅ FINAL SAVE FUNCTION
 const handleSave = async () => {

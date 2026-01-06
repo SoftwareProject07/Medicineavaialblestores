@@ -149,9 +149,24 @@ form input {
   justify-content: space-between;
   font-size: 14px;
 }
+/* .rem{
+  padding-left:10px;
+} */
 
 .options a {
   color: #fff;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 4px; /* checkbox aur text ke beech space */
+  font-size: 14px;
+}
+
+.remember-me input[type="checkbox"] {
+  margin: 0;
+  
 }
 
 .login-btn {
@@ -210,4 +225,27 @@ height: calc(100% - 73px);
 .h-custom {
 height: 100%;
 }
+}
+
+
+
+
+
+/* ============== */
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.password-wrapper span {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
 }

@@ -1,4 +1,9 @@
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
+
+
 import {Routes, Route, Navigate } from "react-router-dom";
+import {CartProvider} from "./Component/User/CartContext.jsx";
 
 import Login from "./Component/Login.jsx";
 import Registeration from "./Component/Registeration.jsx";
@@ -8,15 +13,18 @@ import Contact from "./Component/Contact.jsx";
 import Medicine from "./Component/Admin/Medicine.jsx";
 import Dashboard from "./Component/DeshboardsMedicine/Dashboard.jsx";
 import AdminDashboard from "./Component/Admin/AdminDeshboard.jsx";
-// import CartItem from "./Component/User/Cartitem.jsx";
 
 import Cart from "./Component/User/Carts.jsx";
 // import AdminRegisteration from "./Component/Admin/AdminRegisteration.jsx";
 import CustomerDetails from "./Component/User/Customerdetails.jsx";//Patience name 
 import AdminLogin from "./Component/Admin/AdminLogin.jsx";
+import CartItem from "./Component/User/CartItem.jsx";
+import MedicineDisplay from "./Component/User/MedicineDisplay.jsx";
 
 function App() {
   return (
+        <CartProvider>
+
     <Routes>
       <Route path="/" element={<Navigate to="/header" />} />
       <Route path="/login" element={<Login />} />
@@ -28,15 +36,17 @@ function App() {
 
       <Route path="/contact" element={<Contact />} />
               <Route Path="/admindashboard" element={<AdminDashboard  />} />
-              {/* <Route Path="/cartitems" element={<CartItem />}/> */}
-             <Route Path="/carts" element={<Cart />}/>
-
+              <Route Path="/cartitems" element={<CartItem />}/>
+             <Route path="/carts" element={<Cart />}/>
 
                           {/* <Route Path="/adminregisteration" elemment={<AdminRegisteration />} /> */}
                      <Route path="/customerdetails" element={<CustomerDetails />} /> 
                                    <Route path="/adminlogin" element={<AdminLogin />} />
+                                   <Route path="/medicinedisplay" element={<MedicineDisplay />}/>
+
 
     </Routes>
+</CartProvider>
   );
 }
 
