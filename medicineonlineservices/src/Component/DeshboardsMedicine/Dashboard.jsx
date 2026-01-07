@@ -64,9 +64,8 @@ export default function Dashboard() {
           taken: true,
           meal: "After",
           nextDose: "8.00 am",
-          status: "On Time"
-        },
-         {
+          status: "On Time",
+        
           id: 2,
           name: "paracitamol 500mg",
           frequency: " 6hour",
