@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/headers.css";
 import "../styles/noscroll.css";
-import { useCart } from "./CartContext";
+import { useCart } from "../User/CartContext";
 
 // import { useState } from "react";
 
@@ -194,9 +194,8 @@ export default function Header() {
             </button>
           ))}
         </div>
-      </section>
 
-      {/* 🔍 SEARCH BAR */}
+ {/* 🔍 SEARCH BAR */}
       <div className="search-wrapper d-flex align-items-center gap-2 p-3 justify-content-center">
         <button className="btn btn-link">
           Deliver to <b>{location.city}</b>
@@ -221,6 +220,33 @@ export default function Header() {
           style={{ maxWidth: "1200px" }}
         />
       </div>
+      </section>
+
+      {/* 🔍 SEARCH BAR */}
+      {/* <div className="search-wrapper d-flex align-items-center gap-2 p-3 justify-content-center">
+        <button className="btn btn-link">
+          Deliver to <b>{location.city}</b>
+        </button>
+
+        <input
+          type="text"
+          placeholder="Pincode"
+          value={location.pincode}
+          maxLength={6}
+          onChange={handlePincodeChange}
+          className="form-control"
+          style={{ width: "120px" }}
+        />
+
+        <input
+          type="text"
+          placeholder="Search medicines"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="form-control"
+          style={{ maxWidth: "1200px" }}
+        />
+      </div> */}
 
       {/* 🔍 SEARCH RESULTS */}
       {search && (

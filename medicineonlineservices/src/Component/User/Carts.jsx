@@ -1,6 +1,7 @@
 import React from "react";
 import { useCart } from "./CartContext";
-import CartItem from "./CartItem"; // ✅ FIXED PATH
+import CartItem from "./CartItem";
+// import CartItem from "./CartItem"; // ✅ FIXED PATH
 
 export default function Carts() {
   const { cartItems, updateQuantity, removeFromCart } = useCart();
@@ -22,7 +23,7 @@ export default function Carts() {
 
       {/* Cart Items */}
       {cartItems.map((item) => (
-        <CartItem
+        <carts
           key={item.id}
           item={item}
           onUpdate={updateQuantity}

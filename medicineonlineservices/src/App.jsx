@@ -14,12 +14,13 @@ import Medicine from "./Component/Admin/Medicine.jsx";
 import Dashboard from "./Component/DeshboardsMedicine/Dashboard.jsx";
 import AdminDashboard from "./Component/Admin/AdminDeshboard.jsx";
 
-import Cart from "./Component/User/Carts.jsx";
+// import Cart from "./Component/User/Carts.jsx";
 // import AdminRegisteration from "./Component/Admin/AdminRegisteration.jsx";
 import CustomerDetails from "./Component/User/Customerdetails.jsx";//Patience name 
 import AdminLogin from "./Component/Admin/AdminLogin.jsx";
 import CartItem from "./Component/User/CartItem.jsx";
 import MedicineDisplay from "./Component/User/MedicineDisplay.jsx";
+import Carts from './Component/User/Carts.jsx';
 
 function App() {
   return (
@@ -36,8 +37,8 @@ function App() {
 
       <Route path="/contact" element={<Contact />} />
               <Route Path="/admindashboard" element={<AdminDashboard  />} />
-              <Route Path="/cartitems" element={<CartItem />}/>
-             <Route path="/carts" element={<Cart />}/>
+              <Route path="/cartitems" element={<CartItem />}/>
+             <Route path="/carts" element={<Carts />}/>
 
                           {/* <Route Path="/adminregisteration" elemment={<AdminRegisteration />} /> */}
                      <Route path="/customerdetails" element={<CustomerDetails />} /> 

@@ -44,11 +44,14 @@ const handleSave = async () => {
         },
       }
     );
-
+ 
     console.log("API Response:", response.data);
 
     alert("Registration Successful");
+
     navigate("/login");
+ 
+
   } catch (error) {
     console.error("API Error:", error.response?.data || error.message);
     alert("Registration Failed");

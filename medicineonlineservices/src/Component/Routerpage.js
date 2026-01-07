@@ -8,7 +8,7 @@ import Contact from './Contact.jsx';
 import Medicine from "./Admin/Medicine.jsx";
 import Dashboard from './DeshboardsMedicine/Dashboard.jsx';
 import AdminDashboard from './Admin/AdminDeshboard.jsx';
-import Cart from './User/Carts.jsx';
+import Carts from './User/Carts.jsx';
 import AdminLogin from './Admin/AdminLogin.jsx';
 // import AdminRegisteration from './Admin/AdminRegisteration.jsx';
 import CustomerDetails from './User/Customerdetails.jsx';
@@ -49,8 +49,8 @@ export default function Routerpage() {
         <Route Path="/deshboardpanel/medicines" element={<Medicine />} />
         <Route Path="/dashboards" element={<Dashboard />} />
         <Route Path="/admindashboard" element={<AdminDashboard  />} />
-        <Route Path="/cartitems" element={<CartItem />} />
-             <Route path="/carts" element={<Cart />}/>
+        <Route path="/cartitems" element={<CartItem />} />
+             <Route path="/carts" element={<Carts />}/>
              <Route Path="/adminlogin" element={<AdminLogin />} />
              {/* <Route Path="/adminregisteration" element={<AdminRegisteration />} /> */}
         <Route Pathath="/customerdetails" element={<CustomerDetails />} /> 

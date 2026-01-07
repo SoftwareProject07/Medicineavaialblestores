@@ -96,8 +96,8 @@ export default function AdminLogin() {
         style={{ cursor: "pointer" }}
         onClick={() => console.log("Skip clicked")}
       >
-        <i className="fas fa-times me-2"></i>
-        Skip
+        <i className="fas fa-times me-2"></i>skip
+        {/* <Link to=" ">Skip</Link> */}
       </span>
               <i
                 className="fas fa-crow fa-2x me-3 pt-5 mt-xl-4"

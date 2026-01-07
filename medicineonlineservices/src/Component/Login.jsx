@@ -43,6 +43,13 @@ export default function Login() {
         if (response.data.token) {
           localStorage.setItem("token", response.data.token);
         }
+ // ✅ Save user info
+    // if (response.data.user) {
+    //   localStorage.setItem("user", JSON.stringify(response.data.user));
+    // }
+     if (response.data.userMedicine) {
+      localStorage.setItem("user", JSON.stringify(response.data.userMedicine));
+    }
 
         Swal.fire({
           icon: "success",
