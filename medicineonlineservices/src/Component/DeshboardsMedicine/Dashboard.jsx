@@ -132,7 +132,7 @@ export default function Dashboard() {
                        <li>OrderStatus</li>
 
             <li>customer  Profile</li>
-          <li><Link to="/header"><i class="fas fa-sign-out-alt"></i>LogOut</Link></li>
+          <li><Link to="/header"><i className="fas fa-sign-out-alt"></i>LogOut</Link></li>
         </ul>
       </div>
 
