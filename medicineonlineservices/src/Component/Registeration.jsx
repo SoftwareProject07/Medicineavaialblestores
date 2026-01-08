@@ -1,6 +1,8 @@
 import React, { Fragment, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Swal from "sweetalert2";
+
 import "./styles/registerations.css";
 //import API from "../Services/API";
 
@@ -11,6 +13,8 @@ export default function Registeration() {
   const [middlename, setMiddleName] = useState("");
   const [lastname, setLastName] = useState("");
   const [password, setPassword] = useState("");
+ const [confirmpassword, setconfirmpassword] = useState("");
+
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
 
@@ -27,6 +31,7 @@ const handleSave = async () => {
     MiddleName: middlename,
     LastName: lastname,
     Password: password,
+    ConfirmPassword :confirmpassword,
     Email: email,
     MobileNumber:mobile,
     Fund: 0,
@@ -44,19 +49,46 @@ const handleSave = async () => {
         },
       }
     );
- 
-    console.log("API Response:", response.data);
+  if (
+        response.data?.isSuccess ||
+        response.data?.success ||
+        response.data?.status
+      ) {
+        if (response.data.token) {
+          localStorage.setItem("token", response.data.token);
+        }
+    // console.log("API Response:", response.data);
 
-    alert("Registration Successful");
+    // alert("Registration Successful");
 
-    navigate("/login");
- 
+    // navigate("/login");
+   Swal.fire({
+           icon: "success",
+           title: "Registration Successful",
+           text: "Welcome to Registration Customer",
+         }).then(() => navigate("/login"));
+       }
+        else {
+         Swal.fire(
+           "Registration Customer Failed",
+           response.data?.responseMessage ||
+             response.data?.message ||
+             "Invalid Registration Customer",
+           "error"
+         );
+       }
+      }
+//catch (error) {
+//     console.error("API Error:", error.response?.data || error.message);
+//     alert("Registration Failed");
+//   }
+// };
+catch (error) {
+      console.error(error);
+      Swal.fire("Server Error", "Please try again later", "error");
+    }
+  };
 
-  } catch (error) {
-    console.error("API Error:", error.response?.data || error.message);
-    alert("Registration Failed");
-  }
-};
 
 
   return (
@@ -99,7 +131,14 @@ const handleSave = async () => {
                     className="form-control mb-2"
                     placeholder="Password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e.target.value)  }
+                  />
+  <input
+                    type="confirmpassword"
+                    className="form-control mb-2"
+                    placeholder="confirmpassword"
+                    value={confirmpassword}
+                    onChange={(e) => setconfirmpassword(e.target.value)}
                   />
 
                   <input
@@ -114,6 +153,8 @@ const handleSave = async () => {
                     className="form-control mb-3"
                     placeholder="MobileNumber"
                     value={mobile}
+                                        maxLength={10}
+
                     onChange={(e) => setMobile(e.target.value)}
                   />
                   <input type="hidden"  value={found} onChange={(e)=>setFound(e.target.value)}  />

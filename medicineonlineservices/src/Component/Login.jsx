@@ -114,6 +114,7 @@ export default function Login() {
               type="email || mobile"
               placeholder="Email address/MobileNumber"
               value={email || mobile}
+              
               onChange={(e) => (setEmail(e.target.value)|| setMobile(e.target.value))}
             />
 
