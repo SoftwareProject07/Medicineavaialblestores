@@ -66,14 +66,14 @@ export default function Dashboard() {
           nextDose: "8.00 am",
           status: "On Time",
         
-          id: 2,
-          name: "paracitamol 500mg",
-          frequency: " 6hour",
-          dosage: "2 Tablet",
-          taken: true,
-          meal: "Before",
-          nextDose: "6.00 am",
-          status: "On Time"
+          // id: 2,
+          // name: "paracitamol 500mg",
+          // frequency: " 6hour",
+          // dosage: "2 Tablet",
+          // taken: true,
+          // meal: "Before",
+          // nextDose: "6.00 am",
+          // status: "On Time"
         }
       ]);
     }

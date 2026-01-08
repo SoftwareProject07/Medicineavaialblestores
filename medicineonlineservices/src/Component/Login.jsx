@@ -47,6 +47,7 @@ export default function Login() {
     // if (response.data.user) {
     //   localStorage.setItem("user", JSON.stringify(response.data.user));
     // }
+    // Username show the dashboard side
      if (response.data.userMedicine) {
       localStorage.setItem("user", JSON.stringify(response.data.userMedicine));
     }
@@ -134,7 +135,7 @@ export default function Login() {
                 <input type="checkbox" /> 
                 <span >Remember</span> me
               </label>
-              <Link to="/forgot-password">Forgot password?</Link>
+              <Link to="/loginforgetpasswords">Forget password?</Link>
             </div>
 
             <button type="submit" className="login-btn">
