@@ -141,20 +141,35 @@ export default function Dashboard() {
       {/* ---------- MAIN CONTENT ---------- */}
       <div className="main-content">
         <header>
-          {/* ✅ USER PHOTO */}
-          <img
-            src={
-              user?.photoUrl
-                ? user.photoUrl
-                : "/default-user.png"
-            }
-            alt="User"
-            className="nav-user-photo"
-          />
-          {/* ICONS */}
-          <span className="nav-icon">🔔</span>
-          <span className="nav-icon">⚙️</span>
-          <div className="header-icons">👤 🔔 ⚙️</div>
+        <div className="header-right">
+
+    {/* ✅ USER IMAGE */}
+    {/* <img
+      src={
+        user?.photoUrl && user.photoUrl.startsWith("http")
+          ? user.photoUrl
+          : "/default-user.png"
+      }
+      alt="User"
+      className="nav-user-photo"
+      onError={(e) => {
+        e.target.src = "/default-user.png";
+      }}
+    /> */}
+    <img
+  src={user?.photoUrl || "/default-user.png"}
+  alt="User"
+  className="nav-user-photo"
+  onError={(e) => {
+    e.target.src = "/default-user.png";
+  }}
+/>
+
+
+    <span className="nav-icon">🔔</span>
+    <span className="nav-icon">⚙️</span>
+
+  </div>
         </header>
 
         <div className="medicines-page">
