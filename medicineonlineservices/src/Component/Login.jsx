@@ -8,40 +8,50 @@ import "./styles/logins.css";
 export default function Login() {
   const navigate = useNavigate();
 
-  const [identifier, setIdentifier] = useState(""); // email or mobile
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const[mobile, setMobile]=useState("");
   const [showPassword, setShowPassword] = useState(false);
+
 
   const handleSave = async (e) => {
     e.preventDefault();
 
-    if (!identifier.trim() || !password.trim()) {
-      Swal.fire("Warning", "Please enter Email/Mobile and Password", "warning");
+    if (!email.trim() || !password.trim() || !mobile.trim()) {
+      Swal.fire("Warning", "Please enter Email Address  or  MobileNumber and Password", "warning");
       return;
     }
 
-    // Decide whether identifier is email or mobile
-    const isEmail = identifier.includes("@");
     const data = {
-      Email: isEmail ? identifier : null,
-      MobileNumber: !isEmail ? identifier : null,
+      Email: email,
       Password: password,
+      MobileNumber:mobile
     };
 
     try {
       const response = await axios.post(
-        "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/LOGINUserMedicine",
+       // 'http://localhost:5256/api/USERMEDICINE/LOGINUserMedicine',
+       'https://ecommerencesite-api.onrender.com/api/USERMEDICINE/LOGINUserMedicine',
         data,
         { headers: { "Content-Type": "application/json" } }
       );
 
-      if (response.data?.isSuccess || response.data?.success || response.data?.status) {
+      if (
+        response.data?.isSuccess ||
+        response.data?.success ||
+        response.data?.status
+      ) {
         if (response.data.token) {
           localStorage.setItem("token", response.data.token);
         }
-        if (response.data.userMedicine) {
-          localStorage.setItem("user", JSON.stringify(response.data.userMedicine));
-        }
+ // ✅ Save user info
+    // if (response.data.user) {
+    //   localStorage.setItem("user", JSON.stringify(response.data.user));
+    // }
+    // Username show the dashboard side
+     if (response.data.userMedicine) {
+      localStorage.setItem("user", JSON.stringify(response.data.userMedicine));
+    }
 
         Swal.fire({
           icon: "success",
@@ -53,7 +63,7 @@ export default function Login() {
           "Login Failed",
           response.data?.responseMessage ||
             response.data?.message ||
-            "Invalid Email/Mobile or Password",
+            "Invalid Email/MobileNumber or Password",
           "error"
         );
       }
@@ -66,6 +76,7 @@ export default function Login() {
   return (
     <>
       <div className="login-page">
+        {/* LEFT IMAGE */}
         <div className="login-left">
           <img
             src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
@@ -73,28 +84,42 @@ export default function Login() {
           />
         </div>
 
+        {/* RIGHT FORM */}
         <div className="login-right">
           <div className="social">
             <span>Sign in with</span>
             <div className="icons">
-              <Link to="https://www.facebook.com" className="social-icon"><FaFacebook size={24} color="white" /></Link>
-              <Link to="https://x.com/i/flow/login" className="social-icon"><FaTwitter size={24} color="white" /></Link>
-              <Link to="https://www.google.com" className="social-icon"><FaGoogle size={24} color="white" /></Link>
-              <Link to="https://www.linkedin.com" className="social-icon"><FaLinkedin size={24} color="white" /></Link>
-              <Link to="https://www.instagram.com" className="social-icon"><FaInstagram size={24} color="white" /></Link>
+              <Link to="https://www.facebook.com" className="social-icon">
+    <FaFacebook size={24} color="white" />
+
+</Link>
+
+    <Link  to="https://x.com/i/flow/login" className="social-icon">     <FaTwitter size={24} color="white" />
+  </Link>
+          {/* <i className="fab fa-google"></i> */}
+           <Link  to="https://www.google.com" className="social-icon">     <FaGoogle size={24} color="white" />
+  </Link>
+          {/* <i className="fab fa-linkedin-in"></i> */}
+      <Link  to="https://www.linkedin.com" className="social-icon"> <FaLinkedin size={24} color="white" /></Link>
+      <Link  to="https://www.instagram.com" className="social-icon"> <FaInstagram size={24} color="white" /></Link>
+
             </div>
           </div>
 
-          <div className="divider"><span>Or</span></div>
+          <div className="divider">
+            <span>Or</span>
+          </div>
 
           <form onSubmit={handleSave}>
             <input
-              type="text"
-              placeholder="Email address or Mobile Number"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
+              type="email || mobile"
+              placeholder="Email address/MobileNumber"
+              value={email || mobile}
+              
+              onChange={(e) => (setEmail(e.target.value)|| setMobile(e.target.value))}
             />
 
+            {/* PASSWORD WITH SHOW/HIDE */}
             <div className="password-wrapper">
               <input
                 type={showPassword ? "text" : "password"}
@@ -108,13 +133,16 @@ export default function Login() {
             </div>
 
             <div className="options">
-              <label className="remember-me">
-                <input type="checkbox" /> <span>Remember</span> me
+             <label className="remember-me">
+                <input type="checkbox" /> 
+                <span >Remember</span> me
               </label>
               <Link to="/loginforgetpasswords">Forget password?</Link>
             </div>
 
-            <button type="submit" className="login-btn">LOGIN</button>
+            <button type="submit" className="login-btn">
+              LOGIN
+            </button>
           </form>
 
           <p className="register">
@@ -123,14 +151,25 @@ export default function Login() {
         </div>
       </div>
 
+      {/* FOOTER */}
       <footer className="footer">
-        <span>Copyright © 2026. All rights reserved.</span>
+        <span>Copyright © 2026. All rights reserved.</span> 
+        
         <div className="footer-icons">
-          <Link to="https://www.facebook.com" className="social-icon"><FaFacebook size={24} color="white" /></Link>
-          <Link to="https://x.com/i/flow/login" className="social-icon"><FaTwitter size={24} color="white" /></Link>
-          <Link to="https://www.google.com" className="social-icon"><FaGoogle size={24} color="white" /></Link>
-          <Link to="https://www.linkedin.com" className="social-icon"><FaLinkedin size={24} color="white" /></Link>
-          <Link to="https://www.instagram.com" className="social-icon"><FaInstagram size={24} color="white" /></Link>
+     <Link to="https://www.facebook.com" className="social-icon">
+    <FaFacebook size={24} color="white" />
+
+</Link>
+
+    <Link  to="https://x.com/i/flow/login" className="social-icon">     <FaTwitter size={24} color="white" />
+  </Link>
+          {/* <i className="fab fa-google"></i> */}
+           <Link  to="https://www.google.com" className="social-icon">     <FaGoogle size={24} color="white" />
+  </Link>
+          {/* <i className="fab fa-linkedin-in"></i> */}
+      <Link  to="https://www.linkedin.com" className="social-icon"> <FaLinkedin size={24} color="white" /></Link>
+      <Link  to="https://www.instagram.com" className="social-icon"> <FaInstagram size={24} color="white" /></Link>
+
         </div>
       </footer>
     </>
