@@ -12,7 +12,7 @@ export default function Registeration() {
   const [middlename, setMiddleName] = useState("");
   const [lastname, setLastName] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmpassword, setConfirmPassword] = useState("");
+ // const [confirmpassword, setConfirmPassword] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [photo, setPhoto] = useState(null);
@@ -29,7 +29,7 @@ export default function Registeration() {
     formData.append("MiddleName", middlename || "");
     formData.append("LastName", lastname);
     formData.append("Password", password);
-    formData.append("ConfirmPassword", confirmpassword);
+    //formData.append("ConfirmPassword", confirmpassword);
     formData.append("Email", email);
     formData.append("MobileNumber", mobile);
     formData.append("Fund", 0);
@@ -42,6 +42,7 @@ export default function Registeration() {
 
     try {
       const response = await axios.post(
+        //"http://localhost:5256/api//USERMEDICINE/CREATERegisterUser",
         `https://ecommerencesite-api.onrender.com/api/USERMEDICINE/CREATERegisterUser`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
@@ -76,8 +77,7 @@ export default function Registeration() {
         <input type="password" className="form-control mb-2" placeholder="Password"
           value={password} onChange={(e) => setPassword(e.target.value)} />
 
-        <input type="password" className="form-control mb-2" placeholder="Confirm Password"
-          value={confirmpassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+   
 
         <input type="email" className="form-control mb-2" placeholder="Email"
           value={email} onChange={(e) => setEmail(e.target.value)} />

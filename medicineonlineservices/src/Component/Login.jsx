@@ -17,7 +17,7 @@ export default function Login() {
   const handleSave = async (e) => {
     e.preventDefault();
 
-    if (!email.trim() || !password.trim() || !mobile.trim()) {
+    if (!email.trim() || !password.trim()) {
       Swal.fire("Warning", "Please enter Email Address  or  MobileNumber and Password", "warning");
       return;
     }

@@ -89,7 +89,9 @@ export default function Dashboard() {
       <div className="sidebar">
 <div className="brand">
           <img src="/AKMedizostore.png" alt="logo" width="45px" />
-          <span>AKMedizostore</span>
+          {/* <span>AKMedizostore</span> */}
+                    {user ? `${user.firstName} ${user.lastName}` : "User"}
+
         </div>        <ul>
           {/* Dashboard Dropdown */}
           <li className="menu-group">
@@ -139,6 +141,19 @@ export default function Dashboard() {
       {/* ---------- MAIN CONTENT ---------- */}
       <div className="main-content">
         <header>
+          {/* ✅ USER PHOTO */}
+          <img
+            src={
+              user?.photoUrl
+                ? user.photoUrl
+                : "/default-user.png"
+            }
+            alt="User"
+            className="nav-user-photo"
+          />
+          {/* ICONS */}
+          <span className="nav-icon">🔔</span>
+          <span className="nav-icon">⚙️</span>
           <div className="header-icons">👤 🔔 ⚙️</div>
         </header>
 
