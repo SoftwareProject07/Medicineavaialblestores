@@ -376,3 +376,11 @@ header {
   color: red;
   font-weight: bold;
 }
+
+
+ /* =============photo================== */
+
+ .nav-avatar {
+  width: 40px;
+  height: 40px
+ }

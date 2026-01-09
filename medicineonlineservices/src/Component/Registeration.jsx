@@ -17,27 +17,28 @@ export default function Registeration() {
 
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
-
+//const [photo ,setphoto]=useState("");
   // ✅ decimal safe
   const [found, setFound] = useState(0);
   const [type,setType] = useState("");
   const [createon,setCreateOn] = useState(null);
+const [photo, setPhoto] = useState(null);
 
-
-  // ✅ FINAL SAVE FUNCTION
 const handleSave = async () => {
-  const data = {
-    FirstName: firstname,
-    MiddleName: middlename,
-    LastName: lastname,
-    Password: password,
-    ConfirmPassword :confirmpassword,
-    Email: email,
-    MobileNumber:mobile,
-    Fund: 0,
-    Type: "User",
-    CreateOn: new Date().toISOString(), // ✅ VERY IMPORTANT
-  };
+  const formData = new FormData();
+  formData.append("FirstName", firstname);
+  formData.append("LastName", lastname);
+  formData.append("Password", password);
+  formData.append("ConfirmPassword", confirmpassword);
+  formData.append("Email", email);
+  formData.append("MobileNumber", mobile);
+  formData.append("Type", "User");
+  formData.append("CreateOn", new Date().toISOString());
+
+  if (photo) {
+    formData.append("Photo", photo); // ✅ FILE
+  }
+
 
   try {
     const response = await axios.post(
@@ -157,6 +158,21 @@ catch (error) {
 
                     onChange={(e) => setMobile(e.target.value)}
                   />
+                    {/* <input
+                    type="file"
+                    className="form-control mb-3"
+                    placeholder="photo"
+                    value={photo}
+
+                    onChange={(e) => setphoto(e.target.value)}
+                  /> */}
+
+                  <input
+  type="file"
+  className="form-control"
+  onChange={(e) => setPhoto(e.target.files[0])}
+/>
+
                   <input type="hidden"  value={found} onChange={(e)=>setFound(e.target.value)}  />
                                     <input type="hidden"  value={type} onChange={(e)=>setType(e.target.value)}  />
                                     <input type="hidden"  value={createon} onChange={(e)=>setCreateOn(e.target.value)}  />

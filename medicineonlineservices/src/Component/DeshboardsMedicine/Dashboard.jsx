@@ -16,7 +16,8 @@ import {
 } from "recharts";
 import "../styles/dashboardsprofiles.css";
 
-// Sample chart data
+/* ---------------- SAMPLE DATA ---------------- */
+
 const weightData = [
   { date: "May 01", weight: 180 },
   { date: "May 10", weight: 178 },
@@ -39,17 +40,25 @@ const bpData = [
 
 const COLORS = ["#0088FE", "#00C49F", "#FF8042"];
 
+/* 🔥 ENV VARIABLE (ONLY THIS) */
+const API_URL = process.env.REACT_APP_API_URL;
+
+/* ---------------- COMPONENT ---------------- */
+
 export default function Dashboard() {
   const [openDashboard, setOpenDashboard] = useState(false);
   const [medications, setMedications] = useState([]);
   const [user, setUser] = useState(null);
-/* ---------- LOAD USER ---------- */
+
+  /* ---------- LOAD USER ---------- */
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
   }, []);
+
+  /* ---------- LOAD MEDICATIONS ---------- */
   useEffect(() => {
     const saved = localStorage.getItem("medications");
     if (saved) {
@@ -64,16 +73,7 @@ export default function Dashboard() {
           taken: true,
           meal: "After",
           nextDose: "8.00 am",
-          status: "On Time",
-        
-          // id: 2,
-          // name: "paracitamol 500mg",
-          // frequency: " 6hour",
-          // dosage: "2 Tablet",
-          // taken: true,
-          // meal: "Before",
-          // nextDose: "6.00 am",
-          // status: "On Time"
+          status: "On Time"
         }
       ]);
     }
@@ -85,21 +85,18 @@ export default function Dashboard() {
 
   return (
     <div className="app-container">
+
       {/* ---------- SIDEBAR ---------- */}
       <div className="sidebar">
-<div className="brand">
-          <img src="/AKMedizostore.png" alt="logo" width="45px" />
-          <span>AKMedizostore</span>
-        </div>        <ul>
-          {/* Dashboard Dropdown */}
-          <li className="menu-group">
-            {/* <span
-              className="menu-title   btn btn-success mb-2"
-              onClick={() => setOpenDashboard(!openDashboard)}
-            >
-              Dashboard {openDashboard ? "▾" : "▸"}
-            </span> */}
+        <div className="brand">
+          <img src="/AKMedizostore.png" alt="logo" width="45" />
+          <span>
+            {user ? `${user.firstName} ${user.lastName}` : "AKMedizostore"}
+          </span>
+        </div>
 
+        <ul>
+          <li className="menu-group">
             <Link
               to="/dashboards"
               className="menu-title btn btn-success mb-2 d-flex justify-content-between align-items-center"
@@ -108,6 +105,7 @@ export default function Dashboard() {
               Dashboard
               <span>{openDashboard ? "▾" : "▸"}</span>
             </Link>
+
             {openDashboard && (
               <ul className="submenu">
                 <li><Link to="/medication-tracker">Medication Tracker</Link></li>
@@ -116,39 +114,53 @@ export default function Dashboard() {
                 <li><Link to="/monthly-progress">Monthly Progress</Link></li>
                 <li><Link to="/prescriptions">Prescriptions</Link></li>
                 <li><Link to="/history">History</Link></li>
-          <li><Link to="/support">Help & Support</Link></li>
-          <li><Link to="/settings">Settings</Link></li>
+                <li><Link to="/support">Help & Support</Link></li>
+                <li><Link to="/settings">Settings</Link></li>
               </ul>
             )}
           </li>
 
-          {/* Other menu items */}
-                      <Link to="/medicinedisplay" className="btn btn-success mb-2">Medicines</Link><br></br>
-            <Link  to="/carts" className="btn btn-success mb-2">Medicine Cart</Link><br></br>
-            <Link to="/customerdetails" className="btn btn-success mb-2">Patience Details</Link> 
-                                                              <li>OrdersPayment</li>
-          <li>CustomerTracking</li>
+          <Link to="/medicinedisplay" className="btn btn-success mb-2">Medicines</Link>
+          <Link to="/carts" className="btn btn-success mb-2">Medicine Cart</Link>
+          <Link to="/customerdetails" className="btn btn-success mb-2">Patient Details</Link>
 
-                       <li>OrderStatus</li>
-
-            <li>customer  Profile</li>
-          <li><Link to="/header"><i className="fas fa-sign-out-alt"></i>LogOut</Link></li>
+          <li className="mt-3">
+            <Link to="/header">
+              <i className="fas fa-sign-out-alt"></i> LogOut
+            </Link>
+          </li>
         </ul>
       </div>
 
       {/* ---------- MAIN CONTENT ---------- */}
       <div className="main-content">
-        <header>
-          <div className="header-icons">👤 🔔 ⚙️</div>
+
+        {/* ---------- HEADER (PHOTO ONLY HERE) ---------- */}
+        <header className="dashboard-header">
+          <div className="header-icons">
+            {user?.photoUrl ? (
+              <img
+                src={
+                  user.photoUrl.startsWith("http")
+                    ? user.photoUrl
+                    : `${API_URL}${user.photoUrl}`
+                }
+                alt="User"
+                className="nav-avatar"
+              />
+            ) : (
+              <span className="default-avatar">👤</span>
+            )}
+            🔔 ⚙️
+          </div>
         </header>
 
+        {/* ---------- PAGE CONTENT ---------- */}
         <div className="medicines-page">
-          {/* <h2>Welcome back, Suvashini</h2> */}
-             {/* <h2>  Welcome back, ${user?.firstName} ${user?.lastName}</h2> */}
+          <h2>
+            Welcome back, {user ? `${user.firstName} ${user.lastName}` : "User"}
+          </h2>
 
-           <h2>  Welcome back, {user ? `${user.firstName} ${user.lastName}` : "User"} </h2>
-
-          {/* Summary Cards */}
           <div className="cards">
             <div className="card blue">Medication Tracker</div>
             <div className="card green">Test Reports</div>
@@ -156,8 +168,8 @@ export default function Dashboard() {
             <div className="card purple">Monthly Progress</div>
           </div>
 
-          {/* Charts */}
           <div className="reports">
+
             <div className="box">
               <h4>Blood Glucose</h4>
               <ResponsiveContainer width="100%" height={200}>
@@ -165,7 +177,7 @@ export default function Dashboard() {
                   <XAxis dataKey="day" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="value" fill="#82ca9d" />
+                  <Bar dataKey="value" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -177,12 +189,7 @@ export default function Dashboard() {
                   <XAxis dataKey="date" />
                   <YAxis />
                   <Tooltip />
-                  <Line
-                    type="monotone"
-                    dataKey="weight"
-                    stroke="#8884d8"
-                    strokeWidth={2}
-                  />
+                  <Line type="monotone" dataKey="weight" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -199,11 +206,8 @@ export default function Dashboard() {
                     dataKey="value"
                     label
                   >
-                    {bpData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
+                    {bpData.map((_, index) => (
+                      <Cell key={index} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
                   <Legend />
@@ -213,9 +217,9 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Medication Table */}
           <div className="table-container">
             <h3>Medication Tracker</h3>
+
             <table className="med-table">
               <thead>
                 <tr>
@@ -228,8 +232,9 @@ export default function Dashboard() {
                   <th>Status</th>
                 </tr>
               </thead>
+
               <tbody>
-                {medications.length > 0 ? (
+                {medications.length ? (
                   medications.map((m) => (
                     <tr key={m.id}>
                       <td>{m.name}</td>
@@ -251,6 +256,7 @@ export default function Dashboard() {
               </tbody>
             </table>
           </div>
+
         </div>
       </div>
     </div>
