@@ -11,10 +11,11 @@ import AdminDashboard from './Admin/AdminDeshboard.jsx';
 import Carts from './User/Carts.jsx';
 import AdminLogin from './Admin/AdminLogin.jsx';
 // import AdminRegisteration from './Admin/AdminRegisteration.jsx';
-import CustomerDetails from './User/Customerdetails.jsx';
+// import CustomerDetails from './User/Customerdetails.jsx';
 import CartItem from './User/CartItem.jsx';
 import MedicineDisplay from './User/MedicineDisplay.jsx';
 import LoginForgetPassword from './User/LoginForgetPassword.jsx';
+import Customerdetails from './User/Customerdetails.jsx';
 //import UpdateMedicine from "./Component/Admin/UpdateMedicine.jsx";
 
 //import Deskboard from './User/Deskboard.jsx';
@@ -54,7 +55,7 @@ export default function Routerpage() {
              <Route path="/carts" element={<Carts />}/>
              <Route Path="/adminlogin" element={<AdminLogin />} />
              {/* <Route Path="/adminregisteration" element={<AdminRegisteration />} /> */}
-        <Route Pathath="/customerdetails" element={<CustomerDetails />} /> 
+        <Route path="/customerdetails" element={<Customerdetails />} /> 
 {/* <Route Path="/cartcontexts" element={<CartContext/>}/> */}
 <Route Path="/medicinedisplay" element={<MedicineDisplay />}/>
              {/* <Route Path="/cart.controllers" element={<Cart./> }/> */}

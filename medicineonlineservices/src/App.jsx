@@ -16,12 +16,12 @@ import AdminDashboard from "./Component/Admin/AdminDeshboard.jsx";
 
 // import Cart from "./Component/User/Carts.jsx";
 // import AdminRegisteration from "./Component/Admin/AdminRegisteration.jsx";
-import CustomerDetails from "./Component/User/Customerdetails.jsx";//Patience name 
 import AdminLogin from "./Component/Admin/AdminLogin.jsx";
 import CartItem from "./Component/User/CartItem.jsx";
 import MedicineDisplay from "./Component/User/MedicineDisplay.jsx";
 import Carts from './Component/User/Carts.jsx';
 import LoginForgetPassword from './Component/User/LoginForgetPassword.jsx';
+import Customerdetails from './Component/User/Customerdetails.jsx';
 
 function App() {
   return (
@@ -42,7 +42,7 @@ function App() {
              <Route path="/carts" element={<Carts />}/>
 
                           {/* <Route Path="/adminregisteration" elemment={<AdminRegisteration />} /> */}
-                     <Route path="/customerdetails" element={<CustomerDetails />} /> 
+        <Route path="/customerdetails" element={<Customerdetails />} /> 
                                    <Route path="/adminlogin" element={<AdminLogin />} />
                                    <Route path="/medicinedisplay" element={<MedicineDisplay />}/>
                                    <Route path="/loginforgetpasswords"  element={<LoginForgetPassword />}/>
