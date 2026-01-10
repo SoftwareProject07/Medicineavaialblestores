@@ -127,7 +127,8 @@ export default function Dashboard() {
             {/* ✅ SAFE PROFILE IMAGE */}
            {user?.photo && (
               <img
-                src={`http://localhost:5256/uploads/${user.photo}`}
+              //  src={`http://localhost:5256/uploads/${user.photo}`}
+              src= {`https://ecommerencesite-api.onrender.com/apiuploads/${user.photo}`}
                 alt="Profile"
                 className="nav-user-photo"
               />
