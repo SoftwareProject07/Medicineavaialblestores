@@ -73,6 +73,58 @@ export default function Login() {
     }
   };
 
+  // FORGET PASSWORD POPUP
+  // ===========================
+  const handleForgetPasswordPopup = async () => {
+    const { value: formValues } = await Swal.fire({
+      title: "Forget Password",
+      html: `
+        <input id="fp-email" class="swal2-input" placeholder="Enter Email">
+        <input id="fp-password" type="password" class="swal2-input" placeholder="New Password">
+      `,
+      showCancelButton: true,
+      confirmButtonText: "Reset Password",
+      preConfirm: () => {
+        const email = document.getElementById("fp-email").value;
+        const newPassword = document.getElementById("fp-password").value;
+
+        if (!email || !newPassword) {
+          Swal.showValidationMessage("All fields are required");
+          return;
+        }
+        return { email, newPassword };
+      },
+    });
+
+    if (!formValues) return;
+
+    try {
+      const payload = {
+        Email: formValues.email,
+        NewPassword: formValues.newPassword,
+      };
+
+      const response = await axios.post(
+        "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/ForgetPassword",
+        payload,
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      if (response.data?.status === true) {
+        Swal.fire("Success", "Password reset successful", "success");
+      } else {
+        Swal.fire(
+          "Failed",
+          response.data?.responseMessage || "Invalid Email",
+          "error"
+        );
+      }
+    } catch (err) {
+      Swal.fire("Error", "Server error", "error");
+    }
+  };
+
+
   return (
     <>
       <div className="login-page">
@@ -137,7 +189,13 @@ export default function Login() {
                 <input type="checkbox" /> 
                 <span >Remember</span> me
               </label>
-              <Link to="/loginforgetpasswords">Forget password?</Link>
+              {/* <Link to="/loginforgetpasswords">Forget password?</Link> */}
+               <span
+                className="forget-link"
+                onClick={handleForgetPasswordPopup}
+              >
+                Forget password?
+              </span>
             </div>
 
             <button type="submit" className="login-btn">
