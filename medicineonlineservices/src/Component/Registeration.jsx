@@ -18,11 +18,15 @@ export default function Registeration() {
   const [photo, setPhoto] = useState(null);
 
   const handleSave = async () => {
-    if (password !== confirmpassword) {
-      Swal.fire("Error", "Password not matched", "error");
-      return;
-    }
+    // if (password !== confirmpassword) {
+    //   Swal.fire("Error", "Password not matched", "error");
+    //   return;
+    // }
 
+  //    if (!firstname || !lastname || !password || !email || !mobile) {
+  //   Swal.fire("Warning", "Please fill all required fields", "warning");
+  //   return;
+  // }
     // ✅ MUST USE FormData
     const formData = new FormData();
     formData.append("FirstName", firstname);
@@ -42,8 +46,8 @@ export default function Registeration() {
 
     try {
       const response = await axios.post(
-        //"http://localhost:5256/api//USERMEDICINE/CREATERegisterUser",
-        `https://ecommerencesite-api.onrender.com/api/USERMEDICINE/CREATERegisterUser`,
+      //  "http://localhost:5256/api/USERMEDICINE/CREATERegisterUser",
+        "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/CREATERegisterUser",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
