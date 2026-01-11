@@ -14,7 +14,7 @@ import AdminLogin from './Admin/AdminLogin.jsx';
 // import CustomerDetails from './User/Customerdetails.jsx';
 import CartItem from './User/CartItem.jsx';
 import MedicineDisplay from './User/MedicineDisplay.jsx';
-import LoginForgetPassword from './User/LoginForgetPassword.jsx';
+//import LoginForgetPassword from './User/LoginForgetPassword.jsx';
 import Customerdetails from './User/Customerdetails.jsx';
 //import UpdateMedicine from "./Component/Admin/UpdateMedicine.jsx";
 
@@ -59,7 +59,9 @@ export default function Routerpage() {
 {/* <Route Path="/cartcontexts" element={<CartContext/>}/> */}
 <Route Path="/medicinedisplay" element={<MedicineDisplay />}/>
              {/* <Route Path="/cart.controllers" element={<Cart./> }/> */}
-<Route path="/loginforgetpassword"  element ={<LoginForgetPassword />}/>
+{/* <Route path="/loginforgetpassword"  element ={<LoginForgetPassword />}/> */}
+
+
     {/* <Route path="/Deskboard" element={<Deskboard />} /> */}
         {/* <Route path="/Orders" element={<Orders />} />
         <Route path="/Profile" element={<Profile />} />

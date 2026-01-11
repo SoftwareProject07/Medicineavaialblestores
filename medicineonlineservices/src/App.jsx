@@ -20,7 +20,7 @@ import AdminLogin from "./Component/Admin/AdminLogin.jsx";
 import CartItem from "./Component/User/CartItem.jsx";
 import MedicineDisplay from "./Component/User/MedicineDisplay.jsx";
 import Carts from './Component/User/Carts.jsx';
-import LoginForgetPassword from './Component/User/LoginForgetPassword.jsx';
+//import LoginForgetPassword from './Component/User/LoginForgetPassword.jsx';
 import Customerdetails from './Component/User/Customerdetails.jsx';
 
 function App() {
@@ -45,7 +45,7 @@ function App() {
         <Route path="/customerdetails" element={<Customerdetails />} /> 
                                    <Route path="/adminlogin" element={<AdminLogin />} />
                                    <Route path="/medicinedisplay" element={<MedicineDisplay />}/>
-                                   <Route path="/loginforgetpasswords"  element={<LoginForgetPassword />}/>
+                                   {/* <Route path="/loginforgetpasswords"  element={<LoginForgetPassword />}/> */}
                                    
 
 
