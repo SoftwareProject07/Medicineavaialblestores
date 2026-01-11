@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { FaFacebook, FaTwitter, FaGoogle, FaLinkedin, FaInstagram } from "react-icons/fa";
+import {
+  FaFacebook,
+  FaTwitter,
+  FaGoogle,
+  FaLinkedin,
+  FaInstagram,
+} from "react-icons/fa";
 import Swal from "sweetalert2";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
@@ -8,104 +14,106 @@ import "./styles/logins.css";
 export default function Login() {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
+  // ✅ Single state for Email / Mobile
+  const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
-  const[mobile, setMobile]=useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-
+  // ================= LOGIN =================
   const handleSave = async (e) => {
     e.preventDefault();
 
-    if (!email.trim() || !password.trim()) {
-      Swal.fire("Warning", "Please enter Email Address  or  MobileNumber and Password", "warning");
+    if (!loginId.trim() || !password.trim()) {
+      Swal.fire(
+        "Warning",
+        "Please enter Email or Mobile Number and Password",
+        "warning"
+      );
       return;
     }
 
-    const data = {
-      Email: email,
+    const payload = {
+      Email: loginId,
+      MobileNumber: loginId,
       Password: password,
-      MobileNumber:mobile
     };
 
     try {
       const response = await axios.post(
-      //  "http://localhost:5256/api/USERMEDICINE/LOGINUserMedicine",
-       "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/LOGINUserMedicine",
-        data,
+        "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/LOGINUserMedicine",
+        payload,
         { headers: { "Content-Type": "application/json" } }
       );
 
       if (
-        response.data?.isSuccess ||
+        response.data?.status ||
         response.data?.success ||
-        response.data?.status
+        response.data?.isSuccess
       ) {
         if (response.data.token) {
           localStorage.setItem("token", response.data.token);
         }
- // ✅ Save user info
-    // if (response.data.user) {
-    //   localStorage.setItem("user", JSON.stringify(response.data.user));
-    // }
-    // Username show the dashboard side
-     if (response.data.userMedicine) {
-      localStorage.setItem("user", JSON.stringify(response.data.userMedicine));
-    }
 
-        Swal.fire({
-          icon: "success",
-          title: "Login Successful",
-          text: "Welcome to Dashboard",
-        }).then(() => navigate("/dashboards"));
+        if (response.data.userMedicine) {
+          localStorage.setItem(
+            "user",
+            JSON.stringify(response.data.userMedicine)
+          );
+        }
+
+        Swal.fire("Success", "Login Successful", "success").then(() =>
+          navigate("/dashboards")
+        );
       } else {
         Swal.fire(
           "Login Failed",
           response.data?.responseMessage ||
-            response.data?.message ||
-            "Invalid Email/MobileNumber or Password",
+            "Invalid Email / Mobile or Password",
           "error"
         );
       }
     } catch (error) {
-      console.error(error);
       Swal.fire("Server Error", "Please try again later", "error");
     }
   };
 
-  // FORGET PASSWORD POPUP
-  // ===========================
+  // ================= FORGET PASSWORD POPUP =================
   const handleForgetPasswordPopup = async () => {
-    const { value: formValues } = await Swal.fire({
+    const { value } = await Swal.fire({
       title: "Forget Password",
       html: `
-        <input id="fp-email" class="swal2-input" placeholder="Enter Email">
+        <input id="fp-identity" class="swal2-input" placeholder="Email / Mobile / Username">
         <input id="fp-password" type="password" class="swal2-input" placeholder="New Password">
       `,
       showCancelButton: true,
       confirmButtonText: "Reset Password",
       preConfirm: () => {
-        const email = document.getElementById("fp-email").value;
+        const identity = document.getElementById("fp-identity").value;
         const newPassword = document.getElementById("fp-password").value;
 
-        if (!email || !newPassword) {
-          Swal.showValidationMessage("All fields are required");
-          return;
+        if (!identity || !newPassword) {
+          Swal.showValidationMessage(
+            "Email / Mobile / Username and New Password are required"
+          );
+          return false;
         }
-        return { email, newPassword };
+        return { identity, newPassword };
       },
     });
 
-    if (!formValues) return;
+    if (!value) return;
 
     try {
       const payload = {
-        Email: formValues.email,
-        NewPassword: formValues.newPassword,
+        Email: value.identity,
+        PhoneNumber: value.identity,
+        UserName: value.identity,
+        NewPassword: value.newPassword,
       };
 
       const response = await axios.post(
-        "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/ForgetPassword",
+       // "http://localhost:5256/api/USERMEDICINE/ForgetPassword",
+      "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/ForgetPassword",
         payload,
         { headers: { "Content-Type": "application/json" } }
       );
@@ -115,15 +123,15 @@ export default function Login() {
       } else {
         Swal.fire(
           "Failed",
-          response.data?.responseMessage || "Invalid Email",
+          response.data?.responseMessage ||
+            "Invalid Email / Mobile / Username",
           "error"
         );
       }
-    } catch (err) {
+    } catch (error) {
       Swal.fire("Error", "Server error", "error");
     }
   };
-
 
   return (
     <>
@@ -142,19 +150,20 @@ export default function Login() {
             <span>Sign in with</span>
             <div className="icons">
               <Link to="https://www.facebook.com" className="social-icon">
-    <FaFacebook size={24} color="white" />
-
-</Link>
-
-    <Link  to="https://x.com/i/flow/login" className="social-icon">     <FaTwitter size={24} color="white" />
-  </Link>
-          {/* <i className="fab fa-google"></i> */}
-           <Link  to="https://www.google.com" className="social-icon">     <FaGoogle size={24} color="white" />
-  </Link>
-          {/* <i className="fab fa-linkedin-in"></i> */}
-      <Link  to="https://www.linkedin.com" className="social-icon"> <FaLinkedin size={24} color="white" /></Link>
-      <Link  to="https://www.instagram.com" className="social-icon"> <FaInstagram size={24} color="white" /></Link>
-
+                <FaFacebook size={24} color="white" />
+              </Link>
+              <Link to="https://x.com/i/flow/login" className="social-icon">
+                <FaTwitter size={24} color="white" />
+              </Link>
+              <Link to="https://www.google.com" className="social-icon">
+                <FaGoogle size={24} color="white" />
+              </Link>
+              <Link to="https://www.linkedin.com" className="social-icon">
+                <FaLinkedin size={24} color="white" />
+              </Link>
+              <Link to="https://www.instagram.com" className="social-icon">
+                <FaInstagram size={24} color="white" />
+              </Link>
             </div>
           </div>
 
@@ -163,15 +172,15 @@ export default function Login() {
           </div>
 
           <form onSubmit={handleSave}>
+            {/* EMAIL / MOBILE */}
             <input
-              type="email || mobile"
-              placeholder="Email address/MobileNumber"
-              value={email || mobile}
-              
-              onChange={(e) => (setEmail(e.target.value)|| setMobile(e.target.value))}
+              type="text"
+              placeholder="Email address or Mobile Number"
+              value={loginId}
+              onChange={(e) => setLoginId(e.target.value)}
             />
 
-            {/* PASSWORD WITH SHOW/HIDE */}
+            {/* PASSWORD */}
             <div className="password-wrapper">
               <input
                 type={showPassword ? "text" : "password"}
@@ -185,12 +194,12 @@ export default function Login() {
             </div>
 
             <div className="options">
-             <label className="remember-me">
+              <label className="remember-me">
                 <input type="checkbox" /> 
-                <span >Remember</span> me
+                <span>Remember</span> me
               </label>
-              {/* <Link to="/loginforgetpasswords">Forget password?</Link> */}
-               <span
+
+              <span
                 className="forget-link"
                 onClick={handleForgetPasswordPopup}
               >
@@ -204,31 +213,15 @@ export default function Login() {
           </form>
 
           <p className="register">
-            Don’t have an account? <Link to="/registeration">Register</Link>
+            Don’t have an account?{" "}
+            <Link to="/registeration">Register</Link>
           </p>
         </div>
       </div>
 
       {/* FOOTER */}
       <footer className="footer">
-        <span>Copyright © 2026. All rights reserved.</span> 
-        
-        <div className="footer-icons">
-     <Link to="https://www.facebook.com" className="social-icon">
-    <FaFacebook size={24} color="white" />
-
-</Link>
-
-    <Link  to="https://x.com/i/flow/login" className="social-icon">     <FaTwitter size={24} color="white" />
-  </Link>
-          {/* <i className="fab fa-google"></i> */}
-           <Link  to="https://www.google.com" className="social-icon">     <FaGoogle size={24} color="white" />
-  </Link>
-          {/* <i className="fab fa-linkedin-in"></i> */}
-      <Link  to="https://www.linkedin.com" className="social-icon"> <FaLinkedin size={24} color="white" /></Link>
-      <Link  to="https://www.instagram.com" className="social-icon"> <FaInstagram size={24} color="white" /></Link>
-
-        </div>
+        <span>Copyright © 2026. All rights reserved.</span>
       </footer>
     </>
   );

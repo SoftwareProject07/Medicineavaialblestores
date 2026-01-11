@@ -95,11 +95,11 @@ export default function MedicineDisplay() {
             </Link>
           </li>
 
-          <li>
+          {/* <li>
             <Link to="/customerdetails" className="btn btn-success mb-2">
               Patient Details
             </Link>
-          </li>
+          </li> */}
 
           <li>
             <Link to="/header">Logout</Link>
