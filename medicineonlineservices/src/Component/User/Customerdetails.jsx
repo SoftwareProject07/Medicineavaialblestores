@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import     '../styles/CustomerDetailss.css';
+import "../styles/CustomerDetailss.css";
 
 export default function Customerdetails() {
   const [fullname, setFullName] = useState("");
@@ -13,6 +13,16 @@ export default function Customerdetails() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // ✅ VALIDATION
+    if (!fullname || !gender || !phoneNumber || !address || !email || !age) {
+      Swal.fire({
+        icon: "warning",
+        title: "All fields required",
+        text: "Please fill all details",
+      });
+      return;
+    }
 
     const data = {
       FullName: fullname,
@@ -31,31 +41,25 @@ export default function Customerdetails() {
         { headers: { "Content-Type": "application/json" } }
       );
 
-      // ✅ SUCCESS POPUP
       Swal.fire({
         icon: "success",
-        title: "Success!",
+        title: "Success",
         text: "Patient details added successfully",
-        confirmButtonColor: "#1976d2",
       });
 
-      // Optional: form reset
+      // RESET FORM
       setFullName("");
       setGender("");
       setPhoneNumber("");
       setAddress("");
       setEmail("");
       setAge("");
-
     } catch (error) {
-      // ❌ ERROR POPUP
       Swal.fire({
         icon: "error",
-        title: "Failed!",
-        text: "Something went wrong. Please try again",
-        confirmButtonColor: "#d32f2f",
+        title: "Error",
+        text: "Something went wrong",
       });
-
       console.error(error);
     }
   };
@@ -71,7 +75,7 @@ export default function Customerdetails() {
             type="text"
             value={fullname}
             onChange={(e) => setFullName(e.target.value)}
-            required
+            placeholder="Enter name"
           />
         </div>
 
@@ -81,6 +85,7 @@ export default function Customerdetails() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter email"
           />
         </div>
 
@@ -90,6 +95,7 @@ export default function Customerdetails() {
             type="text"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
+            placeholder="Enter phone number"
           />
         </div>
 
@@ -109,7 +115,7 @@ export default function Customerdetails() {
             type="number"
             value={age}
             onChange={(e) => setAge(e.target.value)}
-            required
+            placeholder="Enter age"
           />
         </div>
 
@@ -119,14 +125,13 @@ export default function Customerdetails() {
             rows="3"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-          ></textarea>
+            placeholder="Enter address"
+          />
         </div>
 
-        {/* <button type="submit" className="style=item-align:center">Submit</button> */}
         <div className="btn-center">
-  <button type="submit">Submit</button>
-</div>
-
+          <button type="submit">Submit</button>
+        </div>
       </form>
     </div>
   );
