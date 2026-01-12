@@ -2,13 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "./CartContext";
 import "../styles/dashboardsprofiles.css";
-// import { useCart } from "../Component/User/CartContext";
 
 export default function MedicineDisplay() {
   const { addToCart, cartItems } = useCart();
   const [openDashboard, setOpenDashboard] = useState(false);
   const [user, setUser] = useState(null);
-// const { addToCart } = useCart();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -45,9 +43,9 @@ export default function MedicineDisplay() {
       {/* ============ SIDEBAR ============ */}
       <div className="sidebar">
         <div className="brand">
-         <Link to="/dashboards"  >
-           <img src="/AKMedizostore.png" alt="logo" width="55" /></Link>
-
+          <Link to="/dashboards">
+            <img src="/AKMedizostore.png" alt="logo" width="55" />
+          </Link>
           <span>
             {user ? `${user.firstName} ${user.lastName}` : "User"}
           </span>
@@ -104,8 +102,7 @@ export default function MedicineDisplay() {
               )}
             </Link>
           </li>
-
-          <li>OrdersPayment</li>
+           <li>OrdersPayment</li>
           <li>CustomerTracking</li>
           <li>OrderStatus</li>
           <li>Customer Profile</li>
@@ -127,25 +124,14 @@ export default function MedicineDisplay() {
           </div>
         </header>
 
-        {/* <h2>
-          Welcome back, {user ? `${user.firstName} ${user.lastName}` : "User"}
-        </h2> */}
-
         <h2 className="mt-3">Available Medicines</h2>
 
         <div className="cards">
           {meds.map((med) => (
             <div className="card blue" key={med.cartId}>
               <img src={med.imageUrl} alt={med.medicineName} />
-
               <h5>{med.medicineName}</h5>
               <p>₹{med.unitPrice}</p>
-
-              {med.discount > 0 && (
-                <p className="text-success">
-                  Discount ₹{med.discount}
-                </p>
-              )}
 
               <button
                 className="btn btn-light"

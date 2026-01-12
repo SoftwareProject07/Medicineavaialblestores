@@ -10,32 +10,11 @@ import Dashboard from './DeshboardsMedicine/Dashboard.jsx';
 import AdminDashboard from './Admin/AdminDeshboard.jsx';
 import Carts from './User/Carts.jsx';
 import AdminLogin from './Admin/AdminLogin.jsx';
-// import AdminRegisteration from './Admin/AdminRegisteration.jsx';
-// import CustomerDetails from './User/Customerdetails.jsx';
+
 import CartItem from './User/CartItem.jsx';
 import MedicineDisplay from './User/MedicineDisplay.jsx';
-//import LoginForgetPassword from './User/LoginForgetPassword.jsx';
 import Customerdetails from './User/Customerdetails.jsx';
-//import UpdateMedicine from "./Component/Admin/UpdateMedicine.jsx";
-
-//import Deskboard from './User/Deskboard.jsx';
-
-
-// User Components
-// import Login from "./Component/Login";
-//   import Registeration from "./Component/Registeration";
-// import Profile from './User/Profile';
-// import Orders from './User/Orders';
-// import MedicineDisplay from './User/MedicineDisplay';
-// import Carts from './User/Carts';
-// import Deskboard from './User/Deskboard';
-
-// Admin Components
-// import AdminDeskboard from './Admin/AdminDeskboard';
-// import AdminHeader from './Admin/AdminHeader';
-// import AdminOrder from './Admin/AdminOrder';
-// import CustomerList from './Admin/CustomerList';
-// import Medicine from './Admin/Medicine';
+// import HandleLogout from '../handleLogout.jsx';
 
 export default function Routerpage() {
   return (
@@ -58,6 +37,7 @@ export default function Routerpage() {
         <Route path="/customerdetails" element={<Customerdetails />} /> 
 {/* <Route Path="/cartcontexts" element={<CartContext/>}/> */}
 <Route Path="/medicinedisplay" element={<MedicineDisplay />}/>
+{/* <Route path="/handlelogouts" element ={<HandleLogout />}/> */}
              {/* <Route Path="/cart.controllers" element={<Cart./> }/> */}
 {/* <Route path="/loginforgetpassword"  element ={<LoginForgetPassword />}/> */}
 

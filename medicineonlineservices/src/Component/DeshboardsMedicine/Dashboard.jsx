@@ -158,7 +158,15 @@ export default function Dashboard() {
             <Link to="/header">
               <i className="fas fa-sign-out-alt"></i> LogOut
             </Link>
+          
           </li>
+                        <br></br>
+{/* 
+          <li>
+              <Link to="/handlelogouts">
+              <i className="fas fa-sign-out-alt"></i> LogOut
+            </Link>
+          </li> */}
         </ul>
       </div>
 

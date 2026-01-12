@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useCart } from "./User/CartContext";
+
 import {
   FaFacebook,
   FaTwitter,
@@ -13,6 +15,7 @@ import "./styles/logins.css";
 
 export default function Login() {
   const navigate = useNavigate();
+const { loadUserCart } = useCart();
 
   // ✅ Single state for Email / Mobile
   const [loginId, setLoginId] = useState("");
@@ -38,7 +41,7 @@ export default function Login() {
       Password: password,
     };
 
-    try {
+try {
       const response = await axios.post(
         "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/LOGINUserMedicine",
         payload,
@@ -50,20 +53,27 @@ export default function Login() {
         response.data?.success ||
         response.data?.isSuccess
       ) {
+        // 🔐 SAVE TOKEN
         if (response.data.token) {
           localStorage.setItem("token", response.data.token);
         }
 
+        // 👤 SAVE USER
         if (response.data.userMedicine) {
           localStorage.setItem(
             "user",
             JSON.stringify(response.data.userMedicine)
           );
         }
+        localStorage.clear();
 
-        Swal.fire("Success", "Login Successful", "success").then(() =>
-          navigate("/dashboards")
-        );
+        // 🔥 IMPORTANT: RELOAD CART FOR LOGGED USER
+        loadUserCart();
+
+
+        Swal.fire("Success", "Login Successful", "success").then(() => {
+          navigate("/dashboards");
+        });
       } else {
         Swal.fire(
           "Login Failed",
@@ -76,7 +86,6 @@ export default function Login() {
       Swal.fire("Server Error", "Please try again later", "error");
     }
   };
-
   // ================= FORGET PASSWORD POPUP =================
   const handleForgetPasswordPopup = async () => {
     const { value } = await Swal.fire({
