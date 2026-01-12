@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useCart } from "./User/CartContext";
+//import { useCart } from "./User/CartContext";
 
 import {
   FaFacebook,
@@ -15,7 +15,7 @@ import "./styles/logins.css";
 
 export default function Login() {
   const navigate = useNavigate();
-const { loadUserCart } = useCart();
+//const { loadUserCart } = useCart();
 
   // ✅ Single state for Email / Mobile
   const [loginId, setLoginId] = useState("");
@@ -65,10 +65,10 @@ try {
             JSON.stringify(response.data.userMedicine)
           );
         }
-        localStorage.clear();
+       // localStorage.clear();
 
         // 🔥 IMPORTANT: RELOAD CART FOR LOGGED USER
-        loadUserCart();
+      //  loadUserCart();
 
 
         Swal.fire("Success", "Login Successful", "success").then(() => {
