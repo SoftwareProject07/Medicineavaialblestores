@@ -76,11 +76,11 @@ export default function MedicineDisplay() {
             )}
           </li>
 
-          {/* <li>
+          <li>
             <Link to="/medicinedisplay" className="btn btn-success mb-2">
               Medicines
             </Link>
-          </li> */}
+          </li>
 
           {/* 🛒 CART */}
           <li>
