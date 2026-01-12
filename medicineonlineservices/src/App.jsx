@@ -12,15 +12,20 @@ import Medicine from "./Component/Admin/Medicine.jsx";
 import Dashboard from "./Component/DeshboardsMedicine/Dashboard.jsx";
 import AdminDashboard from "./Component/Admin/AdminDeshboard.jsx";
 import AdminLogin from "./Component/Admin/AdminLogin.jsx";
-
+import { useAuth } from "./Component/User/AuthContext";
 import CartItem from "./Component/User/CartItem.jsx";
 import Carts from "./Component/User/Carts.jsx";
 import MedicineDisplay from "./Component/User/MedicineDisplay.jsx";
 import Customerdetails from "./Component/User/Customerdetails.jsx";
 
 function App() {
+  const { loading } = useAuth();
+if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <CartProvider>
+    <CartProvider >
       <Routes>
 
         {/* DEFAULT */}

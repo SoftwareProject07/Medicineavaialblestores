@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-//import { useCart } from "./User/CartContext";
-
 import {
   FaFacebook,
   FaTwitter,
@@ -11,13 +9,14 @@ import {
 import Swal from "sweetalert2";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "../Component/User/AuthContext"; // ✅ CORRECT IMPORT
 import "./styles/logins.css";
 
 export default function Login() {
   const navigate = useNavigate();
-//const { loadUserCart } = useCart();
+  const { login } = useAuth(); // ✅ HOOK TOP LEVEL
 
-  // ✅ Single state for Email / Mobile
+  // ✅ STATES
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -41,35 +40,28 @@ export default function Login() {
       Password: password,
     };
 
-try {
+    try {
       const response = await axios.post(
         "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/LOGINUserMedicine",
         payload,
         { headers: { "Content-Type": "application/json" } }
       );
 
-      if (
-        response.data?.status ||
-        response.data?.success ||
-        response.data?.isSuccess
-      ) {
+      if (response.data?.userMedicine) {
         // 🔐 SAVE TOKEN
         if (response.data.token) {
           localStorage.setItem("token", response.data.token);
         }
 
-        // 👤 SAVE USER
-        if (response.data.userMedicine) {
-          localStorage.setItem(
-            "user",
-            JSON.stringify(response.data.userMedicine)
-          );
-        }
-       // localStorage.clear();
+        // 👤 SAVE USER (AuthContext + localStorage)
+        const userData = {
+          email: response.data.userMedicine.email,
+          firstName: response.data.userMedicine.firstName,
+          lastName: response.data.userMedicine.lastName,
+          id: response.data.userMedicine.id,
+        };
 
-        // 🔥 IMPORTANT: RELOAD CART FOR LOGGED USER
-      //  loadUserCart();
-
+        login(userData); // ✅ IMPORTANT (AuthContext)
 
         Swal.fire("Success", "Login Successful", "success").then(() => {
           navigate("/dashboards");
@@ -86,7 +78,8 @@ try {
       Swal.fire("Server Error", "Please try again later", "error");
     }
   };
-  // ================= FORGET PASSWORD POPUP =================
+
+  // ================= FORGET PASSWORD =================
   const handleForgetPasswordPopup = async () => {
     const { value } = await Swal.fire({
       title: "Forget Password",
@@ -121,8 +114,7 @@ try {
       };
 
       const response = await axios.post(
-       // "http://localhost:5256/api/USERMEDICINE/ForgetPassword",
-      "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/ForgetPassword",
+        "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/ForgetPassword",
         payload,
         { headers: { "Content-Type": "application/json" } }
       );
@@ -181,7 +173,6 @@ try {
           </div>
 
           <form onSubmit={handleSave}>
-            {/* EMAIL / MOBILE */}
             <input
               type="text"
               placeholder="Email address or Mobile Number"
@@ -189,7 +180,6 @@ try {
               onChange={(e) => setLoginId(e.target.value)}
             />
 
-            {/* PASSWORD */}
             <div className="password-wrapper">
               <input
                 type={showPassword ? "text" : "password"}
@@ -204,8 +194,7 @@ try {
 
             <div className="options">
               <label className="remember-me">
-                <input type="checkbox" /> 
-                <span>Remember</span> me
+                <input type="checkbox" /> <span>Remember</span> me
               </label>
 
               <span
@@ -228,7 +217,6 @@ try {
         </div>
       </div>
 
-      {/* FOOTER */}
       <footer className="footer">
         <span>Copyright © 2026. All rights reserved.</span>
       </footer>

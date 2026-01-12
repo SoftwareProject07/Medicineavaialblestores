@@ -1,130 +1,248 @@
+// // import React, { createContext, useContext, useEffect, useState } from "react";
+
+// // const CartContext = createContext();
+
+// // export const CartProvider = ({ children }) => {
+// //   const [cartItems, setCartItems] = useState([]);
+
+// //   // 🔹 Load cart from localStorage
+// //   useEffect(() => {
+// //     const storedCart = localStorage.getItem("cart");
+// //     if (storedCart) {
+// //       setCartItems(JSON.parse(storedCart));
+// //     }
+// //   }, []);
+
+// //   // 🔹 Save cart to localStorage
+// //   useEffect(() => {
+// //     localStorage.setItem("cart", JSON.stringify(cartItems));
+// //   }, [cartItems]);
+
+// //   // 🔹 ADD TO CART (SAFE)
+// //   const addToCart = (medicine) => {
+// //     if (!medicine) return;
+
+// //     const id =
+// //       medicine.MedicineId ??
+// //       medicine.id ??
+// //       medicine._id ??
+// //       medicine.medicineId;
+
+// //     if (!id) {
+// //       console.error("❌ Medicine ID missing", medicine);
+// //       return;
+// //     }
+
+// //     setCartItems((prev) => {
+// //       const existing = prev.find((item) => item.id === id);
+
+// //       if (existing) {
+// //         return prev.map((item) =>
+// //           item.id === id ? { ...item, qty: item.qty + 1 } : item
+// //         );
+// //       }
+
+// //       return [
+// //         ...prev,
+// //         {
+// //           id,
+// //           name: medicine.MedicineName || medicine.name,
+// //           price: medicine.Price || medicine.price,
+// //           qty: 1,
+// //         },
+// //       ];
+// //     });
+// //   };
+
+// //   // 🔹 REMOVE
+// //   const removeFromCart = (id) => {
+// //     setCartItems((prev) => prev.filter((item) => item.id !== id));
+// //   };
+
+// //   // 🔹 CLEAR
+// //   const clearCart = () => {
+// //     setCartItems([]);
+// //     localStorage.removeItem("cart");
+// //   };
+
+// //   return (
+// //     <CartContext.Provider
+// //       value={{ cartItems, addToCart, removeFromCart, clearCart }}
+// //     >
+// //       {children}
+// //     </CartContext.Provider>
+// //   );
+// // };
+
+// // export const useCart = () => useContext(CartContext);
 // import React, { createContext, useContext, useEffect, useState } from "react";
 
 // const CartContext = createContext();
 
 // export const CartProvider = ({ children }) => {
-//   const [cartItems, setCartItems] = useState([]);
+//   const user = JSON.parse(localStorage.getItem("user"));
+//   const userId = user ? user.id : "guest";
 
-//   // 🔹 Load cart from localStorage
+//   const STORAGE_KEY = `cart_${userId}`;
+
+//   const [cartItems, setCartItems] = useState(() => {
+//     const saved = localStorage.getItem(STORAGE_KEY);
+//     return saved ? JSON.parse(saved) : [];
+//   });
+
+//   // 🔐 Save cart user-wise
 //   useEffect(() => {
-//     const storedCart = localStorage.getItem("cart");
-//     if (storedCart) {
-//       setCartItems(JSON.parse(storedCart));
-//     }
-//   }, []);
+//     localStorage.setItem(STORAGE_KEY, JSON.stringify(cartItems));
+//   }, [cartItems, STORAGE_KEY]);
 
-//   // 🔹 Save cart to localStorage
-//   useEffect(() => {
-//     localStorage.setItem("cart", JSON.stringify(cartItems));
-//   }, [cartItems]);
-
-//   // 🔹 ADD TO CART (SAFE)
-//   const addToCart = (medicine) => {
-//     if (!medicine) return;
-
-//     const id =
-//       medicine.MedicineId ??
-//       medicine.id ??
-//       medicine._id ??
-//       medicine.medicineId;
-
-//     if (!id) {
-//       console.error("❌ Medicine ID missing", medicine);
-//       return;
-//     }
-
+//   // ➕ ADD TO CART
+//   const addToCart = (item) => {
 //     setCartItems((prev) => {
-//       const existing = prev.find((item) => item.id === id);
+//       const existing = prev.find(p => p.cartId === item.cartId);
 
 //       if (existing) {
-//         return prev.map((item) =>
-//           item.id === id ? { ...item, qty: item.qty + 1 } : item
+//         return prev.map(p =>
+//           p.cartId === item.cartId
+//             ? { ...p, quantity: p.quantity + 1 }
+//             : p
 //         );
 //       }
 
-//       return [
-//         ...prev,
-//         {
-//           id,
-//           name: medicine.MedicineName || medicine.name,
-//           price: medicine.Price || medicine.price,
-//           qty: 1,
-//         },
-//       ];
+//       return [...prev, { ...item, quantity: 1 }];
 //     });
 //   };
 
-//   // 🔹 REMOVE
+//   // ➖ REMOVE
 //   const removeFromCart = (id) => {
-//     setCartItems((prev) => prev.filter((item) => item.id !== id));
+//     setCartItems(prev => prev.filter(item => item.cartId !== id));
 //   };
 
-//   // 🔹 CLEAR
+//   // ❌ CLEAR (on logout if needed)
 //   const clearCart = () => {
 //     setCartItems([]);
-//     localStorage.removeItem("cart");
+//     localStorage.removeItem(STORAGE_KEY);
 //   };
 
 //   return (
-//     <CartContext.Provider
-//       value={{ cartItems, addToCart, removeFromCart, clearCart }}
-//     >
+//     <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, clearCart }}>
 //       {children}
 //     </CartContext.Provider>
 //   );
 // };
 
 // export const useCart = () => useContext(CartContext);
+
+
+
+
+// import React, { createContext, useContext, useEffect, useState } from "react";
+// import { useAuth } from "./AuthContext";
+
+// const CartContext = createContext();
+
+// export const CartProvider = ({ children }) => {
+//   const { user } = useAuth(); // ✅ REACTIVE USER
+//   const userEmail = user?.email;
+//   const cartKey = userEmail ? `cart_${userEmail}` : null;
+
+//   const [cartItems, setCartItems] = useState([]);
+
+//   // ✅ USER CHANGE → LOAD CORRECT CART
+//   useEffect(() => {
+//     if (!cartKey) {
+//       setCartItems([]);
+//       return;
+//     }
+
+//     const storedCart = localStorage.getItem(cartKey);
+//     setCartItems(storedCart ? JSON.parse(storedCart) : []);
+//   }, [cartKey]);
+
+//   // ✅ SAVE CART
+//   useEffect(() => {
+//     if (cartKey) {
+//       localStorage.setItem(cartKey, JSON.stringify(cartItems));
+//     }
+//   }, [cartItems, cartKey]);
+
+//   const addToCart = (medicine) => {
+//     setCartItems((prev) => {
+//       const found = prev.find(i => i.cartId === medicine.cartId);
+//       if (found) {
+//         return prev.map(i =>
+//           i.cartId === medicine.cartId
+//             ? { ...i, quantity: i.quantity + 1 }
+//             : i
+//         );
+//       }
+//       return [...prev, { ...medicine, quantity: 1 }];
+//     });
+//   };
+
+//   const clearCart = () => {
+//     if (cartKey) localStorage.removeItem(cartKey);
+//     setCartItems([]);
+//   };
+
+//   return (
+//     <CartContext.Provider value={{ cartItems, addToCart, clearCart }}>
+//       {children}
+//     </CartContext.Provider>
+//   );
+// };
+
+// export const useCart = () => useContext(CartContext);
+
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  const userId = user ? user.id : "guest";
+  const { user } = useAuth();
+  const [cartItems, setCartItems] = useState([]);
 
-  const STORAGE_KEY = `cart_${userId}`;
+  // 🔑 unique key per user
+  const cartKey = user?.email ? `cart_${user.email}` : null;
 
-  const [cartItems, setCartItems] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  // 🔐 Save cart user-wise
+  // 🔄 load cart when user changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(cartItems));
-  }, [cartItems, STORAGE_KEY]);
+    if (cartKey) {
+      const storedCart = localStorage.getItem(cartKey);
+      setCartItems(storedCart ? JSON.parse(storedCart) : []);
+    } else {
+      setCartItems([]);
+    }
+  }, [cartKey]);
 
-  // ➕ ADD TO CART
-  const addToCart = (item) => {
+  // 💾 save cart
+  useEffect(() => {
+    if (cartKey) {
+      localStorage.setItem(cartKey, JSON.stringify(cartItems));
+    }
+  }, [cartItems, cartKey]);
+
+  const addToCart = (medicine) => {
     setCartItems((prev) => {
-      const existing = prev.find(p => p.cartId === item.cartId);
-
-      if (existing) {
-        return prev.map(p =>
-          p.cartId === item.cartId
-            ? { ...p, quantity: p.quantity + 1 }
-            : p
+      const found = prev.find((i) => i.cartId === medicine.cartId);
+      if (found) {
+        return prev.map((i) =>
+          i.cartId === medicine.cartId
+            ? { ...i, quantity: i.quantity + 1 }
+            : i
         );
       }
-
-      return [...prev, { ...item, quantity: 1 }];
+      return [...prev, { ...medicine, quantity: 1 }];
     });
   };
 
-  // ➖ REMOVE
-  const removeFromCart = (id) => {
-    setCartItems(prev => prev.filter(item => item.cartId !== id));
-  };
-
-  // ❌ CLEAR (on logout if needed)
   const clearCart = () => {
     setCartItems([]);
-    localStorage.removeItem(STORAGE_KEY);
+    if (cartKey) localStorage.removeItem(cartKey);
   };
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider value={{ cartItems, addToCart, clearCart }}>
       {children}
     </CartContext.Provider>
   );
