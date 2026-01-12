@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "./CartContext";
 import "../styles/dashboardsprofiles.css";
+// import { useCart } from "../Component/User/CartContext";
 
 export default function MedicineDisplay() {
   const { addToCart, cartItems } = useCart();
   const [openDashboard, setOpenDashboard] = useState(false);
   const [user, setUser] = useState(null);
+// const { addToCart } = useCart();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -15,7 +17,7 @@ export default function MedicineDisplay() {
     }
   }, []);
 
-  // ✅ TOTAL CART QUANTITY (IMPORTANT)
+  // ✅ TOTAL CART QUANTITY
   const totalQuantity = cartItems.reduce(
     (sum, item) => sum + item.quantity,
     0
@@ -43,36 +45,44 @@ export default function MedicineDisplay() {
       {/* ============ SIDEBAR ============ */}
       <div className="sidebar">
         <div className="brand">
-          <img src="/AKMedizostore.png" alt="logo" width="45" />
+         <Link to="/dashboards"  >
+           <img src="/AKMedizostore.png" alt="logo" width="55" /></Link>
+
           <span>
             {user ? `${user.firstName} ${user.lastName}` : "User"}
           </span>
         </div>
 
         <ul>
-          <li>
+          <li className="menu-group">
             <button
-              className="btn btn-success mb-2 w-100"
+              className="menu-title btn btn-success mb-2 d-flex justify-content-between align-items-center"
               onClick={() => setOpenDashboard(!openDashboard)}
             >
-              Dashboard {openDashboard ? "▾" : "▸"}
+              Dashboard <span>{openDashboard ? "▾" : "▸"}</span>
             </button>
 
             {openDashboard && (
               <ul className="submenu">
+                <li><Link to="/medication-tracker">Medication Tracker</Link></li>
+                <li><Link to="/test-reports">Test Reports</Link></li>
+                <li><Link to="/health-history">Health History</Link></li>
+                <li><Link to="/monthly-progress">Monthly Progress</Link></li>
+                <li><Link to="/prescriptions">Prescriptions</Link></li>
                 <li><Link to="/history">History</Link></li>
+                <li><Link to="/support">Help & Support</Link></li>
                 <li><Link to="/settings">Settings</Link></li>
               </ul>
             )}
           </li>
 
-          <li>
+          {/* <li>
             <Link to="/medicinedisplay" className="btn btn-success mb-2">
               Medicines
             </Link>
-          </li>
+          </li> */}
 
-          {/* 🛒 CART COUNT FIXED */}
+          {/* 🛒 CART */}
           <li>
             <Link
               to="/carts"
@@ -95,21 +105,33 @@ export default function MedicineDisplay() {
             </Link>
           </li>
 
-          {/* <li>
-            <Link to="/customerdetails" className="btn btn-success mb-2">
-              Patient Details
-            </Link>
-          </li> */}
+          <li>OrdersPayment</li>
+          <li>CustomerTracking</li>
+          <li>OrderStatus</li>
+          <li>Customer Profile</li>
 
           <li>
-            <Link to="/header">Logout</Link>
+            <Link to="/header">
+              <i className="fas fa-sign-out-alt"></i> LogOut
+            </Link>
           </li>
         </ul>
       </div>
 
       {/* ============ MAIN CONTENT ============ */}
       <div className="main-content">
-        <h2>Available Medicines</h2>
+        <header>
+          <div className="header-right">
+            <span className="nav-icon">🔔</span>
+            <span className="nav-icon">⚙️</span>
+          </div>
+        </header>
+
+        {/* <h2>
+          Welcome back, {user ? `${user.firstName} ${user.lastName}` : "User"}
+        </h2> */}
+
+        <h2 className="mt-3">Available Medicines</h2>
 
         <div className="cards">
           {meds.map((med) => (
@@ -120,7 +142,9 @@ export default function MedicineDisplay() {
               <p>₹{med.unitPrice}</p>
 
               {med.discount > 0 && (
-                <p className="text-success">Discount ₹{med.discount}</p>
+                <p className="text-success">
+                  Discount ₹{med.discount}
+                </p>
               )}
 
               <button

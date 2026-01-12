@@ -3,7 +3,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 
 
 import {Routes, Route, Navigate } from "react-router-dom";
-import {CartProvider} from "./Component/User/CartContext.jsx";
+import { CartProvider } from "./Component/User/CartContext.jsx";
 
 import Login from "./Component/Login.jsx";
 import Registeration from "./Component/Registeration.jsx";
@@ -25,8 +25,7 @@ import Customerdetails from './Component/User/Customerdetails.jsx';
 
 function App() {
   return (
-        <CartProvider>
-
+<CartProvider>
     <Routes>
       <Route path="/" element={<Navigate to="/header" />} />
       <Route path="/login" element={<Login />} />
@@ -50,8 +49,8 @@ function App() {
 
 
     </Routes>
-</CartProvider>
-  );
+</CartProvider> 
+ );
 }
 
 export default App;

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useState, useEffect } from "react";
 
-export default function DeshboardPanel() {//medicine 
+export default function DeshboardPanel() {//medicine admin panel deshboard
   const [medicines, setMedicines] = useState([]);
   const [editingMedicine, setEditingMedicine] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");

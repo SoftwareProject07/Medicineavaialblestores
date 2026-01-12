@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+
 import {
   LineChart,
   Line,
@@ -14,6 +15,8 @@ import {
   Cell,
   Legend
 } from "recharts";
+import { useCart } from "../User/CartContext";
+
 import "../styles/dashboardsprofiles.css";
 
 /* ---------- SAMPLE DATA ---------- */
@@ -40,6 +43,8 @@ const bpData = [
 const COLORS = ["#0088FE", "#00C49F", "#FF8042"];
 
 export default function Dashboard() {
+  const { cartItems } = useCart(); // ✅ CART ITEMS
+
   const [openDashboard, setOpenDashboard] = useState(false);
   const [medications, setMedications] = useState([]);
   const [user, setUser] = useState(null);
@@ -73,12 +78,20 @@ export default function Dashboard() {
     }
   }, []);
 
+  /* ---------- CART COUNT ---------- */
+  const totalQuantity = cartItems.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+  );
+
   return (
     <div className="app-container">
       {/* ---------- SIDEBAR ---------- */}
       <div className="sidebar">
         <div className="brand">
-          <img src="/AKMedizostore.png" alt="logo" width="45" />
+          <Link to="/dashboards">
+            <img src="/AKMedizostore.png" alt="logo" width="55" />
+          </Link>
           <span>
             {user ? `${user.firstName} ${user.lastName}` : "User"}
           </span>
@@ -107,16 +120,45 @@ export default function Dashboard() {
             )}
           </li>
 
-          <li><Link to="/medicinedisplay" className="btn btn-success mb-2">Medicines</Link></li>
-          <li><Link to="/carts" className="btn btn-success mb-2">Medicine Cart</Link></li>
-          {/* <Link to="/customerdetails" className="btn btn-success mb-2">Patience Details</Link>  */}
-                                                              <li>OrdersPayment</li>
+          <li>
+            <Link to="/medicinedisplay" className="btn btn-success mb-2">
+              Medicines
+            </Link>
+          </li>
+
+          {/* ✅ CART WITH COUNT */}
+          <li>
+            <Link
+              to="/carts"
+              className="btn btn-success mb-2 d-flex justify-content-between align-items-center"
+            >
+              <span>Medicine Cart</span>
+              {totalQuantity > 0 && (
+                <span
+                  style={{
+                    background: "red",
+                    color: "#fff",
+                    borderRadius: "50%",
+                    padding: "2px 8px",
+                    fontSize: "12px"
+                  }}
+                >
+                  {totalQuantity}
+                </span>
+              )}
+            </Link>
+          </li>
+
+          <li>OrdersPayment</li>
           <li>CustomerTracking</li>
+          <li>OrderStatus</li>
+          <li>Customer Profile</li>
 
-                       <li>OrderStatus</li>
-
-            <li>customer  Profile</li>
-          <li><Link to="/header"><i className="fas fa-sign-out-alt"></i>LogOut</Link></li>
+          <li>
+            <Link to="/header">
+              <i className="fas fa-sign-out-alt"></i> LogOut
+            </Link>
+          </li>
         </ul>
       </div>
 
@@ -124,28 +166,13 @@ export default function Dashboard() {
       <div className="main-content">
         <header>
           <div className="header-right">
-            {/* ✅ SAFE PROFILE IMAGE */}
-           {user?.photo && (
+            {user?.photo && (
               <img
-              //  src={`http://localhost:5256/uploads/${user.photo}`}
-              src= {`https://ecommerencesite-api.onrender.com/apiuploads/${user.photo}`}
+                src={`https://ecommerencesite-api.onrender.com/apiuploads/${user.photo}`}
                 alt="Profile"
                 className="nav-user-photo"
               />
-            )} 
-
-            {/* {user?.photo && (
-  <img
-    src={user.photo.startsWith("http")
-      ? user.photo
-      : `http://localhost:5256/uploads/${user.photo}`}
-       //    : `https://ecommerencesite-api.onrender.com/apiuploads/${user.photo}`}
-
-    alt="Profile"
-    className="nav-user-photo"
-  />
-)} */}
-
+            )}
             <span className="nav-icon">🔔</span>
             <span className="nav-icon">⚙️</span>
           </div>
@@ -155,7 +182,7 @@ export default function Dashboard() {
           Welcome back, {user ? `${user.firstName} ${user.lastName}` : "User"}
         </h2>
 
-        {/* ---------- CARDS ---------- */}
+        {/* ---------- DASHBOARD CARDS ---------- */}
         <div className="cards">
           <div className="card blue">Medication Tracker</div>
           <div className="card green">Test Reports</div>
@@ -205,37 +232,32 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* ---------- MEDICATION TABLE ---------- */}
+        {/* ---------- CART MEDICINES TABLE ---------- */}
         <div className="table-container">
-          <h3>Medication Tracker</h3>
-          <table className="med-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Frequency</th>
-                <th>Dosage</th>
-                <th>Taken</th>
-                <th>Meal</th>
-                <th>Next Dose</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {medications.map((m) => (
-                <tr key={m.id}>
-                  <td>{m.name}</td>
-                  <td>{m.frequency}</td>
-                  <td>{m.dosage}</td>
-                  <td>{m.taken ? "Yes" : "No"}</td>
-                  <td>{m.meal}</td>
-                  <td>{m.nextDose}</td>
-                  <td className={m.status === "Missed" ? "missed" : "ontime"}>
-                    {m.status}
-                  </td>
+          <h3>Medicines in Cart</h3>
+
+          {cartItems.length === 0 ? (
+            <p>No medicines added to cart</p>
+          ) : (
+            <table className="med-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {cartItems.map((item) => (
+                  <tr key={item.cartId}>
+                    <td>{item.medicineName}</td>
+                    <td>₹{item.unitPrice}</td>
+                    <td>{item.quantity}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
 
       </div>

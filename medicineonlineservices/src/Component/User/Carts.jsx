@@ -69,7 +69,9 @@ export default function Cart() {
       {/* ============ SIDEBAR (SAME AS DASHBOARD) ============ */}
       <div className="sidebar">
         <div className="brand">
-          <img src="/AKMedizostore.png" alt="logo" width="45" />
+                    <Link to="/dashboards">
+          
+          <img src="/AKMedizostore.png" alt="logo" width="45" /></Link>
           <span>
             {user ? `${user.firstName} ${user.lastName}` : "User"}
           </span>
