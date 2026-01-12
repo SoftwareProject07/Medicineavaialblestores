@@ -9,14 +9,13 @@ import {
 import Swal from "sweetalert2";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import { useAuth } from "../Component/User/AuthContext"; // ✅ CORRECT IMPORT
+import { useAuth } from "./User/AuthContext";
 import "./styles/logins.css";
 
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth(); // ✅ HOOK TOP LEVEL
 
-  // ✅ STATES
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -47,21 +46,26 @@ export default function Login() {
         { headers: { "Content-Type": "application/json" } }
       );
 
+      // ✅ SUCCESS
       if (response.data?.userMedicine) {
         // 🔐 SAVE TOKEN
         if (response.data.token) {
           localStorage.setItem("token", response.data.token);
         }
 
-        // 👤 SAVE USER (AuthContext + localStorage)
+        // ✅ VERY IMPORTANT (REAL USER DATA FROM API)
         const userData = {
-          email: response.data.userMedicine.email,
+          email: response.data.userMedicine.email, // ❗ EXACT
           firstName: response.data.userMedicine.firstName,
           lastName: response.data.userMedicine.lastName,
-          id: response.data.userMedicine.id,
+          userId: response.data.userMedicine.id,
         };
-
-        login(userData); // ✅ IMPORTANT (AuthContext)
+localStorage.setItem(
+  "currentUser",
+  JSON.stringify(response.data.userMedicine)
+);
+        // ✅ AuthContext LOGIN
+        login(userData);
 
         Swal.fire("Success", "Login Successful", "success").then(() => {
           navigate("/dashboards");

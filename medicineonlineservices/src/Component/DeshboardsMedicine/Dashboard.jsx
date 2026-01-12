@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../User/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 import {
   LineChart,
@@ -43,12 +45,29 @@ const bpData = [
 const COLORS = ["#0088FE", "#00C49F", "#FF8042"];
 
 export default function Dashboard() {
-  const { cartItems } = useCart(); // ✅ CART ITEMS
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+  const {cartItems } = useCart(); // ✅ CART ITEMS
 
   const [openDashboard, setOpenDashboard] = useState(false);
   const [medications, setMedications] = useState([]);
   const [user, setUser] = useState(null);
+// const handleLogout = () => {
+//     logout();           // ✅ user clear
+//     navigate("/login"); // ✅ redirect
+//   };
 
+
+
+
+  const cartCount = cartItems.reduce(
+    (total, item) => total + item.qty,
+    0
+  );
+  const handleLogout = () => {
+  localStorage.removeItem("currentUser"); // user remove
+  logout(); 
+  navigate("/login");
   /* ---------- LOAD USER ---------- */
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -56,6 +75,10 @@ export default function Dashboard() {
       setUser(JSON.parse(storedUser));
     }
   }, []);
+
+
+
+};
 
   /* ---------- LOAD MEDICATIONS ---------- */
   useEffect(() => {
@@ -127,12 +150,15 @@ export default function Dashboard() {
           </li>
 
           {/* ✅ CART WITH COUNT */}
-          <li>
+          {/* <li>
             <Link
               to="/carts"
               className="btn btn-success mb-2 d-flex justify-content-between align-items-center"
             >
               <span>Medicine Cart</span>
+               {cartCount > 0 && (
+          <span className="cart-badge">{cartCount}</span>
+        )}
               {totalQuantity > 0 && (
                 <span
                   style={{
@@ -147,26 +173,31 @@ export default function Dashboard() {
                 </span>
               )}
             </Link>
-          </li>
+          </li> */}
+ <button className="cart-btn">
+        Medicine Cart
+        {cartCount > 0 && <span className="badge">{cartCount}</span>}
+      </button>
 
           <li>OrdersPayment</li>
           <li>CustomerTracking</li>
           <li>OrderStatus</li>
           <li>Customer Profile</li>
 
-          <li>
+          {/* <li>
             <Link to="/header">
               <i className="fas fa-sign-out-alt"></i> LogOut
             </Link>
           
-          </li>
-                        <br></br>
-{/* 
-          <li>
-              <Link to="/handlelogouts">
-              <i className="fas fa-sign-out-alt"></i> LogOut
-            </Link>
           </li> */}
+          <li
+        style={{ cursor: "pointer", color: "red" }}
+        onClick={handleLogout}
+      >
+        🚪 Logout
+      </li>
+                     
+
         </ul>
       </div>
 

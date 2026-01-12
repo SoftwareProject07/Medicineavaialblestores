@@ -5,15 +5,16 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  // 🔄 page refresh par user load
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
+    if (savedUser) setUser(JSON.parse(savedUser));
   }, []);
 
   const login = (userData) => {
+    if (!userData?.email) {
+      console.error("❌ Email missing in login()");
+      return;
+    }
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
   };

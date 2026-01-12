@@ -9,6 +9,7 @@ import { useCart } from "../User/CartContext";
 // import   "../User/Header.jsx";
 
 export default function Header() {
+
   const [adminOpen, setAdminOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
 

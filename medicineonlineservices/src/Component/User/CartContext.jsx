@@ -193,46 +193,46 @@
 
 // export const useCart = () => useContext(CartContext);
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { useAuth } from "./AuthContext";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const { user } = useAuth();
-  const [cartItems, setCartItems] = useState([]);
+  const user = JSON.parse(localStorage.getItem("currentUser"));
 
-  // 🔑 unique key per user
+  // 🔑 USER BASED KEY
   const cartKey = user?.email ? `cart_${user.email}` : null;
 
-  // 🔄 load cart when user changes
+  const [cartItems, setCartItems] = useState([]);
+
+  // 🔹 Load cart WHEN USER CHANGES
   useEffect(() => {
-    if (cartKey) {
-      const storedCart = localStorage.getItem(cartKey);
-      setCartItems(storedCart ? JSON.parse(storedCart) : []);
-    } else {
+    if (!cartKey) {
       setCartItems([]);
+      return;
     }
+
+    const stored = localStorage.getItem(cartKey);
+    setCartItems(stored ? JSON.parse(stored) : []);
   }, [cartKey]);
 
-  // 💾 save cart
+  // 🔹 Save cart USER-WISE
   useEffect(() => {
     if (cartKey) {
       localStorage.setItem(cartKey, JSON.stringify(cartItems));
     }
   }, [cartItems, cartKey]);
 
-  const addToCart = (medicine) => {
+  const addToCart = (item) => {
     setCartItems((prev) => {
-      const found = prev.find((i) => i.cartId === medicine.cartId);
-      if (found) {
+      const exists = prev.find((i) => i._id === item._id);
+
+      if (exists) {
         return prev.map((i) =>
-          i.cartId === medicine.cartId
-            ? { ...i, quantity: i.quantity + 1 }
-            : i
+          i._id === item._id ? { ...i, qty: i.qty + 1 } : i
         );
       }
-      return [...prev, { ...medicine, quantity: 1 }];
+      return [...prev, { ...item, qty: 1 }];
     });
   };
 
