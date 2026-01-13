@@ -47,29 +47,39 @@ export default function Customerdetails() {
         data,
         { headers: { "Content-Type": "application/json" } }
       );
-
-      Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: "Patient details added successfully",
-      });
-
-      // RESET FORM
-      setFullName("");
-      setGender("");
-      setPhoneNumber("");
-      setAddress("");
-      setEmail("");
-      setAge("");
+ if (response.data?.isSuccess) {
+        Swal.fire("Success", "Patient details Successful", "success")
+          .then(() => navigate("/deliveryaddress"));
+      } else {
+        Swal.fire("Error", response.data?.message || "Failed", "error");
+      }
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Something went wrong",
-      });
       console.error(error);
+      Swal.fire("Server Error", "Please try again later", "error");
     }
   };
+      // Swal.fire({
+      //   icon: "success",
+      //   title: "Success",
+      //   text: "Patient details added successfully",
+      // });
+
+      // RESET FORM
+  //     setFullName("");
+  //     setGender("");
+  //     setPhoneNumber("");
+  //     setAddress("");
+  //     setEmail("");
+  //     setAge("");
+  //   } catch (error) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "Error",
+  //       text: "Something went wrong",
+  //     });
+  //     console.error(error);
+  //   }
+  // };
 
   return (
     <div className="form-wrapper">
