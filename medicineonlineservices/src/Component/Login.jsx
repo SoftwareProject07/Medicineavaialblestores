@@ -53,6 +53,11 @@ export default function Login() {
         if (response.data.token) {
           localStorage.setItem("token", response.data.token);
         }
+// User different login access/Creditional  data storage  
+        localStorage.setItem(
+  "user",
+  JSON.stringify(response.data.userMedicine)
+);
 
         // ✅ VERY IMPORTANT (REAL USER DATA FROM API)
         const userData = {

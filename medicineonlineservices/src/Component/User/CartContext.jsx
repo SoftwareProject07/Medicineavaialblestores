@@ -1,107 +1,27 @@
-// // import React, { createContext, useContext, useEffect, useState } from "react";
 
-// // const CartContext = createContext();
-
-// // export const CartProvider = ({ children }) => {
-// //   const [cartItems, setCartItems] = useState([]);
-
-// //   // 🔹 Load cart from localStorage
-// //   useEffect(() => {
-// //     const storedCart = localStorage.getItem("cart");
-// //     if (storedCart) {
-// //       setCartItems(JSON.parse(storedCart));
-// //     }
-// //   }, []);
-
-// //   // 🔹 Save cart to localStorage
-// //   useEffect(() => {
-// //     localStorage.setItem("cart", JSON.stringify(cartItems));
-// //   }, [cartItems]);
-
-// //   // 🔹 ADD TO CART (SAFE)
-// //   const addToCart = (medicine) => {
-// //     if (!medicine) return;
-
-// //     const id =
-// //       medicine.MedicineId ??
-// //       medicine.id ??
-// //       medicine._id ??
-// //       medicine.medicineId;
-
-// //     if (!id) {
-// //       console.error("❌ Medicine ID missing", medicine);
-// //       return;
-// //     }
-
-// //     setCartItems((prev) => {
-// //       const existing = prev.find((item) => item.id === id);
-
-// //       if (existing) {
-// //         return prev.map((item) =>
-// //           item.id === id ? { ...item, qty: item.qty + 1 } : item
-// //         );
-// //       }
-
-// //       return [
-// //         ...prev,
-// //         {
-// //           id,
-// //           name: medicine.MedicineName || medicine.name,
-// //           price: medicine.Price || medicine.price,
-// //           qty: 1,
-// //         },
-// //       ];
-// //     });
-// //   };
-
-// //   // 🔹 REMOVE
-// //   const removeFromCart = (id) => {
-// //     setCartItems((prev) => prev.filter((item) => item.id !== id));
-// //   };
-
-// //   // 🔹 CLEAR
-// //   const clearCart = () => {
-// //     setCartItems([]);
-// //     localStorage.removeItem("cart");
-// //   };
-
-// //   return (
-// //     <CartContext.Provider
-// //       value={{ cartItems, addToCart, removeFromCart, clearCart }}
-// //     >
-// //       {children}
-// //     </CartContext.Provider>
-// //   );
-// // };
-
-// // export const useCart = () => useContext(CartContext);
-// import React, { createContext, useContext, useEffect, useState } from "react";
+// import React, { createContext, useContext, useState, useEffect } from "react";
 
 // const CartContext = createContext();
 
 // export const CartProvider = ({ children }) => {
-//   const user = JSON.parse(localStorage.getItem("user"));
-//   const userId = user ? user.id : "guest";
-
-//   const STORAGE_KEY = `cart_${userId}`;
-
+//   // ✅ load cart from localStorage
 //   const [cartItems, setCartItems] = useState(() => {
-//     const saved = localStorage.getItem(STORAGE_KEY);
-//     return saved ? JSON.parse(saved) : [];
+//     const savedCart = localStorage.getItem("cartItems");
+//     return savedCart ? JSON.parse(savedCart) : [];
 //   });
 
-//   // 🔐 Save cart user-wise
+//   // ✅ save cart on every change
 //   useEffect(() => {
-//     localStorage.setItem(STORAGE_KEY, JSON.stringify(cartItems));
-//   }, [cartItems, STORAGE_KEY]);
+//     localStorage.setItem("cartItems", JSON.stringify(cartItems));
+//   }, [cartItems]);
 
-//   // ➕ ADD TO CART
+//   // ✅ add to cart (quantity support)
 //   const addToCart = (item) => {
 //     setCartItems((prev) => {
-//       const existing = prev.find(p => p.cartId === item.cartId);
+//       const exists = prev.find((p) => p.cartId === item.cartId);
 
-//       if (existing) {
-//         return prev.map(p =>
+//       if (exists) {
+//         return prev.map((p) =>
 //           p.cartId === item.cartId
 //             ? { ...p, quantity: p.quantity + 1 }
 //             : p
@@ -112,19 +32,28 @@
 //     });
 //   };
 
-//   // ➖ REMOVE
-//   const removeFromCart = (id) => {
-//     setCartItems(prev => prev.filter(item => item.cartId !== id));
+//   // ✅ remove single item
+//   const removeFromCart = (cartId) => {
+//     setCartItems((prev) =>
+//       prev.filter((item) => item.cartId !== cartId)
+//     );
 //   };
 
-//   // ❌ CLEAR (on logout if needed)
+//   // ✅ clear cart
 //   const clearCart = () => {
 //     setCartItems([]);
-//     localStorage.removeItem(STORAGE_KEY);
+//     localStorage.removeItem("cartItems");
 //   };
 
 //   return (
-//     <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, clearCart }}>
+//     <CartContext.Provider
+//       value={{
+//         cartItems,
+//         addToCart,
+//         removeFromCart,
+//         clearCart,
+//       }}
+//     >
 //       {children}
 //     </CartContext.Provider>
 //   );
@@ -134,82 +63,29 @@
 
 
 
-
-// import React, { createContext, useContext, useEffect, useState } from "react";
-// import { useAuth } from "./AuthContext";
-
-// const CartContext = createContext();
-
-// export const CartProvider = ({ children }) => {
-//   const { user } = useAuth(); // ✅ REACTIVE USER
-//   const userEmail = user?.email;
-//   const cartKey = userEmail ? `cart_${userEmail}` : null;
-
-//   const [cartItems, setCartItems] = useState([]);
-
-//   // ✅ USER CHANGE → LOAD CORRECT CART
-//   useEffect(() => {
-//     if (!cartKey) {
-//       setCartItems([]);
-//       return;
-//     }
-
-//     const storedCart = localStorage.getItem(cartKey);
-//     setCartItems(storedCart ? JSON.parse(storedCart) : []);
-//   }, [cartKey]);
-
-//   // ✅ SAVE CART
-//   useEffect(() => {
-//     if (cartKey) {
-//       localStorage.setItem(cartKey, JSON.stringify(cartItems));
-//     }
-//   }, [cartItems, cartKey]);
-
-//   const addToCart = (medicine) => {
-//     setCartItems((prev) => {
-//       const found = prev.find(i => i.cartId === medicine.cartId);
-//       if (found) {
-//         return prev.map(i =>
-//           i.cartId === medicine.cartId
-//             ? { ...i, quantity: i.quantity + 1 }
-//             : i
-//         );
-//       }
-//       return [...prev, { ...medicine, quantity: 1 }];
-//     });
-//   };
-
-//   const clearCart = () => {
-//     if (cartKey) localStorage.removeItem(cartKey);
-//     setCartItems([]);
-//   };
-
-//   return (
-//     <CartContext.Provider value={{ cartItems, addToCart, clearCart }}>
-//       {children}
-//     </CartContext.Provider>
-//   );
-// };
-
-// export const useCart = () => useContext(CartContext);
-
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  // ✅ load cart from localStorage
+  // ✅ get logged-in user
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userKey = user?.email ? `cart_${user.email}` : "cart_guest";
+
+  // ✅ load user-wise cart
   const [cartItems, setCartItems] = useState(() => {
-    const savedCart = localStorage.getItem("cartItems");
+    const savedCart = localStorage.getItem(userKey);
     return savedCart ? JSON.parse(savedCart) : [];
   });
 
-  // ✅ save cart on every change
+  // ✅ save cart per user
   useEffect(() => {
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  }, [cartItems]);
+    if (userKey) {
+      localStorage.setItem(userKey, JSON.stringify(cartItems));
+    }
+  }, [cartItems, userKey]);
 
-  // ✅ add to cart (quantity support)
+  // ✅ add to cart
   const addToCart = (item) => {
     setCartItems((prev) => {
       const exists = prev.find((p) => p.cartId === item.cartId);
@@ -226,17 +102,17 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  // ✅ remove single item
+  // ✅ remove item
   const removeFromCart = (cartId) => {
     setCartItems((prev) =>
       prev.filter((item) => item.cartId !== cartId)
     );
   };
 
-  // ✅ clear cart
+  // ✅ clear cart (on logout)
   const clearCart = () => {
     setCartItems([]);
-    localStorage.removeItem("cartItems");
+    localStorage.removeItem(userKey);
   };
 
   return (

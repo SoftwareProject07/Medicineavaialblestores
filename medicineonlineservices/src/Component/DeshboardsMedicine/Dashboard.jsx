@@ -44,7 +44,9 @@ const COLORS = ["#0088FE", "#00C49F", "#FF8042"];
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { cartItems = [] } = useCart(); // ✅ SAFE DEFAULT
+
+  // ✅ ONLY ONE useCart CALL
+  const { cartItems = [], clearCart } = useCart();
 
   const [openDashboard, setOpenDashboard] = useState(false);
   const [user, setUser] = useState(null);
@@ -61,7 +63,7 @@ export default function Dashboard() {
     }
   }, []);
 
-  /* ---------- CART COUNT (ONLY ONE USED) ---------- */
+  /* ---------- CART COUNT ---------- */
   const cartCount = cartItems.reduce(
     (total, item) => total + (item.quantity || 0),
     0
@@ -69,20 +71,19 @@ export default function Dashboard() {
 
   /* ---------- LOGOUT ---------- */
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    navigate("/login");
+    clearCart();                     // ✅ cart clear
+    localStorage.removeItem("user"); // ✅ user clear
+    navigate("/login");              // ✅ redirect
   };
 
   return (
     <div className="app-container">
-      {/* ================= SIDEBAR ================= */}
+      {/* ============ SIDEBAR ============ */}
       <div className="sidebar">
-        {/* LOGO + USER NAME */}
         <div className="brand">
           <Link to="/dashboards">
             <img src="/AKMedizostore.png" alt="logo" width="55" />
           </Link>
-
           <span>
             {user?.firstName
               ? `${user.firstName} ${user.lastName}`
@@ -126,7 +127,6 @@ export default function Dashboard() {
               className="btn btn-success mb-2 d-flex justify-content-between align-items-center"
             >
               <span>Medicine Cart</span>
-
               {cartCount > 0 && (
                 <span
                   style={{
@@ -143,20 +143,23 @@ export default function Dashboard() {
             </Link>
           </li>
 
-          <li>OrdersPayment</li>
-          <li>CustomerTracking</li>
-          <li>OrderStatus</li>
-          <li>Customer Profile</li>
-
           <li>
-            <Link to="/header">
-              <i className="fas fa-sign-out-alt"></i> LogOut
-            </Link>
+            <button
+              onClick={handleLogout}
+              style={{
+                background: "none",
+                border: "none",
+                color: "red",
+                cursor: "pointer",
+              }}
+            >
+              Logout
+            </button>
           </li>
         </ul>
       </div>
 
-      {/* ================= MAIN CONTENT ================= */}
+      {/* ============ MAIN CONTENT ============ */}
       <div className="main-content">
         <h2>
           Welcome back,{" "}
@@ -165,7 +168,6 @@ export default function Dashboard() {
             : "User"}
         </h2>
 
-        {/* DASHBOARD CARDS */}
         <div className="cards">
           <div className="card blue">Medication Tracker</div>
           <div className="card green">Test Reports</div>
@@ -173,7 +175,6 @@ export default function Dashboard() {
           <div className="card purple">Monthly Progress</div>
         </div>
 
-        {/* CHARTS */}
         <div className="reports">
           <div className="box">
             <h4>Blood Glucose</h4>
