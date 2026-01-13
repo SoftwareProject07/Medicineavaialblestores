@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { useAuth } from "../User/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useCart } from "../User/CartContext";
 
 import {
   LineChart,
@@ -15,9 +14,8 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend
+  Legend,
 } from "recharts";
-import { useCart } from "../User/CartContext";
 
 import "../styles/dashboardsprofiles.css";
 
@@ -26,97 +24,69 @@ const weightData = [
   { date: "May 01", weight: 180 },
   { date: "May 10", weight: 178 },
   { date: "May 20", weight: 176 },
-  { date: "Jun 01", weight: 175 }
+  { date: "Jun 01", weight: 175 },
 ];
 
 const glucoseData = [
   { day: "Yesterday", value: 185 },
   { day: "2 Days Ago", value: 105 },
   { day: "Last Week", value: 115 },
-  { day: "Today", value: 110 }
+  { day: "Today", value: 110 },
 ];
 
 const bpData = [
   { label: "Normal", value: 40 },
   { label: "Elevated", value: 25 },
-  { label: "High", value: 35 }
+  { label: "High", value: 35 },
 ];
 
 const COLORS = ["#0088FE", "#00C49F", "#FF8042"];
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
-  const {cartItems } = useCart(); // ✅ CART ITEMS
+  const { cartItems = [] } = useCart(); // ✅ SAFE DEFAULT
 
   const [openDashboard, setOpenDashboard] = useState(false);
-  const [medications, setMedications] = useState([]);
   const [user, setUser] = useState(null);
-// const handleLogout = () => {
-//     logout();           // ✅ user clear
-//     navigate("/login"); // ✅ redirect
-//   };
 
-
-
-
-  const cartCount = cartItems.reduce(
-    (total, item) => total + item.qty,
-    0
-  );
-  const handleLogout = () => {
-  localStorage.removeItem("currentUser"); // user remove
-  logout(); 
-  navigate("/login");
   /* ---------- LOAD USER ---------- */
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch {
+        setUser(null);
+      }
     }
   }, []);
 
-
-
-};
-
-  /* ---------- LOAD MEDICATIONS ---------- */
-  useEffect(() => {
-    const saved = localStorage.getItem("medications");
-    if (saved) {
-      setMedications(JSON.parse(saved));
-    } else {
-      setMedications([
-        {
-          id: 1,
-          name: "Kefalur 500mg",
-          frequency: "8 hour",
-          dosage: "1 Tablet",
-          taken: true,
-          meal: "After",
-          nextDose: "8:00 AM",
-          status: "On Time"
-        }
-      ]);
-    }
-  }, []);
-
-  /* ---------- CART COUNT ---------- */
-  const totalQuantity = cartItems.reduce(
-    (sum, item) => sum + item.quantity,
+  /* ---------- CART COUNT (ONLY ONE USED) ---------- */
+  const cartCount = cartItems.reduce(
+    (total, item) => total + (item.quantity || 0),
     0
   );
 
+  /* ---------- LOGOUT ---------- */
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
   return (
     <div className="app-container">
-      {/* ---------- SIDEBAR ---------- */}
+      {/* ================= SIDEBAR ================= */}
       <div className="sidebar">
+        {/* LOGO + USER NAME */}
         <div className="brand">
           <Link to="/dashboards">
             <img src="/AKMedizostore.png" alt="logo" width="55" />
           </Link>
+
           <span>
-            {user ? `${user.firstName} ${user.lastName}` : "User"}
+            {user?.firstName
+              ? `${user.firstName} ${user.lastName}`
+              : "User"}
           </span>
         </div>
 
@@ -149,79 +119,53 @@ export default function Dashboard() {
             </Link>
           </li>
 
-          {/* ✅ CART WITH COUNT */}
-          {/* <li>
+          {/* 🛒 CART */}
+          <li>
             <Link
               to="/carts"
               className="btn btn-success mb-2 d-flex justify-content-between align-items-center"
             >
               <span>Medicine Cart</span>
-               {cartCount > 0 && (
-          <span className="cart-badge">{cartCount}</span>
-        )}
-              {totalQuantity > 0 && (
+
+              {cartCount > 0 && (
                 <span
                   style={{
                     background: "red",
                     color: "#fff",
                     borderRadius: "50%",
                     padding: "2px 8px",
-                    fontSize: "12px"
+                    fontSize: "12px",
                   }}
                 >
-                  {totalQuantity}
+                  {cartCount}
                 </span>
               )}
             </Link>
-          </li> */}
- <button className="cart-btn">
-        Medicine Cart
-        {cartCount > 0 && <span className="badge">{cartCount}</span>}
-      </button>
+          </li>
 
           <li>OrdersPayment</li>
           <li>CustomerTracking</li>
           <li>OrderStatus</li>
           <li>Customer Profile</li>
 
-          {/* <li>
+          <li>
             <Link to="/header">
               <i className="fas fa-sign-out-alt"></i> LogOut
             </Link>
-          
-          </li> */}
-          <li
-        style={{ cursor: "pointer", color: "red" }}
-        onClick={handleLogout}
-      >
-        🚪 Logout
-      </li>
-                     
-
+          </li>
         </ul>
       </div>
 
-      {/* ---------- MAIN CONTENT ---------- */}
+      {/* ================= MAIN CONTENT ================= */}
       <div className="main-content">
-        <header>
-          <div className="header-right">
-            {user?.photo && (
-              <img
-                src={`https://ecommerencesite-api.onrender.com/apiuploads/${user.photo}`}
-                alt="Profile"
-                className="nav-user-photo"
-              />
-            )}
-            <span className="nav-icon">🔔</span>
-            <span className="nav-icon">⚙️</span>
-          </div>
-        </header>
-
         <h2>
-          Welcome back, {user ? `${user.firstName} ${user.lastName}` : "User"}
+          Welcome back,{" "}
+          {user?.firstName
+            ? `${user.firstName} ${user.lastName}`
+            : "User"}
         </h2>
 
-        {/* ---------- DASHBOARD CARDS ---------- */}
+        {/* DASHBOARD CARDS */}
         <div className="cards">
           <div className="card blue">Medication Tracker</div>
           <div className="card green">Test Reports</div>
@@ -229,7 +173,7 @@ export default function Dashboard() {
           <div className="card purple">Monthly Progress</div>
         </div>
 
-        {/* ---------- CHARTS ---------- */}
+        {/* CHARTS */}
         <div className="reports">
           <div className="box">
             <h4>Blood Glucose</h4>
@@ -270,35 +214,6 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </div>
         </div>
-
-        {/* ---------- CART MEDICINES TABLE ---------- */}
-        <div className="table-container">
-          <h3>Medicines in Cart</h3>
-
-          {cartItems.length === 0 ? (
-            <p>No medicines added to cart</p>
-          ) : (
-            <table className="med-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Price</th>
-                  <th>Quantity</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cartItems.map((item) => (
-                  <tr key={item.cartId}>
-                    <td>{item.medicineName}</td>
-                    <td>₹{item.unitPrice}</td>
-                    <td>{item.quantity}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-
       </div>
     </div>
   );

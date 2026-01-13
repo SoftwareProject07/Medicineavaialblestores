@@ -68,12 +68,15 @@ export default function Cart() {
             </Link>
           </li>
 
-          <li>
+          {/* <li>
             <Link to="/customerdetails" className="btn btn-success mb-2">
               Patient Details
             </Link>
-          </li>
-
+          </li> */}
+   <li>OrdersPayment</li>
+          <li>CustomerTracking</li>
+          <li>OrderStatus</li>
+          <li>Customer Profile</li>
           <li>
             <Link to="/header">
               <i className="fas fa-sign-out-alt"></i> LogOut

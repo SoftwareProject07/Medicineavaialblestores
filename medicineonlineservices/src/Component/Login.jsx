@@ -9,7 +9,7 @@ import {
 import Swal from "sweetalert2";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import { useAuth } from "./User/AuthContext";
+import { useAuth } from "../Component/User/AuthContext"; // ✅ IMPORTANT
 import "./styles/logins.css";
 
 export default function Login() {
@@ -42,6 +42,7 @@ export default function Login() {
     try {
       const response = await axios.post(
         "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/LOGINUserMedicine",
+       // "http://localhost:5256/api/USERMEDICINE/LOGINUserMedicine", 
         payload,
         { headers: { "Content-Type": "application/json" } }
       );
@@ -60,10 +61,7 @@ export default function Login() {
           lastName: response.data.userMedicine.lastName,
           userId: response.data.userMedicine.id,
         };
-localStorage.setItem(
-  "currentUser",
-  JSON.stringify(response.data.userMedicine)
-);
+
         // ✅ AuthContext LOGIN
         login(userData);
 
@@ -119,6 +117,7 @@ localStorage.setItem(
 
       const response = await axios.post(
         "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/ForgetPassword",
+        
         payload,
         { headers: { "Content-Type": "application/json" } }
       );
@@ -223,6 +222,23 @@ localStorage.setItem(
 
       <footer className="footer">
         <span>Copyright © 2026. All rights reserved.</span>
+          <div className="icons">
+              <Link to="https://www.facebook.com" className="social-icon">
+                <FaFacebook size={24} color="white" />
+              </Link>
+              <Link to="https://x.com/i/flow/login" className="social-icon">
+                <FaTwitter size={24} color="white" />
+              </Link>
+              <Link to="https://www.google.com" className="social-icon">
+                <FaGoogle size={24} color="white" />
+              </Link>
+              <Link to="https://www.linkedin.com" className="social-icon">
+                <FaLinkedin size={24} color="white" />
+              </Link>
+              <Link to="https://www.instagram.com" className="social-icon">
+                <FaInstagram size={24} color="white" />
+              </Link>
+            </div>
       </footer>
     </>
   );

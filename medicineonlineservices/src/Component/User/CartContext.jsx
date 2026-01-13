@@ -193,56 +193,61 @@
 
 // export const useCart = () => useContext(CartContext);
 
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const user = JSON.parse(localStorage.getItem("currentUser"));
+  // ✅ load cart from localStorage
+  const [cartItems, setCartItems] = useState(() => {
+    const savedCart = localStorage.getItem("cartItems");
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
 
-  // 🔑 USER BASED KEY
-  const cartKey = user?.email ? `cart_${user.email}` : null;
-
-  const [cartItems, setCartItems] = useState([]);
-
-  // 🔹 Load cart WHEN USER CHANGES
+  // ✅ save cart on every change
   useEffect(() => {
-    if (!cartKey) {
-      setCartItems([]);
-      return;
-    }
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
 
-    const stored = localStorage.getItem(cartKey);
-    setCartItems(stored ? JSON.parse(stored) : []);
-  }, [cartKey]);
-
-  // 🔹 Save cart USER-WISE
-  useEffect(() => {
-    if (cartKey) {
-      localStorage.setItem(cartKey, JSON.stringify(cartItems));
-    }
-  }, [cartItems, cartKey]);
-
+  // ✅ add to cart (quantity support)
   const addToCart = (item) => {
     setCartItems((prev) => {
-      const exists = prev.find((i) => i._id === item._id);
+      const exists = prev.find((p) => p.cartId === item.cartId);
 
       if (exists) {
-        return prev.map((i) =>
-          i._id === item._id ? { ...i, qty: i.qty + 1 } : i
+        return prev.map((p) =>
+          p.cartId === item.cartId
+            ? { ...p, quantity: p.quantity + 1 }
+            : p
         );
       }
-      return [...prev, { ...item, qty: 1 }];
+
+      return [...prev, { ...item, quantity: 1 }];
     });
   };
 
+  // ✅ remove single item
+  const removeFromCart = (cartId) => {
+    setCartItems((prev) =>
+      prev.filter((item) => item.cartId !== cartId)
+    );
+  };
+
+  // ✅ clear cart
   const clearCart = () => {
     setCartItems([]);
-    if (cartKey) localStorage.removeItem(cartKey);
+    localStorage.removeItem("cartItems");
   };
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, clearCart }}>
+    <CartContext.Provider
+      value={{
+        cartItems,
+        addToCart,
+        removeFromCart,
+        clearCart,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
