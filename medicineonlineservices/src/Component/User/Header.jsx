@@ -133,14 +133,34 @@ export default function Header() {
               <Link to="/contact" className="nav-link">Contact Us</Link>
             </li>
           </ul>
+ {/* <div className="right-icons"> */}
+        {/* Admin */}
+        {/* <div className="admin-wrapper">
+          <div
+            className="admin-btn"
+            onClick={() => setAdminOpen(!adminOpen)}
+          >
+            <i className="fas fa-user"></i>
+            {/* <span> Admin</span> 
+          </div> */}
 
+          {/* {adminOpen && (
+            <div className="admin-dropdown">
+              <Link to="">Hindi</Link> */}
+              {/* className="btn btn-success mb-2" */}
+           {/* <Link to="" className="btn btn-success mb-2" >English </Link>
+            </div>
+          )} */}
+        {/* </div>
+      </div> */}
+      
           {/* 🔐 Login & Cart */}
           <div className="d-flex gap-2 align-items-center">
              <Link to="#" >
            <i class="fas fa-toggle-on"></i>
             </Link>
-            
-        
+           
+       
  <div className="right-icons">
         {/* Admin */}
         <div className="admin-wrapper">

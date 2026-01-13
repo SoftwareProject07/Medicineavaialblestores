@@ -10,12 +10,16 @@ export default function Customerdetails() {
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
   const [age, setAge] = useState("");
+  const[cityname,setCityname]=useState("");
+  const[statename,setStatename]=useState("");
+  const[zipcode,setzipcode]=useState("");
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // ✅ VALIDATION
-    if (!fullname || !gender || !phoneNumber || !address || !email || !age) {
+    if (!fullname || !gender || !phoneNumber || !address || !email || !age || !cityname || !statename || !zipcode) {
       Swal.fire({
         icon: "warning",
         title: "All fields required",
@@ -31,6 +35,9 @@ export default function Customerdetails() {
       Address: address,
       Email: email,
       Age: age,
+      CityName:cityname,
+      StateName:statename,
+      ZipCode:zipcode,
       CreatedOn: new Date().toISOString(),
     };
 
@@ -68,7 +75,6 @@ export default function Customerdetails() {
     <div className="form-wrapper">
       <form className="form-card" onSubmit={handleSubmit}>
         <h2>Patient Details</h2>
-
         <div className="form-group">
           <label>Patient Name</label>
           <input
@@ -88,12 +94,12 @@ export default function Customerdetails() {
             placeholder="Enter email"
           />
         </div>
-
         <div className="form-group">
           <label>Contact Number</label>
           <input
             type="text"
             value={phoneNumber}
+            maxLength={10}
             onChange={(e) => setPhoneNumber(e.target.value)}
             placeholder="Enter phone number"
           />
@@ -116,6 +122,33 @@ export default function Customerdetails() {
             value={age}
             onChange={(e) => setAge(e.target.value)}
             placeholder="Enter age"
+          />
+        </div>
+         <div className="form-group">
+          <label>ZIP CODE </label>
+          <input
+            type="text"
+            value={zipcode}
+            onChange={(e) => setzipcode(e.target.value)}
+            placeholder="Enter Pincode"
+          />
+        </div>
+         <div className="form-group">
+          <label>City Name</label>
+          <input
+            type="text"
+            value={cityname}
+            onChange={(e) => setCityname(e.target.value)}
+            placeholder="Enter CityName"
+          />
+        </div>
+         <div className="form-group">
+          <label>State Name</label>
+          <input
+            type="text"
+            value={statename}
+            onChange={(e) => setStatename(e.target.value)}
+            placeholder="Enter StateName"
           />
         </div>
 

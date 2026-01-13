@@ -14,6 +14,7 @@ import AdminLogin from './Admin/AdminLogin.jsx';
 import CartItem from './User/CartItem.jsx';
 import MedicineDisplay from './User/MedicineDisplay.jsx';
 import Customerdetails from './User/Customerdetails.jsx';
+import DeliveryAddress from './User/DeliveryAddress.jsx';
 // import HandleLogout from '../handleLogout.jsx';
 
 export default function Routerpage() {
@@ -37,6 +38,7 @@ export default function Routerpage() {
         <Route path="/customerdetails" element={<Customerdetails />} /> 
 {/* <Route Path="/cartcontexts" element={<CartContext/>}/> */}
 <Route Path="/medicinedisplay" element={<MedicineDisplay />}/>
+<Route path="/deliveryaddress" element={<DeliveryAddress />}/>
 {/* <Route path="/handlelogouts" element ={<HandleLogout />}/> */}
              {/* <Route Path="/cart.controllers" element={<Cart./> }/> */}
 {/* <Route path="/loginforgetpassword"  element ={<LoginForgetPassword />}/> */}

@@ -148,7 +148,13 @@ export default function Dashboard() {
               )}
             </Link>
           </li>
-
+          {/* deliveryaddress */}
+         {/* <li>Delivery Address</li> */}
+           <li>
+            <Link to="/deliveryaddress" className="btn btn-success mb-2">
+              Delivery Address
+            </Link>
+          </li>
           <li>OrdersPayment</li>
           <li>CustomerTracking</li>
           <li>OrderStatus</li>
