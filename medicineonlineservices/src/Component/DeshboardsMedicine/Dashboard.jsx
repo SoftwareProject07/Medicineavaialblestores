@@ -143,21 +143,18 @@ export default function Dashboard() {
             </Link>
           </li>
 
-          <li>
-            <button
-              onClick={handleLogout}
-              style={{
-                background: "none",
-                border: "none",
-                color: "red",
-                cursor: "pointer",
-              }}
-            >
-              Logout
-            </button>
-          </li>
-        </ul>
-      </div>
+          <li>OrdersPayment</li>
+                   <li>CustomerTracking</li>
+                   <li>OrderStatus</li>
+                   <li>Customer Profile</li>
+         
+                     <li>
+                               <Link to="/header">
+                                 <i className="fas fa-sign-out-alt"></i> LogOut
+                               </Link>
+                             </li>
+                 </ul>
+               </div>
 
       {/* ============ MAIN CONTENT ============ */}
       <div className="main-content">
