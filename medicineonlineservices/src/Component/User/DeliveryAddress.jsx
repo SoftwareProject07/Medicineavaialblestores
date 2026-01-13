@@ -1,91 +1,102 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "../styles/CustomerDetailss.css";
+import "../styles/DeliveryAddresss.css";
 
-export default function DeliveryAddress() {
-  const [customerList, setCustomerList] = useState([]);
+export default function DeliveryAddressList() {
+  const [addresses, setAddresses] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
-  // ================= API CALL =================
-  const fetchCustomers = async () => {
+  // ================= FETCH DELIVERY ADDRESSES =================
+  const fetchAddresses = async () => {
     try {
       const res = await axios.get(
+        // "http://localhost:5256/api/Patient_CustomerAPI/GetAllPatients_Customers"
         "https://ecommerencesite-api.onrender.com/api/Patient_CustomerAPI/GetAllPatients_Customers"
       );
 
-      console.log("API RESPONSE 👉", res.data);
+      console.log("ADDRESS API 👉", res.data);
 
-      // 🔥 HANDLE ALL RESPONSE TYPES
       const list =
         res.data?.data ||
-        res.data?.patients ||
-        res.data?.result ||
+        res.data?.addresses ||
         res.data ||
         [];
 
-      if (Array.isArray(list)) {
-        setCustomerList(list);
-      } else {
-        setCustomerList([]);
-      }
+      setAddresses(Array.isArray(list) ? list : []);
     } catch (err) {
-      console.error("API ERROR:", err);
-      setError("Failed to load patient list (API error)");
+      console.error("Address API Error", err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchCustomers();
+    fetchAddresses();
   }, []);
 
-  // ================= UI =================
-  if (loading) return <p style={{ textAlign: "center" }}>Loading...</p>;
-  if (error) return <p style={{ color: "red", textAlign: "center" }}>{error}</p>;
+  const handleDeliverHere = (address) => {
+    console.log("DELIVER TO 👉", address);
+    alert(`Delivering to ${address.FullName || address.fullName}`);
+  };
+
+  if (loading) return <p>Loading delivery addresses...</p>;
 
   return (
-    <div className="list-section">
-      <h2>Patient List</h2>
+    <div className="delivery-wrapper">
+      <h2>DELIVERY ADDRESS</h2>
 
-      <table border="1" width="100%" cellPadding="10">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Gender</th>
-            <th>Age</th>
-            <th>City</th>
-            <th>State</th>
-            <th>Zip</th>
-          </tr>
-        </thead>
+      {addresses.length === 0 ? (
+        <p>No address found</p>
+      ) : (
+        addresses.map((addr, index) => (
+          <div
+            key={index}
+            className={`address-card ${
+              selectedId === index ? "active" : ""
+            }`}
+          >
+            <div className="address-header">
+              <input
+                type="radio"
+                name="address"
+                checked={selectedId === index}
+                onChange={() => setSelectedId(index)}
+              />
 
-        <tbody>
-          {customerList.length === 0 ? (
-            <tr>
-              <td colSpan="8" align="center">
-                No Data Found
-              </td>
-            </tr>
-          ) : (
-            customerList.map((item, index) => (
-              <tr key={index}>
-                <td>{item.FullName || item.fullName || "-"}</td>
-                <td>{item.Email || item.email || "-"}</td>
-                <td>{item.PhoneNumber || item.phoneNumber || "-"}</td>
-                <td>{item.Gender || item.gender || "-"}</td>
-                <td>{item.Age || item.age || "-"}</td>
-                <td>{item.CityName || item.cityName || "-"}</td>
-                <td>{item.StateName || item.stateName || "-"}</td>
-                <td>{item.ZipCode || item.zipCode || "-"}</td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+              <span className="name">
+                {addr.FullName || addr.fullName}
+              </span>
+
+              <span className="tag">HOME</span>
+
+              <span className="phone">
+                {addr.PhoneNumber || addr.phoneNumber}
+              </span>
+
+              <span className="edit">EDIT</span>
+            </div>
+
+            <div className="address-body">
+              <p>
+                {addr.Address || addr.address},{" "}
+                {addr.CityName || addr.cityName},{" "}
+                {addr.StateName || addr.stateName} -{" "}
+                <b>{addr.ZipCode || addr.zipCode}</b>
+              </p>
+            </div>
+
+            {selectedId === index && (
+              <button
+                className="deliver-btn"
+                onClick={() => handleDeliverHere(addr)}
+              >
+                DELIVER HERE
+              </button>
+            )}
+          </div>
+        ))
+      )}
     </div>
   );
 }

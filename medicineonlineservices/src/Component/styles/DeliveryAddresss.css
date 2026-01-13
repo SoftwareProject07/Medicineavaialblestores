@@ -1,0 +1,58 @@
+.delivery-wrapper {
+  background: #fff;
+  padding: 20px;
+}
+
+.address-card {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 12px;
+}
+
+.address-card.active {
+  background: #f1f8ff;
+  border-color: #2874f0;
+}
+
+.address-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.name {
+  margin-left: 5px;
+}
+
+.tag {
+  background: #eee;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+.phone {
+  margin-left: auto;
+  margin-right: 10px;
+}
+
+.edit {
+  color: #2874f0;
+  cursor: pointer;
+}
+
+.address-body {
+  margin-left: 25px;
+  margin-top: 5px;
+  color: #333;
+}
+
+.deliver-btn {
+  margin-left: 25px;
+  margin-top: 10px;
+  background: #fb641b;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  cursor: pointer;
+}
