@@ -128,7 +128,9 @@ export default function DeliveryAddress() {
   };
 
   if (loading) return <p>Loading...</p>;
-
+ /* ================= LOGIN PERSON MOBILE (FIX) ================= */
+  const loginMobile =
+    addresses.length > 0 ? addresses[0].PhoneNumber : "";
   return (
     
     <div className="app-container">
@@ -215,6 +217,12 @@ export default function DeliveryAddress() {
            </div>
       {/* ================= MAIN CONTENT ================= */}
       <div className="main-content">
+         <h2>
+          Login Person, {user?.firstName} {user?.lastName},  &nbsp; &nbsp;
+          Mobile Number : {loginMobile}
+        </h2>
+        <br></br>
+        <hr></hr>
         <h2>DELIVERY ADDRESS</h2>
 
         {addresses.map((addr) => (
