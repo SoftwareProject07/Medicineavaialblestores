@@ -139,10 +139,10 @@ export default function Cart() {
             </table>
 
             <h4 className="mt-3">Total Amount: ₹{totalAmount}</h4>
-{/* 
-            <Link to="/customerdetails" className="btn btn-primary mt-2">
+
+            <Link to="/deliveryaddress" className="btn btn-primary mt-2">
               Proceed to Checkout
-            </Link> */}
+            </Link>
 
  {/* <Link
   to="/customerdetails"
