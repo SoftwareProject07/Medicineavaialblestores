@@ -73,6 +73,11 @@ export default function Cart() {
               Patient Details
             </Link>
           </li> */}
+           <li>
+                        <Link to="/deliveryaddress" className="btn btn-success mb-2">
+                          Delivery Address
+                        </Link>
+                      </li>
    <li>OrdersPayment</li>
           <li>CustomerTracking</li>
           <li>OrderStatus</li>
@@ -134,10 +139,20 @@ export default function Cart() {
             </table>
 
             <h4 className="mt-3">Total Amount: ₹{totalAmount}</h4>
-
+{/* 
             <Link to="/customerdetails" className="btn btn-primary mt-2">
               Proceed to Checkout
-            </Link>
+            </Link> */}
+
+ {/* <Link
+  to="/customerdetails"
+  className="btn btn-primary mt-2"
+  onClick={clearCart}
+>
+  Proceed to Checkout
+</Link> */}
+
+
           </div>
         )}
       </div>

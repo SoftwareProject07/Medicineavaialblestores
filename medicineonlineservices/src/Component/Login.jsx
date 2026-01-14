@@ -19,7 +19,7 @@ export default function Login() {
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
+  
   // ================= LOGIN =================
   const handleSave = async (e) => {
     e.preventDefault();
@@ -45,7 +45,10 @@ export default function Login() {
        // "http://localhost:5256/api/USERMEDICINE/LOGINUserMedicine", 
         payload,
         { headers: { "Content-Type": "application/json" } }
+
+        
       );
+        phoneNumber: response.data.phoneNumber
 
       // ✅ SUCCESS
       if (response.data?.userMedicine) {
@@ -59,13 +62,16 @@ export default function Login() {
   JSON.stringify(response.data.userMedicine)
 );
 
+
         // ✅ VERY IMPORTANT (REAL USER DATA FROM API)
         const userData = {
           email: response.data.userMedicine.email, // ❗ EXACT
           firstName: response.data.userMedicine.firstName,
           lastName: response.data.userMedicine.lastName,
           userId: response.data.userMedicine.id,
+  phoneNumber: response.data.phoneNumber // 👈 backend se aana chahiye
         };
+localStorage.setItem("user", JSON.stringify(userData));
 
         // ✅ AuthContext LOGIN
         login(userData);

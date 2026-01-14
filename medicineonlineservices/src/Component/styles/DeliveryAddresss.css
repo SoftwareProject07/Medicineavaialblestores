@@ -1,19 +1,70 @@
+/* ================= ROOT LAYOUT ================= */
+.app-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: #f5f7fb;
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: #1f3a5f;
+  color: #fff;
+  padding: 20px 15px;
+  box-sizing: border-box;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar a {
+  color: #fff;
+  text-decoration: none;
+}
+
+/* ================= MAIN CONTENT ================= */
+.main-content {
+  flex: 1;
+  padding: 20px;
+  margin: 0;
+  box-sizing: border-box;
+  background: #f5f7fb;
+}
+
+.main-content h2 {
+  margin-top: 0;
+}
+
+/* ================= DELIVERY WRAPPER ================= */
 .delivery-wrapper {
   background: #fff;
   padding: 20px;
+  margin: 0;              /* ✅ NO GAP */
+  min-height: 100vh;
 }
 
+/* ================= ADDRESS CARD ================= */
 .address-card {
+  background: #fff;
   border: 1px solid #ddd;
+  border-radius: 6px;
   padding: 15px;
-  margin-bottom: 12px;
+  margin-bottom: 15px;
 }
 
 .address-card.active {
-  background: #f1f8ff;
-  border-color: #2874f0;
+  border: 2px solid #2874f0;
+  background: #f1f7ff;
 }
 
+/* ================= ADDRESS HEADER ================= */
 .address-header {
   display: flex;
   align-items: center;
@@ -29,30 +80,87 @@
   background: #eee;
   padding: 2px 6px;
   font-size: 12px;
+  border-radius: 4px;
 }
 
 .phone {
   margin-left: auto;
-  margin-right: 10px;
+  font-weight: 500;
 }
 
+/* ================= ACTIONS ================= */
 .edit {
-  color: #2874f0;
+  color: green;
   cursor: pointer;
+  font-weight: bold;
 }
 
+.delete {
+  color: red;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* ================= ADDRESS BODY ================= */
 .address-body {
-  margin-left: 25px;
-  margin-top: 5px;
+  margin-top: 8px;
   color: #333;
+  font-size: 14px;
 }
 
+/* ================= DELIVER BUTTON ================= */
 .deliver-btn {
-  margin-left: 25px;
   margin-top: 10px;
   background: #fb641b;
-  color: white;
+  color: #fff;
   border: none;
-  padding: 10px 16px;
+  padding: 8px 14px;
   cursor: pointer;
+  border-radius: 4px;
 }
+
+/* ================= EDIT FORM ================= */
+.edit-form input {
+  display: block;
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 8px;
+}
+
+.edit-form button {
+  margin-right: 8px;
+}
+
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-box {
+  background: #fff;
+  width: 420px;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.modal-box input,
+.modal-box textarea {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px;
+}
+
+.modal-actions {
+  margin-top: 15px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+

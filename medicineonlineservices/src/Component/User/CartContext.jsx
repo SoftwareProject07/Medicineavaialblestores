@@ -1,21 +1,29 @@
 
-// import React, { createContext, useContext, useState, useEffect } from "react";
+
+
+// import React, { createContext, useContext, useEffect, useState } from "react";
 
 // const CartContext = createContext();
 
 // export const CartProvider = ({ children }) => {
-//   // ✅ load cart from localStorage
+//   // ✅ get logged-in user
+//   const user = JSON.parse(localStorage.getItem("user"));
+//   const userKey = user?.email ? `cart_${user.email}` : "cart_guest";
+
+//   // ✅ load user-wise cart
 //   const [cartItems, setCartItems] = useState(() => {
-//     const savedCart = localStorage.getItem("cartItems");
+//     const savedCart = localStorage.getItem(userKey);
 //     return savedCart ? JSON.parse(savedCart) : [];
 //   });
 
-//   // ✅ save cart on every change
+//   // ✅ save cart per user
 //   useEffect(() => {
-//     localStorage.setItem("cartItems", JSON.stringify(cartItems));
-//   }, [cartItems]);
+//     if (userKey) {
+//       localStorage.setItem(userKey, JSON.stringify(cartItems));
+//     }
+//   }, [cartItems, userKey]);
 
-//   // ✅ add to cart (quantity support)
+//   // ✅ add to cart
 //   const addToCart = (item) => {
 //     setCartItems((prev) => {
 //       const exists = prev.find((p) => p.cartId === item.cartId);
@@ -32,17 +40,17 @@
 //     });
 //   };
 
-//   // ✅ remove single item
+//   // ✅ remove item
 //   const removeFromCart = (cartId) => {
 //     setCartItems((prev) =>
 //       prev.filter((item) => item.cartId !== cartId)
 //     );
 //   };
 
-//   // ✅ clear cart
+//   // ✅ clear cart (on logout)
 //   const clearCart = () => {
 //     setCartItems([]);
-//     localStorage.removeItem("cartItems");
+//     localStorage.removeItem(userKey);
 //   };
 
 //   return (
@@ -62,27 +70,24 @@
 // export const useCart = () => useContext(CartContext);
 
 
-
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  // ✅ get logged-in user
+  // ✅ logged-in user
   const user = JSON.parse(localStorage.getItem("user"));
   const userKey = user?.email ? `cart_${user.email}` : "cart_guest";
 
-  // ✅ load user-wise cart
+  // ✅ load cart user-wise
   const [cartItems, setCartItems] = useState(() => {
     const savedCart = localStorage.getItem(userKey);
     return savedCart ? JSON.parse(savedCart) : [];
   });
 
-  // ✅ save cart per user
+  // ✅ save cart to localStorage
   useEffect(() => {
-    if (userKey) {
-      localStorage.setItem(userKey, JSON.stringify(cartItems));
-    }
+    localStorage.setItem(userKey, JSON.stringify(cartItems));
   }, [cartItems, userKey]);
 
   // ✅ add to cart
@@ -102,14 +107,27 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  // ✅ remove item
+  // ✅ update quantity
+  const updateQuantity = (cartId, quantity) => {
+    if (quantity <= 0) return;
+
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.cartId === cartId
+          ? { ...item, quantity }
+          : item
+      )
+    );
+  };
+
+  // ✅ remove single item
   const removeFromCart = (cartId) => {
     setCartItems((prev) =>
       prev.filter((item) => item.cartId !== cartId)
     );
   };
 
-  // ✅ clear cart (on logout)
+  // ✅ clear cart (checkout / logout)
   const clearCart = () => {
     setCartItems([]);
     localStorage.removeItem(userKey);
@@ -120,6 +138,7 @@ export const CartProvider = ({ children }) => {
       value={{
         cartItems,
         addToCart,
+        updateQuantity,
         removeFromCart,
         clearCart,
       }}
@@ -130,3 +149,4 @@ export const CartProvider = ({ children }) => {
 };
 
 export const useCart = () => useContext(CartContext);
+

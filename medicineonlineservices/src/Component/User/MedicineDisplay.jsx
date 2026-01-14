@@ -98,7 +98,11 @@ export default function MedicineDisplay() {
               )}
             </Link>
           </li>
-
+ <li>
+              <Link to="/deliveryaddress" className="btn btn-success mb-2">
+                Delivery Address
+              </Link>
+            </li>
             <li>OrdersPayment</li>
           <li>CustomerTracking</li>
           <li>OrderStatus</li>
