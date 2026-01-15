@@ -160,12 +160,13 @@ export default function MedicineDisplay() {
                   Add to Cart
                 </button>
 
-                <button
+         <Link to="/deliveryaddress">      <button 
                   className="btn btn-success w-50 buynow"
                   onClick={() => buyNow(med)}
                 >
                   Buy Now
                 </button>
+                </Link>  
               </div>
             </div>
           ))}
