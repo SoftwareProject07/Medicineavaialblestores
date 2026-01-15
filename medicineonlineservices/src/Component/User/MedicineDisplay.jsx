@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "./CartContext";
 import "../styles/dashboardsprofiles.css";
 
 export default function MedicineDisplay() {
   const { addToCart, cartItems = [] } = useCart();
+  const navigate = useNavigate();
+
   const [openDashboard, setOpenDashboard] = useState(false);
   const [user, setUser] = useState(null);
 
@@ -20,6 +22,7 @@ export default function MedicineDisplay() {
     0
   );
 
+  /* ================= MEDICINES ================= */
   const meds = [
     {
       cartId: 1,
@@ -35,7 +38,20 @@ export default function MedicineDisplay() {
       discount: 5,
       imageUrl: "https://placehold.co/100x100/png",
     },
+    {
+      cartId: 3,
+      medicineName: "Amoxicillin",
+      unitPrice: 120,
+      discount: 10,
+      imageUrl: "https://placehold.co/100x100/png",
+    },
   ];
+
+  /* ================= BUY NOW ================= */
+  const buyNow = (med) => {
+    addToCart(med);
+    navigate("/carts");
+  };
 
   return (
     <div className="app-container">
@@ -52,31 +68,33 @@ export default function MedicineDisplay() {
 
         <ul>
           <li className="menu-group">
-                      <button
-                        className="menu-title btn btn-success mb-2 d-flex justify-content-between align-items-center"
-                        onClick={() => setOpenDashboard(!openDashboard)}
-                      >
-                        Dashboard <span>{openDashboard ? "▾" : "▸"}</span>
-                      </button>
-          
-                      {openDashboard && (
-                        <ul className="submenu">
-                          <li><Link to="/medication-tracker">Medication Tracker</Link></li>
-                          <li><Link to="/test-reports">Test Reports</Link></li>
-                          <li><Link to="/health-history">Health History</Link></li>
-                          <li><Link to="/monthly-progress">Monthly Progress</Link></li>
-                          <li><Link to="/prescriptions">Prescriptions</Link></li>
-                          <li><Link to="/history">History</Link></li>
-                          <li><Link to="/support">Help & Support</Link></li>
-                          <li><Link to="/settings">Settings</Link></li>
-                        </ul>
-                      )}
-                    </li>
-                       <li>
-                                <Link to="/medicinedisplay" className="btn btn-success mb-2">
-                                  Medicines
-                                </Link>
-                              </li>
+            <button
+              className="menu-title btn btn-success mb-2 d-flex justify-content-between align-items-center"
+              onClick={() => setOpenDashboard(!openDashboard)}
+            >
+              Dashboard <span>{openDashboard ? "▾" : "▸"}</span>
+            </button>
+
+            {openDashboard && (
+              <ul className="submenu">
+                <li><Link to="/medication-tracker">Medication Tracker</Link></li>
+                <li><Link to="/test-reports">Test Reports</Link></li>
+                <li><Link to="/health-history">Health History</Link></li>
+                <li><Link to="/monthly-progress">Monthly Progress</Link></li>
+                <li><Link to="/prescriptions">Prescriptions</Link></li>
+                <li><Link to="/history">History</Link></li>
+                <li><Link to="/support">Help & Support</Link></li>
+                <li><Link to="/settings">Settings</Link></li>
+              </ul>
+            )}
+          </li>
+
+          <li>
+            <Link to="/medicinedisplay" className="btn btn-success mb-2">
+              Medicines
+            </Link>
+          </li>
+
           <li>
             <Link
               to="/carts"
@@ -98,21 +116,16 @@ export default function MedicineDisplay() {
               )}
             </Link>
           </li>
- <li>
-              <Link to="/deliveryaddress" className="btn btn-success mb-2">
-                Delivery Address
-              </Link>
-            </li>
-            <li>OrdersPayment</li>
-          <li>CustomerTracking</li>
-          <li>OrderStatus</li>
-          <li>Customer Profile</li>
 
-            <li>
-                      <Link to="/header">
-                        <i className="fas fa-sign-out-alt"></i> LogOut
-                      </Link>
-                    </li>
+          <li>
+            <Link to="/deliveryaddress" className="btn btn-success mb-2">
+              Delivery Address
+            </Link>
+          </li>
+
+          <li>
+            <Link to="/header">LogOut</Link>
+          </li>
         </ul>
       </div>
 
@@ -123,7 +136,6 @@ export default function MedicineDisplay() {
         <div className="cards">
           {meds.map((med) => (
             <div className="card blue" key={med.cartId}>
-              {/* ✅ IMAGE SIZE FIXED */}
               <img
                 src={med.imageUrl}
                 alt={med.medicineName}
@@ -139,13 +151,22 @@ export default function MedicineDisplay() {
                 </p>
               )}
 
-              <button
-                type="button"
-                className="btn btn-light"
-                onClick={() => addToCart(med)}
-              >
-                Add to Cart
-              </button>
+              {/* ====== EQUAL BUTTONS ====== */}
+              <div className="d-flex gap-2 w-100 mt-2">
+                <button
+                  className="btn btn-light w-50 addtocart"
+                  onClick={() => addToCart(med)}
+                >
+                  Add to Cart
+                </button>
+
+                <button
+                  className="btn btn-success w-50 buynow"
+                  onClick={() => buyNow(med)}
+                >
+                  Buy Now
+                </button>
+              </div>
             </div>
           ))}
         </div>
