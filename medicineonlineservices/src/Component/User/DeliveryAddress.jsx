@@ -242,7 +242,7 @@ export default function DeliveryAddress() {
 <hr></hr> */}
  <h2>
            Login  Person : {user ? `${user.firstName} ${user.lastName}` : "User"} &nbsp;&nbsp;
-             Mobile Number : {loginMobile}
+               Mobile Number : {loginMobile}
 
              </h2>
              
