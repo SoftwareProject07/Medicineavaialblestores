@@ -17,20 +17,27 @@ export default function DeliveryAddress() {
   const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
   const [openDashboard, setOpenDashboard] = useState(false);
+  const [user, setUser] = useState(null);
 
   const { cartItems } = useCart();
 
   /* ================= USER (STATIC / LOCAL STORAGE) ================= */
-  const user = {
-    firstName: "User",
-    lastName: ""
-  };
+  // const user = {
+  //   firstName: "User",
+  //   lastName: ""
+  // };
 
   /* ================= CART COUNT ================= */
   const totalQuantity = cartItems.reduce(
     (sum, item) => sum + item.quantity,
     0
   );
+   useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   /* ================= ADD FORM STATE ================= */
   const [formData, setFormData] = useState({
@@ -96,7 +103,9 @@ export default function DeliveryAddress() {
       alert("API Failed ❌");
     }
   };
-
+/* ================= LOGIN PERSON MOBILE (FIX) ================= */
+  const loginMobile =
+    addresses.length > 0 ? addresses[0].PhoneNumber : "";
   /* ================= EDIT ================= */
   const handleEdit = (addr, index) => {
     setEditIndex(index);
@@ -226,6 +235,18 @@ export default function DeliveryAddress() {
 
       {/* ---------- MAIN ---------- */}
       <div className="main-content">
+
+         {/* <h2>
+  Login Person, {user?.firstName} {user?.lastName}, &nbsp;&nbsp;
+   Mobile Number : {loginMobile}</h2>
+<hr></hr> */}
+ <h2>
+           Login  Person : {user ? `${user.firstName} ${user.lastName}` : "User"} &nbsp;&nbsp;
+             Mobile Number : {loginMobile}
+
+             </h2>
+             
+             <hr></hr>
         <h2>DELIVERY ADDRESS</h2>
 
         {addresses.map((addr, index) => (
