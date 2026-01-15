@@ -84,7 +84,7 @@ export default function DeliveryAddress() {
   const handleSaveAddress = async () => {
     try {
       await axios.post(`${API}/AddPatient_Customer`, formData);
-      alert("Address Added ✅");
+      alert("Customer Address Added ✅");
       setShowPopup(false);
       setFormData({
         fullName: "",
@@ -100,7 +100,7 @@ export default function DeliveryAddress() {
       fetchAddresses();
     } catch (err) {
       console.error(err);
-      alert("API Failed ❌");
+      alert("Customer Address Failed ❌");
     }
   };
 /* ================= LOGIN PERSON MOBILE (FIX) ================= */
@@ -241,7 +241,7 @@ export default function DeliveryAddress() {
    Mobile Number : {loginMobile}</h2>
 <hr></hr> */}
  <h2>
-           Login  Person : {user ? `${user.firstName} ${user.lastName}` : "User"} &nbsp;&nbsp;
+           Login  Person : {user ? `${user.firstName} ${user.lastName}` : "User"} ✅ &nbsp;&nbsp;
                Mobile Number : {loginMobile}
 
              </h2>
@@ -295,36 +295,47 @@ export default function DeliveryAddress() {
               <div className="edit-form">
                 <input
                   value={editData.FullName}
+                  placeholder="FullName"
                   onChange={(e) =>
                     setEditData({ ...editData, FullName: e.target.value })
                   }
                 />
                 <input
                   value={editData.PhoneNumber}
+                                    placeholder="PhoneNumber"
+
                   onChange={(e) =>
                     setEditData({ ...editData, PhoneNumber: e.target.value })
                   }
                 />
                 <input
                   value={editData.Address}
+                  placeholder="Address"
+
                   onChange={(e) =>
                     setEditData({ ...editData, Address: e.target.value })
                   }
                 />
                 <input
                   value={editData.CustomerCity}
+                                    placeholder="CustomerCity"
+
                   onChange={(e) =>
                     setEditData({ ...editData, CustomerCity: e.target.value })
                   }
                 />
                 <input
                   value={editData.CustomerState}
+                                                      placeholder="CustomerState"
+
                   onChange={(e) =>
                     setEditData({ ...editData, CustomerState: e.target.value })
                   }
                 />
                 <input
                   value={editData.CustomerZipCode}
+                                                                        placeholder="Pincode"
+
                   onChange={(e) =>
                     setEditData({ ...editData, CustomerZipCode: e.target.value })
                   }
@@ -356,7 +367,7 @@ export default function DeliveryAddress() {
         {showPopup && (
           <div className="popup">
             <div className="popup-box">
-              <h3>Add Address</h3>
+              <h3>Customer  Address</h3>
 
               {Object.keys(formData).map((key) => (
                 <input
