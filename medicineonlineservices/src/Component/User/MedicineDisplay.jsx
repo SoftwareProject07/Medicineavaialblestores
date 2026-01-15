@@ -54,8 +54,8 @@ export default function MedicineDisplay() {
   };
 
   return (
-    <div className="app-container">
-      {/* ============ SIDEBAR ============ */}
+ <div className="app-container">
+      {/* ---------- SIDEBAR ---------- */}
       <div className="sidebar">
         <div className="brand">
           <Link to="/dashboards">
@@ -95,6 +95,7 @@ export default function MedicineDisplay() {
             </Link>
           </li>
 
+          {/* ✅ CART WITH COUNT */}
           <li>
             <Link
               to="/carts"
@@ -108,7 +109,7 @@ export default function MedicineDisplay() {
                     color: "#fff",
                     borderRadius: "50%",
                     padding: "2px 8px",
-                    fontSize: "12px",
+                    fontSize: "12px"
                   }}
                 >
                   {totalQuantity}
@@ -116,15 +117,22 @@ export default function MedicineDisplay() {
               )}
             </Link>
           </li>
-
-          <li>
+          {/* deliveryaddress */}
+         {/* <li>Delivery Address</li> */}
+           <li>
             <Link to="/deliveryaddress" className="btn btn-success mb-2">
               Delivery Address
             </Link>
           </li>
+          <li>OrdersPayment</li>
+          <li>CustomerTracking</li>
+          <li>OrderStatus</li>
+          <li>Customer Profile</li>
 
           <li>
-            <Link to="/header">LogOut</Link>
+            <Link to="/header">
+              <i className="fas fa-sign-out-alt"></i> LogOut
+            </Link>
           </li>
         </ul>
       </div>
@@ -154,14 +162,14 @@ export default function MedicineDisplay() {
               {/* ====== EQUAL BUTTONS ====== */}
               <div className="d-flex gap-2 w-100 mt-2">
                 <button
-                  className="btn btn-light w-50 addtocart"
+                  className="btn btn-light w-10 addtocart"
                   onClick={() => addToCart(med)}
                 >
                   Add to Cart
                 </button>
 
          <Link to="/deliveryaddress">      <button 
-                  className="btn btn-success w-50 buynow"
+                  className="btn btn-success w-10 buynow"
                   onClick={() => buyNow(med)}
                 >
                   Buy Now
