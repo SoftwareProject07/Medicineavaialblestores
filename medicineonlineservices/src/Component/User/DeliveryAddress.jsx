@@ -296,6 +296,8 @@ export default function DeliveryAddress() {
                 <input
                   value={editData.FullName}
                   placeholder="FullName"
+
+                  required autoComplete="off"
                   onChange={(e) =>
                     setEditData({ ...editData, FullName: e.target.value })
                   }
@@ -303,7 +305,8 @@ export default function DeliveryAddress() {
                 <input
                   value={editData.PhoneNumber}
                                     placeholder="PhoneNumber"
-
+                  required autoComplete="off"
+maxLength={10}
                   onChange={(e) =>
                     setEditData({ ...editData, PhoneNumber: e.target.value })
                   }
@@ -311,6 +314,7 @@ export default function DeliveryAddress() {
                 <input
                   value={editData.Address}
                   placeholder="Address"
+                  required autoComplete="off"
 
                   onChange={(e) =>
                     setEditData({ ...editData, Address: e.target.value })
@@ -319,6 +323,7 @@ export default function DeliveryAddress() {
                 <input
                   value={editData.CustomerCity}
                                     placeholder="CustomerCity"
+                  required autoComplete="off"
 
                   onChange={(e) =>
                     setEditData({ ...editData, CustomerCity: e.target.value })
@@ -327,6 +332,7 @@ export default function DeliveryAddress() {
                 <input
                   value={editData.CustomerState}
                                                       placeholder="CustomerState"
+                  required autoComplete="off"
 
                   onChange={(e) =>
                     setEditData({ ...editData, CustomerState: e.target.value })
@@ -335,6 +341,7 @@ export default function DeliveryAddress() {
                 <input
                   value={editData.CustomerZipCode}
                                                                         placeholder="Pincode"
+                  required autoComplete="off"
 
                   onChange={(e) =>
                     setEditData({ ...editData, CustomerZipCode: e.target.value })
