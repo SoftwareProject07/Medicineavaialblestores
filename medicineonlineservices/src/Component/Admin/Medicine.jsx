@@ -12,7 +12,7 @@ export default function Medicine() {
   const [discount, setDiscount] = useState("");
   const [quantity, setQuantity] = useState("");
   const [expiryDate, setExpiryDate] = useState(""); // YYYY-MM-DD from input
-  const [imageFile, setImageFile] = useState(null);
+ // const [imageFile, setImageFile] = useState(null);
 
   const toDdMmYyyy = (yyyyMmDd) => {
     if (!yyyyMmDd) return "";
@@ -34,11 +34,12 @@ export default function Medicine() {
     formData.append("Quantity", quantity);
     formData.append("ExpiryDate", toDdMmYyyy(expiryDate)); // match backend regex
     formData.append("STATUS", "1"); // optional; backend sets this anyway
-    formData.append("image", imageFile); // must match controller parameter name
+   // formData.append("image", imageFile); // must match controller parameter name
 
     try {
       await axios.post(
         "https://ecommerencesite-api.onrender.com/api/MEDICINE/CreateMedicine",
+     // "http://localhost:5256/api/MEDICINE/CreateMedicine",
         formData,
         {
           // DO NOT set Content-Type manually; let the browser set multipart boundary
@@ -67,12 +68,12 @@ export default function Medicine() {
           <input type="date" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} />
           {/* <input type="file" value={imageFile} onChange={e => setImageFile(e.target.value)} /> */}
 
-          <input
+          {/* <input
             type="file"
             accept="image/*"
             value={imageFile}
             onChange={e => setImageFile(e.target.files?.[0] || null)}
-          />
+          /> */}
         
 
           <button className="btn btn-success w-100" onClick={handleSave}>

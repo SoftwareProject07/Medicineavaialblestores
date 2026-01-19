@@ -34,7 +34,7 @@ export default function AdminLogin() {
     try {
       const response = await axios.post(
          "https://ecommerencesite-api.onrender.com/api/AdminApi/LOGINAdmin",
-        //"http://localhost:5256/api/AdminApi/LOGINAdmin",
+       // "http://localhost:5256/api/AdminApi/LOGINAdmin",
 
         data,
         { headers: { "Content-Type": "application/json" } }

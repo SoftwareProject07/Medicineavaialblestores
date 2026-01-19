@@ -43,7 +43,10 @@ export default function DeshboardPanel() {//medicine admin panel deshboard
   // 🔹 GET Medicines
   useEffect(() => {
     axios
-      .get("https://ecommerencesite-api.onrender.com/api/MEDICINE/AllListMedicineProduct")
+      .get(
+        "https://ecommerencesite-api.onrender.com/api/MEDICINE/AllListMedicineProduct"
+     //   "http://localhost:5256/api/MEDICINE/AllListMedicineProduct"
+      )
       .then((res) => {
         const list = Array.isArray(res.data) ? res.data : res.data?.data;
         setMedicines(Array.isArray(list) ? normalize(list) : []);
@@ -112,9 +115,11 @@ export default function DeshboardPanel() {//medicine admin panel deshboard
       }
 
       const res = await axios.put(
-        "https://ecommerencesite-api.onrender.com/api/MEDICINE/UpdateMedicine",
+      //  "https://ecommerencesite-api.onrender.com/api/MEDICINE/UpdateMedicine",
+      "http://localhost:5256/api/MEDICINE/UpdateMedicine",
         data
       );
+
 
       if (res.data?.status) {
         setMedicines((prev) =>
@@ -148,6 +153,7 @@ export default function DeshboardPanel() {//medicine admin panel deshboard
     try {
       const res = await axios.delete(
         `https://ecommerencesite-api.onrender.com/api/MEDICINE/DeleteMedicine/${id}`
+       // `http://localhost:5256/api/MEDICINE/DeleteMedicine/${id}`
       );
       if (res.data?.status) {
         setMedicines((prev) => prev.filter((m) => m.id !== id));

@@ -67,6 +67,7 @@ export default function Customerdetails() {
  try {
   const response = await axios.post(
     "https://ecommerencesite-api.onrender.com/api/Patient_CustomerAPI/AddPatient_Customer",
+  //  "http://localhost:5256/api/Patient_CustomerAPI/AddPatient_Customer",
     data,
     {
       headers: { "Content-Type": "application/json" }

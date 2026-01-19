@@ -48,7 +48,7 @@ export default function Login() {
 
         
       );
-        phoneNumber: response.data.phoneNumber
+      //  phoneNumber: response.data.phoneNumber
 
       // ✅ SUCCESS
       if (response.data?.userMedicine) {
@@ -128,7 +128,7 @@ localStorage.setItem("user", JSON.stringify(userData));
 
       const response = await axios.post(
         "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/ForgetPassword",
-        
+       //"http://localhost:5256/api/USERMEDICINE/ForgetPassword",
         payload,
         { headers: { "Content-Type": "application/json" } }
       );
