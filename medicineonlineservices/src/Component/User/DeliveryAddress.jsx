@@ -6,7 +6,7 @@ import { useCart } from "../User/CartContext";
 
 /* ================= API ================= */
 const API =
- "https://ecommerencesite-api.onrender.com/api/Patient_CustomerAPI";
+ "https://ecommerencesite.onrender.com/api/Patient_CustomerAPI";
   //"http://localhost:5256/api/Patient_CustomerAPI";
 
 export default function DeliveryAddress() {

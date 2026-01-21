@@ -41,7 +41,7 @@ export default function Login() {
 
     try {
       const response = await axios.post(
-        "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/LOGINUserMedicine",
+        "https://ecommerencesite.onrender.com/api/USERMEDICINE/LOGINUserMedicine",
        // "http://localhost:5256/api/USERMEDICINE/LOGINUserMedicine", 
         payload,
         { headers: { "Content-Type": "application/json" } }
@@ -127,7 +127,7 @@ localStorage.setItem("user", JSON.stringify(userData));
       };
 
       const response = await axios.post(
-        "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/ForgetPassword",
+        "https://ecommerencesite.onrender.com/api/USERMEDICINE/ForgetPassword",
        //"http://localhost:5256/api/USERMEDICINE/ForgetPassword",
         payload,
         { headers: { "Content-Type": "application/json" } }

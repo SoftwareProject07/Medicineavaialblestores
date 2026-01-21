@@ -47,7 +47,7 @@ export default function Medicine() {
 
     try {
       await axios.post(
-        "https://ecommerencesite-api.onrender.com/api/MEDICINE/CreateMedicine",
+        "https://ecommerencesite.onrender.com/api/MEDICINE/CreateMedicine",
      // "http://localhost:5256/api/MEDICINE/CreateMedicine",
         formData,
         {

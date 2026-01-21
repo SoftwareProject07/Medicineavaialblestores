@@ -176,7 +176,7 @@ export default function Dashboard() {
             {user?.photo && (
               <img
                 src={
-                  `https://ecommerencesite-api.onrender.com/apiuploads/${user.photo}`
+                  `https://ecommerencesite.onrender.com/apiuploads/${user.photo}`
                  // `http://localhost:5256/apiuploads/${user.photo}`
                 }
                 alt="Profile"

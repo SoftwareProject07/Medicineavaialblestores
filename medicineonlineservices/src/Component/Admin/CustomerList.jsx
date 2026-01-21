@@ -25,7 +25,7 @@ export default function CustomerList() {
     axios
       .get(
         //"http://localhost:5256/api/USERMEDICINE/AllUserList"
-        "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/AllUserList"
+        "https://ecommerencesite.onrender.com/api/USERMEDICINE/AllUserList"
       )
       .then((res) => {
         console.log("API FULL RESPONSE 👉", res.data);

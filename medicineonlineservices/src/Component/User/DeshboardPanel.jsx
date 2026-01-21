@@ -44,7 +44,7 @@ export default function DeshboardPanel() {//medicine admin panel deshboard
   useEffect(() => {
     axios
       .get(
-        "https://ecommerencesite-api.onrender.com/api/MEDICINE/AllListMedicineProduct"
+        "https://ecommerencesite.onrender.com/api/MEDICINE/AllListMedicineProduct"
      //   "http://localhost:5256/api/MEDICINE/AllListMedicineProduct"
       )
       .then((res) => {
@@ -115,7 +115,7 @@ export default function DeshboardPanel() {//medicine admin panel deshboard
       }
 
       const res = await axios.put(
-        "https://ecommerencesite-api.onrender.com/api/MEDICINE/UpdateMedicine",
+        "https://ecommerencesite.onrender.com/api/MEDICINE/UpdateMedicine",
       //"http://localhost:5256/api/MEDICINE/UpdateMedicine",
         data
       );
@@ -152,7 +152,7 @@ export default function DeshboardPanel() {//medicine admin panel deshboard
     if (!window.confirm("Are you sure?")) return;
     try {
       const res = await axios.delete(
-        `https://ecommerencesite-api.onrender.com/api/MEDICINE/DeleteMedicine/${id}`
+        `https://ecommerencesite.onrender.com/api/MEDICINE/DeleteMedicine/${id}`
        // `http://localhost:5256/api/MEDICINE/DeleteMedicine/${id}`
       );
       if (res.data?.status) {

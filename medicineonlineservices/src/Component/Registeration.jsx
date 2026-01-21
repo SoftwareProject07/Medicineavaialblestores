@@ -47,7 +47,7 @@ export default function Registeration() {
     try {
       const response = await axios.post(
        // "http://localhost:5256/api/USERMEDICINE/CREATERegisterUser",
-        "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/CREATERegisterUser",
+        "https://ecommerencesite.onrender.com/api/USERMEDICINE/CREATERegisterUser",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
