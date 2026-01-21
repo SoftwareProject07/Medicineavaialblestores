@@ -32,7 +32,7 @@ export default function AdminLogin() {
     };
 
     try {
-      const response = await axios.get(
+      const response = await axios.post(
          "https://ecommerencesite.onrender.com/api/AdminApi/LOGINAdmin",
        // "http://localhost:5256/api/AdminApi/LOGINAdmin",
 
