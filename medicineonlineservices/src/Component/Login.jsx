@@ -150,7 +150,16 @@ localStorage.setItem("user", JSON.stringify(userData));
 
   return (
     <>
+
+    
       <div className="login-page">
+        <i
+      className="fas fa-times me-2"
+      style={{ cursor: "pointer" }}
+      onClick={() => navigate("/header")}
+    >
+      {/* skip */}
+    </i>
         {/* LEFT IMAGE */}
         <div className="login-left">
           <img

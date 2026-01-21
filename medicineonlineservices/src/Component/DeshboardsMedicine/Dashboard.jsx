@@ -159,7 +159,7 @@ export default function Dashboard() {
           <li>CustomerTracking</li>
           <li>OrderStatus</li>
           <li>Customer Profile</li>
-        <Link to="/medicinelist" className="btn btn-success mb-2" ><li>Medicine List</li></Link>
+        {/* <Link to="/medicinelist" className="btn btn-success mb-2" ><li>Medicine List</li></Link> */}
 
           <li>
             <Link to="/header">

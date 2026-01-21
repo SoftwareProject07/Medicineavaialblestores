@@ -115,8 +115,8 @@ export default function DeshboardPanel() {//medicine admin panel deshboard
       }
 
       const res = await axios.put(
-      //  "https://ecommerencesite-api.onrender.com/api/MEDICINE/UpdateMedicine",
-      "http://localhost:5256/api/MEDICINE/UpdateMedicine",
+        "https://ecommerencesite-api.onrender.com/api/MEDICINE/UpdateMedicine",
+      //"http://localhost:5256/api/MEDICINE/UpdateMedicine",
         data
       );
 
@@ -176,16 +176,16 @@ export default function DeshboardPanel() {//medicine admin panel deshboard
         </div>
 
         <ul>
-         {/* <li className="menu-group">  */}
-         {/*   <span
+         {/* <li className="menu-group">  
+            <span
               className="menu-title btn btn-success mb-2"
               onClick={() => setOpenDashboard(!openDashboard)}
             >
               Dashboard {openDashboard ? "▾" : "▸"}
-            </span> */}
+            </span> 
 
 
-{/* <Link
+<Link
   to="/dashboards"
   className="menu-title btn btn-success mb-2 d-flex justify-content-between align-items-center"
   onClick={() => setOpenDashboard(!openDashboard)}
@@ -209,14 +209,13 @@ export default function DeshboardPanel() {//medicine admin panel deshboard
           </li> */}
 
            <Link to="/deshboardpanel" className="btn btn-success mb-2">Admin Dashboard</Link>
-                               {/* <Link to="/header" className="btn btn-success mb-2">Medicines</Link>
                                          <li>Cart</li>
-                                        <Link to="/customerdetails" className="btn btn-success mb-2">Patience Details</Link> 
-                                          */}
+                                        {/* <Link to="/customerdetails" className="btn btn-success mb-2">Patience Details</Link>  */}
+                                         
 
           <li>OrdersPayment</li>
 
-          <li>CustomerLIST</li>
+     <li><Link  to="/customerlists" className="btn btn-success mb-2">   CustomerLIST </Link></li>
 
           <li>OrderList</li>
 

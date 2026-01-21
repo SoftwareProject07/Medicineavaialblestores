@@ -12,13 +12,22 @@ export default function Medicine() {
   const [discount, setDiscount] = useState("");
   const [quantity, setQuantity] = useState("");
   const [expiryDate, setExpiryDate] = useState(""); // YYYY-MM-DD from input
- // const [imageFile, setImageFile] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
 
   const toDdMmYyyy = (yyyyMmDd) => {
     if (!yyyyMmDd) return "";
     const [yyyy, mm, dd] = yyyyMmDd.split("-");
     return `${dd}/${mm}/${yyyy}`;
   };
+
+//   const toDdMmYyyy = (date) => {
+//   const [y, m, d] = date.split("-");
+//   return `${d}/${m}/${y}`;
+// };
+
+// send this
+// expiryDate: toDdMmYyyy(expiryDate)
+
 
   const handleSave = async () => {
     if (!name || !manufacturer || !unitPrice || !quantity || !expiryDate || !imageFile) {
@@ -32,9 +41,9 @@ export default function Medicine() {
     formData.append("UnitPrice", unitPrice);   // let server parse decimals
     formData.append("Discount", discount || 0);
     formData.append("Quantity", quantity);
-    formData.append("ExpiryDate", toDdMmYyyy(expiryDate)); // match backend regex
+    formData.append("ExpiryDate", expiryDate); // match backend regex--toDdMmYyyy(expiryDate)
     formData.append("STATUS", "1"); // optional; backend sets this anyway
-   // formData.append("image", imageFile); // must match controller parameter name
+   formData.append("image", imageFile); // must match controller parameter name
 
     try {
       await axios.post(
@@ -43,7 +52,7 @@ export default function Medicine() {
         formData,
         {
           // DO NOT set Content-Type manually; let the browser set multipart boundary
-          // headers: { "Content-Type": "multipart/form-data" }
+           headers: { "Content-Type": "multipart/form-data" }
         }
       );
       alert("Add Medicine Successful");
@@ -65,7 +74,7 @@ export default function Medicine() {
           <input type="number" placeholder="Unit Price" value={unitPrice} onChange={e => setUnitPrice(e.target.value)} />
           <input type="number" placeholder="Discount" value={discount} onChange={e => setDiscount(e.target.value)} />
           <input type="number" placeholder="Quantity" value={quantity} onChange={e => setQuantity(e.target.value)} />
-          <input type="date" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} />
+          <input type="text" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} />
           {/* <input type="file" value={imageFile} onChange={e => setImageFile(e.target.value)} /> */}
 
           {/* <input

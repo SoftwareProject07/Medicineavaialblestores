@@ -32,7 +32,7 @@ export default function AdminLogin() {
     };
 
     try {
-      const response = await axios.post(
+      const response = await axios.get(
          "https://ecommerencesite-api.onrender.com/api/AdminApi/LOGINAdmin",
        // "http://localhost:5256/api/AdminApi/LOGINAdmin",
 
@@ -49,15 +49,7 @@ export default function AdminLogin() {
           localStorage.setItem("token", response.data.token);
         }
 
-  //       alert("Admin Login Successful ✅");
-  //       navigate("/deshboardpanel");
-  //     } else {
-  //       alert(response.data.message || "Invalid Email or Password");
-  //     }
-  //   } catch (error) {
-  //     alert("Server error, please try again later");
-  //   }
-  // };
+
    Swal.fire({
             icon: "success",
             title: "Admin Login Successful",
@@ -96,8 +88,16 @@ export default function AdminLogin() {
         style={{ cursor: "pointer" }}
         onClick={() => console.log("Skip clicked")}
       >
-        <i className="fas fa-times me-2"></i>skip
+        {/* <i className="fas fa-times me-2"></i>skip  */}
+      {/* <Link to="/login">   </Link> */}
         {/* <Link to=" ">Skip</Link> */}
+        <i
+      className="fas fa-times me-2"
+      style={{ cursor: "pointer" }}
+      onClick={() => navigate("/header")}
+    >
+      {/* skip */}
+    </i>
       </span>
               <i
                 className="fas fa-crow fa-2x me-3 pt-5 mt-xl-4"

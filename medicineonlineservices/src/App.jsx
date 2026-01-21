@@ -19,6 +19,7 @@ import MedicineDisplay from "./Component/User/MedicineDisplay.jsx";
 import Customerdetails from "./Component/User/Customerdetails.jsx";
 import DeliveryAddress from "./Component/User/DeliveryAddress.jsx";
 import MedicineList from "./Component/User/MedicineList.jsx";
+import CustomerList from "./Component/Admin/CustomerList.jsx";
 
 function App() {
   const { loading } = useAuth();
@@ -53,6 +54,7 @@ if (loading) {
         <Route path="/deshboardpanel/medicines" element={<Medicine />} />
         <Route path="/deliveryaddress" element={<DeliveryAddress />} />
         <Route path="/medicinelist" element={<MedicineList />} /> 
+ <Route path="/customerlists" element={<CustomerList />} />
 
       </Routes>
     </CartProvider>

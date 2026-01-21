@@ -15,7 +15,7 @@ export default function Registeration() {
  // const [confirmpassword, setConfirmPassword] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
-  const [photo, setPhoto] = useState(null);
+//const [photo, setPhoto] = useState(null);
 
   const handleSave = async () => {
     // if (password !== confirmpassword) {
@@ -40,9 +40,9 @@ export default function Registeration() {
     formData.append("Type", "User");
     formData.append("CreateOn", new Date().toISOString());
 
-    if (photo) {
-      formData.append("Photo", photo); // 🔥 FILE
-    }
+    // if (photo) {
+    //   formData.append("Photo", photo); // 🔥 FILE
+    // }
 
     try {
       const response = await axios.post(
@@ -90,8 +90,8 @@ export default function Registeration() {
           value={mobile} maxLength={10}
           onChange={(e) => setMobile(e.target.value)} />
 
-        <input type="file" className="form-control mb-3"
-          onChange={(e) => setPhoto(e.target.files[0])} />
+        {/* <input type="file" className="form-control mb-3"
+          onChange={(e) => setPhoto(e.target.files[0])} /> */}
 
         <button className="btn btn-success w-100" onClick={handleSave}>
           Register
