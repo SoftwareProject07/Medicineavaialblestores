@@ -89,6 +89,7 @@ export default function CustomerList() {
           <thead className="table-dark">
             <tr>
               <th>First Name</th>
+              <th>Middlename</th>
               <th>Last Name</th>
               <th>Email</th>
               <th>Mobile</th>
@@ -106,6 +107,7 @@ export default function CustomerList() {
               currentItems.map((u) => (
                 <tr key={u.id}>
                   <td>{u.firstName}</td>
+                  <td>{u.middleName}</td>
                   <td>{u.lastName}</td>
                   <td>{u.email}</td>
                   <td>{u.mobileNumber}</td>
