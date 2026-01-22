@@ -209,7 +209,7 @@ export default function DeshboardPanel() {//medicine admin panel deshboard
           </li> */}
 
            <Link to="/deshboardpanel" className="btn btn-success mb-2">Admin Dashboard</Link>
-                                         <li>Cart</li>
+                                         {/* <li>Cart</li> */}
                                         {/* <Link to="/customerdetails" className="btn btn-success mb-2">Patience Details</Link>  */}
                                          
 

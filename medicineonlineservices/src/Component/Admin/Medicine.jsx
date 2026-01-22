@@ -6,12 +6,13 @@ import "../styles/admincreateMedicine.css";
 export default function Medicine() {
   const navigate = useNavigate();
 
+  // Initial state ko empty string "" rakhein taaki "uncontrolled to controlled" error na aaye
   const [name, setName] = useState("");
   const [manufacturer, setManufacturer] = useState("");
   const [unitPrice, setUnitPrice] = useState("");
   const [discount, setDiscount] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [expiryDate, setExpiryDate] = useState(""); // YYYY-MM-DD from input
+  const [expiryDate, setExpiryDate] = useState(""); 
   const [imageFile, setImageFile] = useState(null);
 
   const toDdMmYyyy = (yyyyMmDd) => {
@@ -20,46 +21,41 @@ export default function Medicine() {
     return `${dd}/${mm}/${yyyy}`;
   };
 
-//   const toDdMmYyyy = (date) => {
-//   const [y, m, d] = date.split("-");
-//   return `${d}/${m}/${y}`;
-// };
-
-// send this
-// expiryDate: toDdMmYyyy(expiryDate)
-
-
   const handleSave = async () => {
     if (!name || !manufacturer || !unitPrice || !quantity || !expiryDate || !imageFile) {
-      alert("Please fill all required fields");
+      alert("Please fill all required fields and select an image");
       return;
     }
 
     const formData = new FormData();
     formData.append("Name", name);
     formData.append("Manufacturer", manufacturer);
-    formData.append("UnitPrice", unitPrice);   // let server parse decimals
+    formData.append("UnitPrice", unitPrice);
     formData.append("Discount", discount || 0);
     formData.append("Quantity", quantity);
-    formData.append("ExpiryDate", expiryDate); // match backend regex--toDdMmYyyy(expiryDate)
-    formData.append("STATUS", "1"); // optional; backend sets this anyway
-   formData.append("image", imageFile); // must match controller parameter name
+    
+    // ✅ Yahan function call karna zaroori hai
+    formData.append("ExpiryDate", toDdMmYyyy(expiryDate)); 
+    
+    formData.append("STATUS", "1");
+    // ✅ Image file object bhej rahe hain
+    formData.append("image", imageFile); 
 
     try {
       await axios.post(
-        "https://ecommerencesite.onrender.com/api/MEDICINE/CreateMedicine",
-     // "http://localhost:5256/api/MEDICINE/CreateMedicine",
+       // "http://localhost:5256/api/MEDICINE/CreateMedicine",
+       "https://ecommerencesite.onrender.com/api/MEDICINE/CreateMedicine",
         formData,
         {
-          // DO NOT set Content-Type manually; let the browser set multipart boundary
-           headers: { "Content-Type": "multipart/form-data" }
+          headers: { "Content-Type": "multipart/form-data" }
         }
       );
       alert("Add Medicine Successful");
       navigate("/deshboardpanel");
     } catch (error) {
-      console.error("API Error:", error.response?.data || error.message);
-      alert("Add Medicine Failed");
+      // 400 error aane par yahan console mein check karein ki backend kya maang raha hai
+      console.error("API Error Detailed:", error.response?.data);
+      alert("Add Medicine Failed. Check console for details.");
     }
   };
 
@@ -74,16 +70,14 @@ export default function Medicine() {
           <input type="number" placeholder="Unit Price" value={unitPrice} onChange={e => setUnitPrice(e.target.value)} />
           <input type="number" placeholder="Discount" value={discount} onChange={e => setDiscount(e.target.value)} />
           <input type="number" placeholder="Quantity" value={quantity} onChange={e => setQuantity(e.target.value)} />
-          <input type="text" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} />
-          {/* <input type="file" value={imageFile} onChange={e => setImageFile(e.target.value)} /> */}
-
-          {/* <input
-            type="file"
+          <input type="date" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} />
+          
+          {/* ✅ FIXED: value property hata di gayi hai aur files[0] use kiya hai */}
+          <input 
+            type="file" 
             accept="image/*"
-            value={imageFile}
-            onChange={e => setImageFile(e.target.files?.[0] || null)}
-          /> */}
-        
+            onChange={e => setImageFile(e.target.files[0])} 
+          />
 
           <button className="btn btn-success w-100" onClick={handleSave}>
             Add Medicines
