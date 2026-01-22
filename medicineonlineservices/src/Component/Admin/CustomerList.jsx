@@ -5,8 +5,12 @@ import { Link } from "react-router-dom";
 export default function CustomerList() {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  
+  // 🔹 PAGINATION STATE
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
-  // 🔹 NORMALIZE API DATA (MOST IMPORTANT)
+  // 🔹 NORMALIZE API DATA
   const normalizeUsers = (list) =>
     list.map((u) => ({
       id: u.id ?? u.Id,
@@ -16,26 +20,15 @@ export default function CustomerList() {
       mobileNumber: u.mobileNumber ?? u.MobileNumber,
       fund: u.fund ?? u.Fund,
       type: u.type ?? u.Type,
-    //  photoUrl: u.photoUrl ?? u.PhotoUrl,
       createdOn: u.createdOn ?? u.CreatedOn,
     }));
 
   // 🔹 GET USERS
   useEffect(() => {
     axios
-      .get(
-        //"http://localhost:5256/api/USERMEDICINE/AllUserList"
-        "https://ecommerencesite.onrender.com/api/USERMEDICINE/AllUserList"
-      )
+      .get("https://ecommerencesite.onrender.com/api/USERMEDICINE/AllUserList")
       .then((res) => {
-        console.log("API FULL RESPONSE 👉", res.data);
-
-        const list = Array.isArray(res.data)
-          ? res.data
-          : res.data?.data;
-
-        console.log("FINAL USER LIST 👉", list);
-
+        const list = Array.isArray(res.data) ? res.data : res.data?.data;
         setUsers(Array.isArray(list) ? normalizeUsers(list) : []);
       })
       .catch((err) => {
@@ -52,62 +45,29 @@ export default function CustomerList() {
       u.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // 🔹 PAGINATION LOGIC
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
-   <div className="dashboard-container">
+    <div className="dashboard-container">
       {/* ---------- SIDEBAR ---------- */}
       <div className="sidebar">
         <div className="brand">
           <img src="/AKMedizostore.png" alt="logo" width="45px" />
           <span>AKMedizostore</span>
         </div>
-
         <ul>
-         {/* <li className="menu-group">  
-            <span
-              className="menu-title btn btn-success mb-2"
-              onClick={() => setOpenDashboard(!openDashboard)}
-            >
-              Dashboard {openDashboard ? "▾" : "▸"}
-            </span> 
-
-
-<Link
-  to="/dashboards"
-  className="menu-title btn btn-success mb-2 d-flex justify-content-between align-items-center"
-  onClick={() => setOpenDashboard(!openDashboard)}
->
-  Dashboard
-  <span>{openDashboard ? "▾" : "▸"}</span>
-</Link>
-
-            {openDashboard && (
-              <ul className="submenu">
-                <li><Link to="/medication-tracker">Medication Tracker</Link></li>
-                <li><Link to="/test-reports">Test Reports</Link></li>
-                <li><Link to="/health-history">Health History</Link></li>
-                <li><Link to="/monthly-progress">Monthly Progress</Link></li>
-                <li><Link to="/prescriptions">Prescriptions</Link></li>
-                <li><Link to="/history">History</Link></li>
-                <li><Link to="/support">Help & Support</Link></li>
-                <li><Link to="/settings">Settings</Link></li>
-              </ul>
-            )}
-          </li> */}
-
-           <Link to="/deshboardpanel" className="btn btn-success mb-2">Admin Dashboard</Link>
-                                         <li>Cart</li>
-                                        {/* <Link to="/customerdetails" className="btn btn-success mb-2">Patience Details</Link>  */}
-                                         
-
+          <Link to="/deshboardpanel" className="btn btn-success mb-2">Admin Dashboard</Link>
+          <li>Cart</li>
           <li>OrdersPayment</li>
-
-     <li><Link  to="/customerlists" className="btn btn-success mb-2">   CustomerLIST </Link></li>
-
+          <li><Link to="/customerlists" className="btn btn-success mb-2">Customer LIST</Link></li>
           <li>OrderList</li>
-
-          {/* <li>Customer Profile</li> */}
-           {/* className="btn btn-success mb-2" */}
-          <li><Link to="/adminlogin"><i class="fas fa-sign-out-alt"></i> LogOut</Link></li>
+          <li><Link to="/adminlogin"><i className="fas fa-sign-out-alt"></i> LogOut</Link></li>
         </ul>
       </div>
 
@@ -119,11 +79,14 @@ export default function CustomerList() {
           className="form-control my-3"
           placeholder="Search by name or email"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1); // Reset to page 1 on search
+          }}
         />
 
         <table className="table table-bordered table-hover">
-          <thead>
+          <thead className="table-dark">
             <tr>
               <th>First Name</th>
               <th>Last Name</th>
@@ -131,52 +94,50 @@ export default function CustomerList() {
               <th>Mobile</th>
               <th>Fund</th>
               <th>Type</th>
-                          {/* <th>Photo</th> */}
-
               <th>Created On</th>
             </tr>
           </thead>
-
           <tbody>
-            {filteredUsers.length === 0 ? (
+            {currentItems.length === 0 ? (
               <tr>
-                <td colSpan="8" className="text-center">
-                  No customers found
-                </td>
+                <td colSpan="7" className="text-center">No customers found</td>
               </tr>
             ) : (
-              filteredUsers.map((u) => (
+              currentItems.map((u) => (
                 <tr key={u.id}>
-                  {/* <td>
-                    {u.photoUrl ? (
-                      <img
-                        src={u.photoUrl}
-                        alt="user"
-                        width="50"
-                        height="50"
-                        style={{ borderRadius: "50%" }}
-                      />
-                    ) : (
-                      "No Photo"
-                    )}
-                  </td> */}
                   <td>{u.firstName}</td>
                   <td>{u.lastName}</td>
                   <td>{u.email}</td>
                   <td>{u.mobileNumber}</td>
                   <td>{u.fund}</td>
                   <td>{u.type}</td>
-                  <td>
-                    {u.createdOn
-                      ? new Date(u.createdOn).toLocaleDateString()
-                      : "N/A"}
-                  </td>
-
+                  <td>{u.createdOn ? new Date(u.createdOn).toLocaleDateString() : "N/A"}</td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
+
+        {/* 🔹 PAGINATION CONTROLS */}
+        <div className="d-flex justify-content-between align-items-center mt-3">
+          <span>Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredUsers.length)} of {filteredUsers.length} entries</span>
+          
+          <nav>
+            <ul className="pagination mb-0">
+              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                <button className="page-link" onClick={() => paginate(currentPage - 1)}>Previous</button>
+              </li>
+              
+              <li className="page-item active">
+                <span className="page-link">{currentPage}</span>
+              </li>
+
+              <li className={`page-item ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}`}>
+                <button className="page-link" onClick={() => paginate(currentPage + 1)}>Next</button>
+              </li>
+            </ul>
+          </nav>
+        </div>
       </div>
     </div>
   );
