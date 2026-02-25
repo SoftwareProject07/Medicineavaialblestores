@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // useNavigate ko import kiya
 import Swal from "sweetalert2"; // Error popup ke liye import kiya
-import "../component/styles/contacts.css";
+import "../Component/styles/contacts.css";
 
 export default function Contact() {
   const navigate = useNavigate(); // navigate function initialize kiya
