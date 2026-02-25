@@ -1,24 +1,59 @@
-export default function CartItem({ item, onUpdate, onRemove }) {
+import React from "react";
+
+export default function CartItem({ item, handleQuantity, remove }) {
   return (
-    <div style={{ display: "flex", marginBottom: 10 }}>
-      <img src={item.imageUrl} width="80" />
+    <tr className="align-middle">
+      <td className="fw-bold">{item.medicineName}</td>
+      <td>₹{item.unitPrice}</td>
+      <td>
+        <div className="d-flex align-items-center border rounded-pill p-1 bg-light" style={{ width: "fit-content" }}>
+          {/* Minus Button */}
+          <button 
+            className="btn btn-sm btn-white rounded-circle shadow-sm border fw-bold" 
+            style={{ width: "28px", height: "28px" }}
+            onClick={() => handleQuantity(item.cartId, item.quantity, -1)}
+            disabled={item.quantity <= 1}
+          > - </button>
 
-      <div style={{ flex: 1, marginLeft: 10 }}>
-        <h5>{item.medicineName}</h5>
-        <p>₹{item.unitPrice}</p>
+          <span className="mx-3 fw-bold">{item.quantity}</span>
 
-        <button onClick={() => onUpdate(item.cartId, item.quantity - 1)}>
-          -
+          {/* Plus Button */}
+          <button 
+            className="btn btn-sm btn-white rounded-circle shadow-sm border fw-bold" 
+            style={{ width: "28px", height: "28px" }}
+            onClick={() => handleQuantity(item.cartId, item.quantity, 1)}
+          > + </button>
+        </div>
+      </td>
+      <td className="fw-bold text-dark">₹{(item.unitPrice * item.quantity).toFixed(2)}</td>
+      
+      <td>
+        {/* Soft Delete Button */}
+        <button 
+          className="btn btn-sm btn-danger px-3 rounded-pill shadow-sm" 
+          onClick={() => remove(item.cartId)}
+        >
+          Delete
         </button>
-        <span style={{ margin: "0 10px" }}>{item.quantity}</span>
-        <button onClick={() => onUpdate(item.cartId, item.quantity + 1)}>
-          +
-        </button>
-
-        <p>Total: ₹{item.totalPrice}</p>
-      </div>
-
-      <button onClick={() => onRemove(item.cartId)}>❌</button>
-    </div>
+      </td>
+    </tr>
   );
 }
+
+
+
+// CartItem.jsx
+// import React from 'react';
+
+// const CartItem = ({ item, removeFromCart, updateQuantity }) => {
+//   return (
+//     // Aapka existing JSX code...
+//     <tr>
+//       <td>{item.name}</td>
+//       {/* ... rest of the code */}
+//     </tr>
+//   );
+// };
+
+// // YEH LINE MISSING HO SAKTI HAI:
+// export default CartItem;

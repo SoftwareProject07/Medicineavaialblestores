@@ -1,399 +1,289 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/DeliveryAddresss.css";
 import { useCart } from "../User/CartContext";
+import { 
+  ChevronLeft, X, Trash2, Edit, LayoutDashboard, 
+  Pill, ShoppingCart, MapPin, LogOut, Plus, CreditCard, User as UserIcon 
+} from "lucide-react";
 
-/* ================= API ================= */
-const API =
- "https://ecommerencesite.onrender.com/api/Patient_CustomerAPI";
-  //"http://localhost:5256/api/Patient_CustomerAPI";
+const API = "https://ecommerencesite.onrender.com/api/Patient_CustomerAPI";
 
 export default function DeliveryAddress() {
-  /* ================= STATES ================= */
   const [addresses, setAddresses] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const [editIndex, setEditIndex] = useState(null);
-  const [editData, setEditData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showPopup, setShowPopup] = useState(false);
   const [openDashboard, setOpenDashboard] = useState(false);
-  const [user, setUser] = useState(null);
-
-  const { cartItems } = useCart();
-
-  /* ================= USER (STATIC / LOCAL STORAGE) ================= */
-  // const user = {
-  //   firstName: "User",
-  //   lastName: ""
-  // };
-
-  /* ================= CART COUNT ================= */
-  const totalQuantity = cartItems.reduce(
-    (sum, item) => sum + item.quantity,
-    0
-  );
-   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
-
-  /* ================= ADD FORM STATE ================= */
+  
+  // Popup States
+  const [showAddPopup, setShowAddPopup] = useState(false);
+  const [showEditPopup, setShowEditPopup] = useState(false);
+  const [editData, setEditData] = useState(null);
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phoneNumber: "",
-    gender: "",
-    age: "",
-    address: "",
-    customerCity: "",
-    customerState: "",
-    customerZipCode: ""
+    fullName: "", gender: "Male", phoneNumber: "", address: "", 
+    customerCity: "", customerState: "", customerZipCode: "", age: "0"
   });
 
-  /* ================= FETCH ADDRESSES ================= */
+  const { setSelectedAddress, cartItems } = useCart();
+  const navigate = useNavigate();
+  const [user] = useState(JSON.parse(localStorage.getItem("user")));
+
+  useEffect(() => { 
+    if (user?.email) {
+        fetchAddresses();
+    } else {
+        setLoading(false);
+    }
+  }, [user]);
+
   const fetchAddresses = async () => {
     try {
       const res = await axios.get(`${API}/GetAllPatients_Customers`);
       const raw = res.data?.data || res.data || [];
-
-      const normalized = raw.map((item) => ({
-        Patient_CustomerId: item.patient_CustomerId,
-        FullName: item.fullName,
-        PhoneNumber: item.phoneNumber,
-        Address: item.address,
-        CustomerCity: item.customerCity,
-        CustomerState: item.customerState,
-        CustomerZipCode: item.customerZipCode
-      }));
-
-      setAddresses(normalized);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+      const filtered = raw.filter(item => item.email === user?.email);
+      setAddresses(filtered);
+    } catch (err) { 
+      console.error("Fetch error:", err); 
+    } finally { 
+      setLoading(false); 
     }
   };
 
-  useEffect(() => {
-    fetchAddresses();
-  }, []);
-
-  /* ================= ADD ADDRESS ================= */
-  const handleSaveAddress = async () => {
-    try {
-      await axios.post(`${API}/AddPatient_Customer`, formData);
-      alert("Customer Address Added ✅");
-      setShowPopup(false);
-      setFormData({
-        fullName: "",
-        email: "",
-        phoneNumber: "",
-        gender: "",
-        age: "",
-        address: "",
-        customerCity: "",
-        customerState: "",
-        customerZipCode: ""
-      });
-      fetchAddresses();
-    } catch (err) {
-      console.error(err);
-      alert("Customer Address Failed ❌");
-    }
-  };
-/* ================= LOGIN PERSON MOBILE (FIX) ================= */
-  const loginMobile =
-    addresses.length > 0 ? addresses[0].PhoneNumber : "";
-  /* ================= EDIT ================= */
-  const handleEdit = (addr, index) => {
-    setEditIndex(index);
+  // Corrected Edit Handler
+  const handleEditClick = (e, addr) => {
+    e.stopPropagation();
     setEditData({ ...addr });
+    setShowEditPopup(true);
+  };
+
+  const handleDelete = async (e, id) => {
+    e.stopPropagation();
+    if (window.confirm("Are you sure you want to delete this address?")) {
+      try {
+        await axios.delete(`${API}/DeletePatient_Customer?id=${id}`);
+        fetchAddresses();
+      } catch { alert("Delete Failed"); }
+    }
   };
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`${API}/UpdatePatient_Customer`, {
-        patient_CustomerId: editData.Patient_CustomerId,
-        fullName: editData.FullName,
-        phoneNumber: editData.PhoneNumber,
-        address: editData.Address,
-        customerCity: editData.CustomerCity,
-        customerState: editData.CustomerState,
-        customerZipCode: editData.CustomerZipCode
-      });
-
-      alert("Updated ✅");
-      setEditIndex(null);
+      await axios.put(`${API}/UpdatePatient_Customer`, editData);
+      setShowEditPopup(false);
       fetchAddresses();
-    } catch {
-      alert("Update Failed ❌");
-    }
+      alert("Updated Successfully!");
+    } catch { alert("Update Failed"); }
   };
 
-  /* ================= DELETE ================= */
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete address?")) return;
-    await axios.delete(`${API}/DeletePatient/${id}`);
-    fetchAddresses();
+  const handleSaveNew = async () => {
+    try {
+      const payload = { ...formData, email: user.email, patient_CustomerId: 0 };
+      await axios.post(`${API}/AddPatient_Customer`, payload);
+      setShowAddPopup(false);
+      setFormData({ fullName: "", gender: "Male", phoneNumber: "", address: "", customerCity: "", customerState: "", customerZipCode: "", age: "0" });
+      fetchAddresses();
+      alert("Address Saved!");
+    } catch { alert("Save Failed"); }
   };
 
-  /* ================= DELIVER ================= */
-  const handleDeliverHere = (addr) => {
-    alert(`Delivering to: ${addr.FullName}`);
-  };
-
-  if (loading) return <p>Loading...</p>;
+  if (loading) return (
+    <div className="vh-100 d-flex justify-content-center align-items-center bg-dark text-success fw-bold">
+      <div className="spinner-border me-3"></div> Loading...
+    </div>
+  );
 
   return (
-     <div className="app-container">
-         {/* ---------- SIDEBAR ---------- */}
-         <div className="sidebar">
-           <div className="brand">
-             <Link to="/dashboards">
-               <img src="/AKMedizostore.png" alt="logo" width="55" />
-             </Link>
-             <span>
-               {user ? `${user.firstName} ${user.lastName}` : "User"}
-             </span>
-           </div>
-   
-           <ul>
-             <li className="menu-group">
-               <button
-                 className="menu-title btn btn-success mb-2 d-flex justify-content-between align-items-center"
-                 onClick={() => setOpenDashboard(!openDashboard)}
-               >
-                 Dashboard <span>{openDashboard ? "▾" : "▸"}</span>
-               </button>
-   
-               {openDashboard && (
-                 <ul className="submenu">
-                   <li><Link to="/medication-tracker">Medication Tracker</Link></li>
-                   <li><Link to="/test-reports">Test Reports</Link></li>
-                   <li><Link to="/health-history">Health History</Link></li>
-                   <li><Link to="/monthly-progress">Monthly Progress</Link></li>
-                   <li><Link to="/prescriptions">Prescriptions</Link></li>
-                   <li><Link to="/history">History</Link></li>
-                   <li><Link to="/support">Help & Support</Link></li>
-                   <li><Link to="/settings">Settings</Link></li>
-                 </ul>
-               )}
-             </li>
-   
-             <li>
-               <Link to="/medicinedisplay" className="btn btn-success mb-2">
-                 Medicines
-               </Link>
-             </li>
-   
-             {/* ✅ CART WITH COUNT */}
-             <li>
-               <Link
-                 to="/carts"
-                 className="btn btn-success mb-2 d-flex justify-content-between align-items-center"
-               >
-                 <span>Medicine Cart</span>
-                 {totalQuantity > 0 && (
-                   <span
-                     style={{
-                       background: "red",
-                       color: "#fff",
-                       borderRadius: "50%",
-                       padding: "2px 8px",
-                       fontSize: "12px"
-                     }}
-                   >
-                     {totalQuantity}
-                   </span>
-                 )}
-               </Link>
-             </li>
-             {/* deliveryaddress */}
-            {/* <li>Delivery Address</li> */}
-              <li>
-               <Link to="/deliveryaddress" className="btn btn-success mb-2">
-                 Delivery Address
-               </Link>
-             </li>
-             <li>OrdersPayment</li>
-             <li>CustomerTracking</li>
-             <li>OrderStatus</li>
-             <li>Customer Profile</li>
-   
-             <li>
-               <Link to="/header">
-                 <i className="fas fa-sign-out-alt"></i> LogOut
-               </Link>
-             </li>
-           </ul>
-         </div>
+    <div className="d-flex bg-dark text-white min-vh-100 main-layout">
+      
+      {/* --- 1. SIDEBAR --- */}
+      <div className="sidebar shadow-lg border-end border-secondary">
+        <div className="brand p-4">
+          <Link to="/dashboards" className="text-decoration-none d-flex align-items-center gap-2">
+            <img src="/AKMedizostore.png" alt="logo" width="50" />
+            <span className="user-name text-truncate text-success fw-bold">
+              {user ? `${user.firstName} ${user.lastName}` : "User"}
+            </span>
+          </Link>
+        </div>
 
+        <ul className="menu-list list-unstyled px-3">
+                <li className="menu-group">
+                    <button
+                      className="menu-title btn btn-success mb-2 d-flex justify-content-between align-items-center"
+                      onClick={() => setOpenDashboard(!openDashboard)}
+                    >
+                      Dashboard <span>{openDashboard ? "▾" : "▸"}</span>
+                    </button>
+        
+                    {openDashboard && (
+                      <ul className="submenu">
+                        <li><Link to="/medication-tracker">Medication Tracker</Link></li>
+                        <li><Link to="/test-reports">Test Reports</Link></li>
+                        <li><Link to="/health-history">Health History</Link></li>
+                        <li><Link to="/monthly-progress">Monthly Progress</Link></li>
+                        <li><Link to="/prescriptions">Prescriptions</Link></li>
+                        <li><Link to="/history">History</Link></li>
+                        <li><Link to="/support">Help & Support</Link></li>
+                        <li><Link to="/settings">Settings</Link></li>
+                      </ul>
+                    )}
+                  </li>
 
+        
+                  <li>
+                    <Link to="/medicinedisplay" className="btn btn-success mb-2">
+                      Medicines
+                    </Link>
+                  </li>
+        
+                  {/* ✅ CART WITH COUNT */}
+                   <Link to="/carts" className="nav-link">
+                             <i className="fas fa-shopping-cart me-2"></i> My Cart
+                             {cartItems.length > 0 && (
+                               <span className="cart-count badge bg-danger rounded-pill ms-2">
+                                 {cartItems.length}
+                               </span>
+                             )}
+                           </Link>
+                  {/* deliveryaddress */}
+                 {/* <li>Delivery Address</li> */}
+                   <li>
+                    <Link to="/deliveryaddress" className="btn btn-success mb-2">
+                      Delivery Address
+                    </Link>
+                  </li>
+                
+                  <li><Link to="/CompletePayments" className="btn btn-success mb-2">
+                     ORDER PAYMENT
+                    </Link></li>
+                   <li>OrderItem</li>
+        
+                  <li>CustomerTracking</li>
+        
+                  <Link to="/profile"  className="btn btn-success">CustomerProfile</Link>
+        
+                {/* <Link to="/medicinelist" className="btn btn-success mb-2" ><li>Medicine List</li></Link> */}
+        
+                  <li>
+                    <Link to="/header">
+                      <i className="fas fa-sign-out-alt"></i>  LogOut
+                    </Link>
+                  </li>
+        </ul>
+      </div>
 
+      {/* --- 2. MAIN CONTENT AREA --- */}
+      <div className="main-content flex-grow-1 p-4">
+        <div className="header-container d-flex justify-content-between align-items-center mb-4">
+          <div className="d-flex align-items-center">
+            <ChevronLeft className="me-3 cursor-pointer text-success back-icon" onClick={() => navigate(-1)} />
+            <div>
+              <h4 className="fw-bold mb-0">Delivery Address</h4>
+              <small className="text-muted">Select or add a location for delivery</small>
+            </div>
+          </div>
+          <button className="btn btn-success fw-bold px-4 rounded-pill" onClick={() => setShowAddPopup(true)}>
+            <Plus size={18} className="me-1" /> ADD NEW
+          </button>
+        </div>
 
-      {/* ---------- MAIN ---------- */}
-      <div className="main-content">
-
-         {/* <h2>
-  Login Person, {user?.firstName} {user?.lastName}, &nbsp;&nbsp;
-   Mobile Number : {loginMobile}</h2>
-<hr></hr> */}
- <h2>
-           Login  Person : {user ? `${user.firstName} ${user.lastName}` : "User"} ✅ &nbsp;&nbsp;
-               Mobile Number : {loginMobile}
-
-             </h2>
-             
-             <hr></hr>
-        <h2>DELIVERY ADDRESS</h2>
-
-        {addresses.map((addr, index) => (
-          <div
-            key={addr.Patient_CustomerId}
-            className={`address-card ${
-              selectedIndex === index ? "active" : ""
-            }`}
-          >
-            {editIndex !== index ? (
-              <>
-                <div className="address-header">
-                  <input
-                    type="radio"
-                    checked={selectedIndex === index}
-                    onChange={() => setSelectedIndex(index)}
-                  />
-                  <span className="name">{addr.FullName}</span>
-                  <span className="phone">{addr.PhoneNumber}</span>
-                  <span className="edit" onClick={() => handleEdit(addr, index)}>
-                    EDIT
-                  </span>
-                  <span
-                    className="delete"
-                    onClick={() => handleDelete(addr.Patient_CustomerId)}
-                  >
-                    DELETE
-                  </span>
-                </div>
-
-                <div className="address-body">
-                  {addr.Address}, {addr.CustomerCity},{" "}
-                  {addr.CustomerState} - <b>{addr.CustomerZipCode}</b>
+        <div className="address-grid">
+          {addresses.length === 0 ? (
+            <div className="empty-state text-center p-5 border border-secondary border-dashed rounded-4">
+              <MapPin size={40} className="text-muted mb-2" />
+              <p>No addresses found. Click "+ ADD NEW" to create one.</p>
+            </div>
+          ) : (
+            addresses.map((addr, index) => (
+              <div 
+                key={index} 
+                className={`address-card p-4 mb-3 border rounded-3 transition-all ${selectedIndex === index ? "selected" : "normal"}`} 
+                onClick={() => setSelectedIndex(index)} 
+              >
+                <div className="d-flex justify-content-between">
+                  <div className="d-flex gap-3">
+                    <div className="radio-circle">
+                        {selectedIndex === index && <div className="radio-inner"></div>}
+                    </div>
+                    <div>
+                      <h6 className="fw-bold mb-1 fs-5 text-white">{addr.fullName} <small className="text-muted">({addr.gender})</small></h6>
+                      <p className="text-info small fw-bold mb-1">{addr.phoneNumber}</p>
+                      <p className="text-white-50 small mb-0">{addr.address}, {addr.customerCity}, {addr.customerState} - {addr.customerZipCode}</p>
+                    </div>
+                  </div>
+                  <div className="d-flex gap-2 action-btns">
+                    <button className="btn btn-link text-info p-0" onClick={(e) => handleEditClick(e, addr)}><Edit size={18} /></button>
+                    <button className="btn btn-link text-danger p-0" onClick={(e) => handleDelete(e, addr.patient_CustomerId)}><Trash2 size={18} /></button>
+                  </div>
                 </div>
 
                 {selectedIndex === index && (
-                  <button
-                    className="deliver-btn"
-                    onClick={() => handleDeliverHere(addr)}
-                  >
-                    DELIVER HERE
-                  </button>
+                  <div className="mt-3 animate-fade-in">
+                    <button 
+                      className="btn btn-warning w-100 fw-bold py-2 shadow-sm" 
+                      disabled={cartItems.length === 0}
+                      onClick={(e) => { e.stopPropagation(); setSelectedAddress(addr); navigate("/carts"); }}
+                    >
+                      {cartItems.length > 0 ? "DELIVER TO THIS ADDRESS" : "CART IS EMPTY - ADD MEDICINES"}
+                    </button>
+                  </div>
                 )}
-              </>
-            ) : (
-              <div className="edit-form">
-                <input
-                  value={editData.FullName}
-                  placeholder="FullName"
-
-                  required autoComplete="off"
-                  onChange={(e) =>
-                    setEditData({ ...editData, FullName: e.target.value })
-                  }
-                />
-                <input
-                  value={editData.PhoneNumber}
-                                    placeholder="PhoneNumber"
-                  required autoComplete="off"
-maxLength={10}
-                  onChange={(e) =>
-                    setEditData({ ...editData, PhoneNumber: e.target.value })
-                  }
-                />
-                <input
-                  value={editData.Address}
-                  placeholder="Address"
-                  required autoComplete="off"
-
-                  onChange={(e) =>
-                    setEditData({ ...editData, Address: e.target.value })
-                  }
-                />
-                <input
-                  value={editData.CustomerCity}
-                                    placeholder="CustomerCity"
-                  required autoComplete="off"
-
-                  onChange={(e) =>
-                    setEditData({ ...editData, CustomerCity: e.target.value })
-                  }
-                />
-                <input
-                  value={editData.CustomerState}
-                                                      placeholder="CustomerState"
-                  required autoComplete="off"
-
-                  onChange={(e) =>
-                    setEditData({ ...editData, CustomerState: e.target.value })
-                  }
-                />
-                <input
-                  value={editData.CustomerZipCode}
-                                                                        placeholder="Pincode"
-                  required autoComplete="off"
-
-                  onChange={(e) =>
-                    setEditData({ ...editData, CustomerZipCode: e.target.value })
-                  }
-                />
-
-                <button onClick={handleUpdate}>UPDATE</button>
-                <button onClick={() => setEditIndex(null)}>CANCEL</button>
               </div>
-            )}
-          </div>
-        ))}
+            ))
+          )}
+        </div>
+      </div>
 
-        {/* <button
-          className="btn btn-primary mt-3"
-          onClick={() => setShowPopup(true)}
-        >
-          + ADD NEW ADDRESS
-        </button> */}
+      {/* --- 3. MODAL (Universal) --- */}
+      {(showEditPopup || showAddPopup) && (
+        <div className="modal-overlay">
+          <div className="modal-content-custom bg-dark border border-secondary p-4 rounded-4 shadow-lg">
+            <div className="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-2">
+              <h5 className="text-success fw-bold mb-0">{showEditPopup ? "Update Address" : "Add New Address"}</h5>
+              <X className="cursor-pointer text-muted" onClick={() => { setShowEditPopup(false); setShowAddPopup(false); }} />
+            </div>
 
-        <button
-  className="btn btn-primary mt-3"
-  onClick={() => setShowPopup(true)}
->
-  + ADD NEW ADDRESS
-</button>
+            <div className="row g-3 text-start">
+              <div className="col-12">
+                <label className="small text-muted mb-1">Full Name</label>
+                <input className="form-control bg-transparent text-white border-secondary" value={showEditPopup ? editData.fullName : formData.fullName} onChange={e => showEditPopup ? setEditData({...editData, fullName: e.target.value}) : setFormData({...formData, fullName: e.target.value})} />
+              </div>
+              <div className="col-md-6">
+                <label className="small text-muted mb-1">Phone Number</label>
+                <input className="form-control bg-transparent text-white border-secondary" value={showEditPopup ? editData.phoneNumber : formData.phoneNumber} onChange={e => showEditPopup ? setEditData({...editData, phoneNumber: e.target.value}) : setFormData({...formData, phoneNumber: e.target.value})} />
+              </div>
+              <div className="col-md-6">
+                <label className="small text-muted mb-1">Gender</label>
+                <select className="form-select bg-dark text-white border-secondary" value={showEditPopup ? editData.gender : formData.gender} onChange={e => showEditPopup ? setEditData({...editData, gender: e.target.value}) : setFormData({...formData, gender: e.target.value})}>
+                  <option value="Male">Male</option><option value="Female">Female</option>
+                </select>
+              </div>
+              <div className="col-12">
+                <label className="small text-muted mb-1">Detailed Address</label>
+                <textarea className="form-control bg-transparent text-white border-secondary" rows="2" value={showEditPopup ? editData.address : formData.address} onChange={e => showEditPopup ? setEditData({...editData, address: e.target.value}) : setFormData({...formData, address: e.target.value})} />
+              </div>
+              <div className="col-md-4">
+                <label className="small text-muted mb-1">City</label>
+                <input className="form-control bg-transparent text-white border-secondary" value={showEditPopup ? editData.customerCity : formData.customerCity} onChange={e => showEditPopup ? setEditData({...editData, customerCity: e.target.value}) : setFormData({...formData, customerCity: e.target.value})} />
+              </div>
+              <div className="col-md-4">
+                <label className="small text-muted mb-1">State</label>
+                <input className="form-control bg-transparent text-white border-secondary" value={showEditPopup ? editData.customerState : formData.customerState} onChange={e => showEditPopup ? setEditData({...editData, customerState: e.target.value}) : setFormData({...formData, customerState: e.target.value})} />
+              </div>
+              <div className="col-md-4">
+                <label className="small text-muted mb-1">Zip Code</label>
+                <input className="form-control bg-transparent text-white border-secondary" value={showEditPopup ? editData.customerZipCode : formData.customerZipCode} onChange={e => showEditPopup ? setEditData({...editData, customerZipCode: e.target.value}) : setFormData({...formData, customerZipCode: e.target.value})} />
+              </div>
+            </div>
 
-
-        {/* ---------- POPUP ---------- */}
-        {showPopup && (
-          <div className="popup">
-            <div className="popup-box">
-              <h3>Customer  Address</h3>
-
-              {Object.keys(formData).map((key) => (
-                <input
-                  key={key}
-                  placeholder={key}
-                  value={formData[key]}
-                  onChange={(e) =>
-                    setFormData({ ...formData, [key]: e.target.value })
-                  }
-                />
-              ))}
-
-              <button onClick={handleSaveAddress}>SAVE</button>
-              <button onClick={() => setShowPopup(false)}>CANCEL</button>
+            <div className="d-flex gap-2 mt-4 pt-3">
+              <button className="btn btn-success flex-grow-1 py-2 fw-bold" onClick={showEditPopup ? handleUpdate : handleSaveNew}>SAVE</button>
+              <button className="btn btn-outline-secondary flex-grow-1 py-2" onClick={() => { setShowEditPopup(false); setShowAddPopup(false); }}>CANCEL</button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

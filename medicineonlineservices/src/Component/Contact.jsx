@@ -1,81 +1,178 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import "./styles/contacts.css";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom"; // useNavigate ko import kiya
+import Swal from "sweetalert2"; // Error popup ke liye import kiya
+import "../component/styles/contacts.css";
 
 export default function Contact() {
+  const navigate = useNavigate(); // navigate function initialize kiya
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [adminOpen, setAdminOpen] = useState(false);
+  const [cartItems] = useState([]);
+  const [isShopOpen] = useState(localStorage.getItem("shopStatus") !== "OFF");
+
+  // --- Logic: Medicine Order Protection with Popup ---
+  const handleMedicineOrderClick = (e) => {
+    const isLoggedIn = localStorage.getItem("user") || localStorage.getItem("token");
+
+    if (!isLoggedIn) {
+      e.preventDefault(); // Page change hone se rokein
+      
+      // Stylish Error Popup
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Required',
+        text: 'Please login first to access Medicine Orders !',
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Login Now',
+        showCancelButton: true,
+        cancelButtonText: 'Close'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setSidebarOpen(false); // Sidebar close karein
+          navigate("/dashboards"); // Login page par bhej dein
+        }
+      });
+    } else {
+      setSidebarOpen(false); // Agar login hai toh sidebar close karke orders par jane dein
+    }
+  };
+
   return (
     <>
-      {/* NAVBAR */}
-      <nav className="navbar navbar-expand-lg navbar-light bg-light px-3 shadow-sm w-100">
-        <Link className="navbar-brand d-flex align-items-center" to="/">
-          <img
-            src="/AKMedizostore.png"
-            alt="AKMedizostore"
-            className="img-fluid"
-            style={{ width: "40px", marginRight: "8px" }}
-          />
-          AKMedizostore
-        </Link>
-
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav me-auto">
-            <li className="nav-item">
-              <Link className="nav-link" to="/">Home</Link>
+      {/* --- SIDEBAR MENU --- */}
+      <div
+        className={`side-menu bg-white shadow ${sidebarOpen ? "open" : ""}`}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: sidebarOpen ? 0 : "-300px",
+          width: "280px",
+          height: "100%",
+          zIndex: 2000,
+          transition: "0.3s ease",
+        }}
+      >
+        <div className="p-4">
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h5 className="fw-bold mb-0">AKMedizostore</h5>
+            <button
+              className="btn-close"
+              onClick={() => setSidebarOpen(false)}
+            ></button>
+          </div>
+          <ul className="nav flex-column gap-2">
+            <li className="nav-item border-bottom pb-2">
+              <Link to="/" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>
+                Home
+              </Link>
             </li>
 
-            <li className="nav-item">
-              <Link className="nav-link" to="/medicine-order">
+            {/* PROTECTED MEDICINE ORDER LINK */}
+            <li className="nav-item border-bottom pb-2">
+              <Link 
+                to="/orders" 
+                className="nav-link text-dark p-0" 
+                onClick={handleMedicineOrderClick}
+              >
                 Medicine Order
               </Link>
             </li>
 
-            <li className="nav-item">
-              <Link className="nav-link" to="/about">
+            {/* <li className="nav-item border-bottom pb-2">
+              <Link to="/abouts" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>
                 About
               </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link className="nav-link active" to="/contact">
+            </li> */}
+            <li className="nav-item border-bottom pb-2">
+              <Link to="/contact" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>
                 Contact Us
               </Link>
             </li>
           </ul>
+        </div>
+      </div>
 
-          <div className="d-flex align-items-center gap-3">
-            <Link to="/login" className="btn btn-success">
-                       Login / Signup
-                     </Link><br></br>
-                     {/* <a href="#" className="position-relative">
-                         🛒
-                         <span className="badge bg-danger text-white cart-badge">0</span>
-                       </a> */}
-            <div className="position-relative">
-              🛒
-              <span className="badge bg-danger text-white cart-badge">0</span>
+      {/* OVERLAY */}
+      {sidebarOpen && (
+        <div
+          className="overlay"
+          onClick={() => setSidebarOpen(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            zIndex: 1999,
+          }}
+        ></div>
+      )}
+
+      {/* --- NAVBAR --- */}
+      <nav className="navbar navbar-expand-lg fixed-top bg-white shadow-sm px-3">
+        <button
+          className="btn border-0 me-2"
+          onClick={() => setSidebarOpen(true)}
+        >
+          <i className="fas fa-bars fa-lg"></i>
+        </button>
+
+        <Link to="/" className="navbar-brand d-flex align-items-center">
+          <img src="/AKMedizostore.png" width="34" alt="logo" />
+          <span className="ms-2 fw-bold">AKMedizostore</span>
+        </Link>
+
+        <div className="ms-auto d-flex gap-3 align-items-center">
+          <div className="admin-wrapper position-relative">
+            <div onClick={() => setAdminOpen(!adminOpen)} style={{ cursor: "pointer" }}>
+              <i className="fas fa-user-circle fa-2x text-secondary"></i>
             </div>
+            {adminOpen && (
+              <div
+                className="admin-dropdown bg-white border shadow p-2 position-absolute"
+                style={{
+                  right: 0,
+                  top: "45px",
+                  zIndex: 1000,
+                  borderRadius: "8px",
+                  minWidth: "160px",
+                }}
+              >
+                <Link
+                  to={isShopOpen ? "/login" : "#"}
+                  className={`d-block p-2 text-decoration-none ${isShopOpen ? "text-dark" : "text-muted"}`}
+                >
+                  Customer Login
+                </Link>
+                <Link to="/adminlogin" className="btn btn-success btn-sm w-100 mt-2">
+                  Admin Login
+                </Link>
+              </div>
+            )}
+          </div>
+          <div className="cart-icon position-relative" style={{ cursor: "pointer" }}>
+            <span style={{ fontSize: "1.5rem" }}>🛒</span>
+            <span className="badge bg-primary position-absolute top-0 start-100 translate-middle rounded-pill">
+              {cartItems.length}
+            </span>
           </div>
         </div>
       </nav>
 
-      {/* CONTACT CONTENT */}
-      <div className="contactdesign text-center mt-5">
-        <h2>AVAILABLE TIMING : 24 × 7</h2>
-        <h3>Contact Person : 7033132629</h3>
-        <p className="fw-bold mt-3">
-          CURRENT ADDRESS : 2nd Floor, Flat No. 206, JS Roop Homes,
-          Near Vihar Heritage Sector-1,  
-          Gautam Buddh Nagar, Greater Noida Extension
-        </p>
+      {/* --- CONTACT CONTENT --- */}
+      <div className="contactdesign text-center" style={{ marginTop: "120px" }}>
+        <h2 className="fw-bold">AVAILABLE TIMING : 24 × 7</h2>
+        <h3 className="text-primary">Contact Person : 7033132629</h3>
+        <div className="container mt-4">
+          <div className="card shadow-sm p-4 border-0 bg-white mx-auto" style={{ maxWidth: "600px" }}>
+            <p className="fw-bold mb-0">CURRENT ADDRESS:</p>
+            <p className="text-muted">
+              2nd Floor, Flat No. 206, JS Roop Homes,
+              <br />
+              Near Vihar Heritage Sector-1,
+              <br />
+              Gautam Buddh Nagar, Greater Noida Extension
+            </p>
+          </div>
+        </div>
       </div>
     </>
   );

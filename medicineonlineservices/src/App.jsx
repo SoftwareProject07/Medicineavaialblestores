@@ -2,7 +2,6 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 
 import { Routes, Route, Navigate } from "react-router-dom";
 import { CartProvider } from "./Component/User/CartContext.jsx";
-
 import Login from "./Component/Login.jsx";
 import Registeration from "./Component/Registeration.jsx";
 import Header from "./Component/User/Header.jsx";
@@ -13,13 +12,27 @@ import Dashboard from "./Component/DeshboardsMedicine/Dashboard.jsx";
 import AdminDashboard from "./Component/Admin/AdminDeshboard.jsx";
 import AdminLogin from "./Component/Admin/AdminLogin.jsx";
 import { useAuth } from "./Component/User/AuthContext";
-import CartItem from "./Component/User/CartItem.jsx";
+ import CartItem from "./Component/User/CartItem.jsx";
 import Carts from "./Component/User/Carts.jsx";
 import MedicineDisplay from "./Component/User/MedicineDisplay.jsx";
 import Customerdetails from "./Component/User/Customerdetails.jsx";
 import DeliveryAddress from "./Component/User/DeliveryAddress.jsx";
 import MedicineList from "./Component/User/MedicineList.jsx";
 import CustomerList from "./Component/Admin/CustomerList.jsx";
+import CustomerProfile from "./Component/User/CustomerProfile.jsx";
+import PRINTER_VOUCHER from "./Component/User/PRINTER_VOUCHER.jsx";
+import CompletePayment from "./Component/User/CompletePayment.jsx";
+import ABOUTUS from "./Component/User/ABOUTUS.jsx";
+import ViewExample_Header from "./Component/User/ViewExample_Header.jsx";
+
+// import AdminHeader from "./Component/Admin/AdminHeader.jsx";
+
+
+
+function PrivateRoute({ children }) {
+  const { user } = useAuth();
+  return user ? children : <Navigate to="/" />;
+}
 
 function App() {
   const { loading } = useAuth();
@@ -55,8 +68,23 @@ if (loading) {
         <Route path="/deliveryaddress" element={<DeliveryAddress />} />
         <Route path="/medicinelist" element={<MedicineList />} /> 
  <Route path="/customerlists" element={<CustomerList />} />
+ <Route path="/CompletePayments" element={<CompletePayment/>} />
+ 
+<Route
+        path="/profile"
+        element={
+          <PrivateRoute>
+            <CustomerProfile />
+          </PrivateRoute>
+        }
+      />
+    <Route path="/printervouchers" element={<PRINTER_VOUCHER />} />
+    <Route path="/medicinedata" element={<Medicine />} />
+    <Route path="/viewexampleheader" element={<ViewExample_Header />} />
+    {/* <Route path="/adminheaders" element={<AdminHeader />} />  */}
+    <Route path="/abouts" element={<ABOUTUS />} />
+        </Routes>
 
-      </Routes>
     </CartProvider>
   );
 }

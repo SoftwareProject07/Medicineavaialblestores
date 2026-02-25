@@ -63,7 +63,7 @@ export default function CustomerList() {
         </div>
         <ul>
           <Link to="/deshboardpanel" className="btn btn-success mb-2">Admin Dashboard</Link>
-          <li>Cart</li>
+          {/* <li>Cart</li> */}
           <li>OrdersPayment</li>
           <li><Link to="/customerlists" className="btn btn-success mb-2">Customer LIST</Link></li>
           <li>OrderList</li>

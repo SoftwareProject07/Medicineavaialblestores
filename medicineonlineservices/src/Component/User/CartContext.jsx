@@ -1,67 +1,63 @@
-
-
-
-// import React, { createContext, useContext, useEffect, useState } from "react";
+// import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 
 // const CartContext = createContext();
 
 // export const CartProvider = ({ children }) => {
-//   // ✅ get logged-in user
-//   const user = JSON.parse(localStorage.getItem("user"));
-//   const userKey = user?.email ? `cart_${user.email}` : "cart_guest";
+//   const [cartItems, setCartItems] = useState([]);
 
-//   // ✅ load user-wise cart
-//   const [cartItems, setCartItems] = useState(() => {
-//     const savedCart = localStorage.getItem(userKey);
-//     return savedCart ? JSON.parse(savedCart) : [];
-//   });
+//   // ✅ 1. Unique Key per User (e.g., cart_shivam12@gmail.com)
+//   const getUserKey = () => {
+//     const user = JSON.parse(localStorage.getItem("user"));
+//     return user?.email ? `cart_${user.email}` : "cart_guest";
+//   };
 
-//   // ✅ save cart per user
+//   // ✅ 2. Login change hone par data load karne ka function
+//   const syncUserCart = useCallback(() => {
+//     const key = getUserKey();
+//     const savedCart = localStorage.getItem(key);
+//     setCartItems(savedCart ? JSON.parse(savedCart) : []);
+//   }, []);
+
 //   useEffect(() => {
-//     if (userKey) {
-//       localStorage.setItem(userKey, JSON.stringify(cartItems));
-//     }
-//   }, [cartItems, userKey]);
+//     syncUserCart();
+//     window.addEventListener("storage", syncUserCart);
+//     return () => window.removeEventListener("storage", syncUserCart);
+//   }, [syncUserCart]);
 
-//   // ✅ add to cart
 //   const addToCart = (item) => {
 //     setCartItems((prev) => {
-//       const exists = prev.find((p) => p.cartId === item.cartId);
-
+//       const exists = prev.find((p) => p.id === item.id);
+//       let updated;
 //       if (exists) {
-//         return prev.map((p) =>
-//           p.cartId === item.cartId
-//             ? { ...p, quantity: p.quantity + 1 }
-//             : p
-//         );
+//         updated = prev.map((p) => p.id === item.id ? { ...p, quantity: (p.quantity || 1) + 1 } : p);
+//       } else {
+//         updated = [...prev, { ...item, quantity: 1 }];
 //       }
-
-//       return [...prev, { ...item, quantity: 1 }];
+//       localStorage.setItem(getUserKey(), JSON.stringify(updated));
+//       return updated;
 //     });
 //   };
 
-//   // ✅ remove item
-//   const removeFromCart = (cartId) => {
-//     setCartItems((prev) =>
-//       prev.filter((item) => item.cartId !== cartId)
-//     );
+//   const updateQuantity = (id, quantity) => {
+//     setCartItems((prev) => {
+//       const updated = prev.map((item) => (item.id === id ? { ...item, quantity } : item));
+//       localStorage.setItem(getUserKey(), JSON.stringify(updated));
+//       return updated;
+//     });
 //   };
 
-//   // ✅ clear cart (on logout)
-//   const clearCart = () => {
-//     setCartItems([]);
-//     localStorage.removeItem(userKey);
+//   const removeFromCart = (id) => {
+//     setCartItems((prev) => {
+//       const updated = prev.filter((item) => item.id !== id);
+//       localStorage.setItem(getUserKey(), JSON.stringify(updated));
+//       return updated;
+//     });
 //   };
+
+//   const clearCartOnSwitch = () => setCartItems([]);
 
 //   return (
-//     <CartContext.Provider
-//       value={{
-//         cartItems,
-//         addToCart,
-//         removeFromCart,
-//         clearCart,
-//       }}
-//     >
+//     <CartContext.Provider value={{ cartItems, addToCart, updateQuantity, removeFromCart, clearCartOnSwitch, syncUserCart }}>
 //       {children}
 //     </CartContext.Provider>
 //   );
@@ -70,83 +66,145 @@
 // export const useCart = () => useContext(CartContext);
 
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+
+
+
+//  2
+// CartContext.js
+// import React, { createContext, useContext, useState, useEffect } from "react";
+
+// const CartContext = createContext();
+
+// export const CartProvider = ({ children }) => {
+//   // 1. Initial State: Refresh hone par LocalStorage se data uthayein
+//   const [cartItems, setCartItems] = useState(() => {
+//     const savedCart = localStorage.getItem("myCartItems");
+//     return savedCart ? JSON.parse(savedCart) : [];
+//   });
+
+//   const [selectedAddress, setSelectedAddress] = useState(null);
+
+//   // 2. Persistence: Jab bhi cartItems change ho, use LocalStorage mein save karein
+//   useEffect(() => {
+//     localStorage.setItem("myCartItems", JSON.stringify(cartItems));
+//   }, [cartItems]);
+
+//   // Login ke waqt cart sync karne ke liye empty function (taki login error na de)
+//   const syncUserCart = () => {
+//     // Agar backend se cart lana hai toh yahan logic aayega
+//     console.log("Cart synced with local storage");
+//   };
+
+//   const addToCart = (product) => {
+//     setCartItems((prev) => {
+//       const existing = prev.find((item) => item.id === product.id);
+//       if (existing) {
+//         return prev.map((item) =>
+//           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+//         );
+//       }
+//       return [...prev, { ...product, quantity: 1 }];
+//     });
+//   };
+
+//   const updateQuantity = (id, amount) => {
+//     setCartItems((prev) =>
+//       prev.map((item) => (item.id === id ? { ...item, quantity: Math.max(1, amount) } : item))
+//     );
+//   };
+
+//   const removeFromCart = (id) => {
+//     setCartItems((prev) => prev.filter((item) => item.id !== id));
+//   };
+
+//   // Logout ke waqt cart khali karne ke liye
+//   const clearCart = () => {
+//     setCartItems([]);
+//     localStorage.removeItem("myCartItems");
+//   };
+
+//   return (
+//     <CartContext.Provider value={{ 
+//       cartItems, addToCart, removeFromCart, updateQuantity, 
+//       selectedAddress, setSelectedAddress, syncUserCart, clearCart 
+//     }}>
+//       {children}
+//     </CartContext.Provider>
+//   );
+// };
+
+// export const useCart = () => useContext(CartContext);
+
+
+
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  // ✅ logged-in user
-  const user = JSON.parse(localStorage.getItem("user"));
-  const userKey = user?.email ? `cart_${user.email}` : "cart_guest";
+  // Helper: Current User ID nikalne ke liye
+  const getUserId = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    return user ? user.userId : "guest";
+  };
 
-  // ✅ load cart user-wise
+  // ✅ 1. Lazy Initialization: Refresh par yahan se data wapas aata hai
   const [cartItems, setCartItems] = useState(() => {
-    const savedCart = localStorage.getItem(userKey);
+    const userId = getUserId();
+    const savedCart = localStorage.getItem(`cart_${userId}`);
     return savedCart ? JSON.parse(savedCart) : [];
   });
 
-  // ✅ save cart to localStorage
+  const [selectedAddress, setSelectedAddress] = useState(null);
+
+  // ✅ 2. Persistence: Jab bhi cartItems badle, use LocalStorage mein save karo
   useEffect(() => {
-    localStorage.setItem(userKey, JSON.stringify(cartItems));
-  }, [cartItems, userKey]);
+    const userId = getUserId();
+    localStorage.setItem(`cart_${userId}`, JSON.stringify(cartItems));
+  }, [cartItems]);
 
-  // ✅ add to cart
-  const addToCart = (item) => {
+  // ✅ 3. Sync Logic: Login ke waqt naye user ka data load karne ke liye
+  const syncUserCart = () => {
+    const userId = getUserId();
+    const savedCart = localStorage.getItem(`cart_${userId}`);
+    setCartItems(savedCart ? JSON.parse(savedCart) : []);
+  };
+
+  const addToCart = (product) => {
     setCartItems((prev) => {
-      const exists = prev.find((p) => p.cartId === item.cartId);
-
-      if (exists) {
-        return prev.map((p) =>
-          p.cartId === item.cartId
-            ? { ...p, quantity: p.quantity + 1 }
-            : p
+      const existing = prev.find((item) => item.id === product.id);
+      if (existing) {
+        return prev.map((item) =>
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-
-      return [...prev, { ...item, quantity: 1 }];
+      return [...prev, { ...product, quantity: 1 }];
     });
   };
 
-  // ✅ update quantity
-  const updateQuantity = (cartId, quantity) => {
-    if (quantity <= 0) return;
-
+  const updateQuantity = (id, amount) => {
     setCartItems((prev) =>
-      prev.map((item) =>
-        item.cartId === cartId
-          ? { ...item, quantity }
-          : item
-      )
+      prev.map((item) => (item.id === id ? { ...item, quantity: amount } : item))
     );
   };
 
-  // ✅ remove single item
-  const removeFromCart = (cartId) => {
-    setCartItems((prev) =>
-      prev.filter((item) => item.cartId !== cartId)
-    );
+  const removeFromCart = (id) => {
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
   };
 
-  // ✅ clear cart (checkout / logout)
-  const clearCart = () => {
+  // ✅ 4. Logout cleanup logic
+  const clearCartState = () => {
     setCartItems([]);
-    localStorage.removeItem(userKey);
   };
 
   return (
-    <CartContext.Provider
-      value={{
-        cartItems,
-        addToCart,
-        updateQuantity,
-        removeFromCart,
-        clearCart,
-      }}
-    >
+    <CartContext.Provider value={{ 
+      cartItems, addToCart, removeFromCart, updateQuantity, 
+      syncUserCart, clearCartState, selectedAddress, setSelectedAddress 
+    }}>
       {children}
     </CartContext.Provider>
   );
 };
 
 export const useCart = () => useContext(CartContext);
-

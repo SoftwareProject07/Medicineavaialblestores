@@ -90,82 +90,79 @@ export default function Customerdetails() {
   return (
        <div className="app-container">
          {/* ============ SIDEBAR ============ */}
-         <div className="sidebar">
-           <div className="brand">
-             <Link to="/dashboards">
-               <img src="/AKMedizostore.png" alt="logo" width="55" />
-             </Link>
-             <span>
-               {user ? `${user.firstName} ${user.lastName}` : "User"}
-             </span>
-           </div>
-   
-           <ul>
-             <li className="menu-group">
-                         <button
-                           className="menu-title btn btn-success mb-2 d-flex justify-content-between align-items-center"
-                           onClick={() => setOpenDashboard(!openDashboard)}
-                         >
-                           Dashboard <span>{openDashboard ? "▾" : "▸"}</span>
-                         </button>
-             
-                         {openDashboard && (
-                           <ul className="submenu">
-                             <li><Link to="/medication-tracker">Medication Tracker</Link></li>
-                             <li><Link to="/test-reports">Test Reports</Link></li>
-                             <li><Link to="/health-history">Health History</Link></li>
-                             <li><Link to="/monthly-progress">Monthly Progress</Link></li>
-                             <li><Link to="/prescriptions">Prescriptions</Link></li>
-                             <li><Link to="/history">History</Link></li>
-                             <li><Link to="/support">Help & Support</Link></li>
-                             <li><Link to="/settings">Settings</Link></li>
-                           </ul>
-                         )}
-                       </li>
-                          <li>
-                                   <Link to="/medicinedisplay" className="btn btn-success mb-2">
-                                     Medicines
-                                   </Link>
-                                 </li>
-             <li>
-               <Link
-                 to="/carts"
-                 className="btn btn-success mb-2 d-flex justify-content-between align-items-center"
-               >
-                 <span>Medicine Cart</span>
-                 {totalQuantity > 0 && (
-                   <span
-                     style={{
-                       background: "red",
-                       color: "#fff",
-                       borderRadius: "50%",
-                       padding: "2px 8px",
-                       fontSize: "12px",
-                     }}
-                   >
-                     {totalQuantity}
-                   </span>
-                 )}
-               </Link>
-             </li>
-    <li>
-                 <Link to="/deliveryaddress" className="btn btn-success mb-2">
-                   Delivery Address
-                 </Link>
-               </li>
-               <li>OrdersPayment</li>
-             <li>CustomerTracking</li>
-             <li>OrderStatus</li>
-             <li>Customer Profile</li>
-   
-               <li>
-                         <Link to="/header">
-                           <i className="fas fa-sign-out-alt"></i> LogOut
-                         </Link>
-                       </li>
-           </ul>
-         </div>
-   
+            <div className="sidebar">
+                <div className="brand">
+                  <Link to="/dashboards">
+                    <img src="/AKMedizostore.png" alt="logo" width="55" />
+                  </Link>
+                  <span>
+                    {user ? `${user.firstName} ${user.lastName}` : "User"}
+                  </span>
+                </div>
+        
+                <ul>
+                  <li className="menu-group">
+                    <button
+                      className="menu-title btn btn-success mb-2 d-flex justify-content-between align-items-center"
+                      onClick={() => setOpenDashboard(!openDashboard)}
+                    >
+                      Dashboard <span>{openDashboard ? "▾" : "▸"}</span>
+                    </button>
+        
+                    {openDashboard && (
+                      <ul className="submenu">
+                        <li><Link to="/medication-tracker">Medication Tracker</Link></li>
+                        <li><Link to="/test-reports">Test Reports</Link></li>
+                        <li><Link to="/health-history">Health History</Link></li>
+                        <li><Link to="/monthly-progress">Monthly Progress</Link></li>
+                        <li><Link to="/prescriptions">Prescriptions</Link></li>
+                        <li><Link to="/history">History</Link></li>
+                        <li><Link to="/support">Help & Support</Link></li>
+                        <li><Link to="/settings">Settings</Link></li>
+                      </ul>
+                    )}
+                  </li>
+        
+                  <li>
+                    <Link to="/medicinedisplay" className="btn btn-success mb-2">
+                      Medicines
+                    </Link>
+                  </li>
+        
+                  {/* ✅ CART WITH COUNT */}
+                   <Link to="/carts" className="nav-link">
+                             <i className="fas fa-shopping-cart me-2"></i> My Cart
+                             {cartItems.length > 0 && (
+                               <span className="cart-count badge bg-danger rounded-pill ms-2">
+                                 {cartItems.length}
+                               </span>
+                             )}
+                           </Link>
+                  {/* deliveryaddress */}
+                 {/* <li>Delivery Address</li> */}
+                   <li>
+                    <Link to="/deliveryaddress" className="btn btn-success mb-2">
+                      Delivery Address
+                    </Link>
+                  </li>
+  <li><Link to="/CompletePayments" className="btn btn-success mb-2">
+             ORDER PAYMENT
+            </Link></li>     
+                          <li>OrderItem</li>
+        
+                  <li>CustomerTracking</li>
+        
+                  <Link to="/profile"  className="btn btn-success">CustomerProfile</Link>
+        
+                {/* <Link to="/medicinelist" className="btn btn-success mb-2" ><li>Medicine List</li></Link> */}
+        
+                  <li>
+                    <Link to="/header">
+                      <i className="fas fa-sign-out-alt"></i> LogOut
+                    </Link>
+                  </li>
+                </ul>
+              </div>
 
       {/* ========= FORM (UNCHANGED) ========= */}
       <div className="form-wrapper">

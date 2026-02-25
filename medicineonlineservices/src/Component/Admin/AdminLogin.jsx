@@ -53,8 +53,8 @@ export default function AdminLogin() {
    Swal.fire({
             icon: "success",
             title: "Admin Login Successful",
-            text: "Welcome to deshboardpanel",
-          }).then(() => navigate("/deshboardpanel"));
+            text: "Welcome to DashboardPanel",
+          }).then(() => navigate("/deshboardpanel"));//deshboardpanel
         } else {
           Swal.fire(
             "Admin Login Failed",

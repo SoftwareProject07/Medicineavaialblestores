@@ -41,8 +41,9 @@ const bpData = [
 ];
 
 const COLORS = ["#0088FE", "#00C49F", "#FF8042"];
+// Customer Side  Dashboard.jsx
 
-export default function Dashboard() {
+export default function Dashboard(userId) {
   const { cartItems } = useCart(); // ✅ CART ITEMS
 
   const [openDashboard, setOpenDashboard] = useState(false);
@@ -127,43 +128,34 @@ export default function Dashboard() {
           </li>
 
           {/* ✅ CART WITH COUNT */}
-          <li>
-            <Link
-              to="/carts"
-              className="btn btn-success mb-2 d-flex justify-content-between align-items-center"
-            >
-              <span>Medicine Cart</span>
-              {totalQuantity > 0 && (
-                <span
-                  style={{
-                    background: "red",
-                    color: "#fff",
-                    borderRadius: "50%",
-                    padding: "2px 8px",
-                    fontSize: "12px"
-                  }}
-                >
-                  {totalQuantity}
-                </span>
-              )}
-            </Link>
-          </li>
-          {/* deliveryaddress */}
-         {/* <li>Delivery Address</li> */}
+           <Link to="/carts" className="nav-link">
+                     <i className="fas fa-shopping-cart me-2"></i> My Cart
+                     {cartItems.length > 0 && (
+                       <span className="cart-count badge bg-danger rounded-pill ms-2">
+                         {cartItems.length}
+                       </span>
+                     )}
+                   </Link>
+ 
            <li>
             <Link to="/deliveryaddress" className="btn btn-success mb-2">
               Delivery Address
             </Link>
           </li>
-          <li>OrdersPayment</li>
+         
+          <li><Link to="/CompletePayments" className="btn btn-success mb-2">
+             ORDER PAYMENT
+            </Link></li>
+           <li>OrderItem</li>
+
           <li>CustomerTracking</li>
-          <li>OrderStatus</li>
-          <li>Customer Profile</li>
-        {/* <Link to="/medicinelist" className="btn btn-success mb-2" ><li>Medicine List</li></Link> */}
+
+          <Link to="/profile"  className="btn btn-success">CustomerProfile</Link>
+
 
           <li>
             <Link to="/header">
-              <i className="fas fa-sign-out-alt"></i> LogOut
+              <i className="fas fa-sign-out-alt"></i>  LogOut
             </Link>
           </li>
         </ul>
@@ -176,7 +168,7 @@ export default function Dashboard() {
             {user?.photo && (
               <img
                 src={
-                  `https://ecommerencesite.onrender.com/apiuploads/${user.photo}`
+                  `https://ecommerencesite.onrender.com/api/uploads/${user.photo}`
                  // `http://localhost:5256/apiuploads/${user.photo}`
                 }
                 alt="Profile"
@@ -260,7 +252,7 @@ export default function Dashboard() {
               <tbody>
                 {cartItems.map((item) => (
                   <tr key={item.cartId}>
-                    <td>{item.medicineName}</td>
+                    <td>{item.name}</td>
                     <td>₹{item.unitPrice}</td>
                     <td>{item.quantity}</td>
                   </tr>

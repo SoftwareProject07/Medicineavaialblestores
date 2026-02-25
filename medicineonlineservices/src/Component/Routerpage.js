@@ -17,6 +17,12 @@ import Customerdetails from './User/Customerdetails.jsx';
 import DeliveryAddress from './User/DeliveryAddress.jsx';
 import MedicineList from './User/MedicineList.jsx';
 import CustomerList from './Admin/CustomerList.jsx';
+import CustomerProfile from './User/CustomerProfile.jsx';
+import PRINTER_VOUCHER from './User/PRINTER_VOUCHER.jsx';
+import CompletePayment from './User/CompletePayment.jsx';
+import ABOUTUS from './User/ABOUTUS.jsx';
+import ViewExample_Header from './User/ViewExample_Header.jsx';
+// import AdminHeader from './Admin/AdminHeader.jsx';
 // import HandleLogout from '../handleLogout.jsx';
 
 export default function Routerpage() {
@@ -43,7 +49,21 @@ export default function Routerpage() {
 <Route path="/deliveryaddress" element={<DeliveryAddress />}/>
 <Route path="/medicinelist" element={<MedicineList />} />
 <Route path="/customerlists" element={<CustomerList />} />
-{/* <Route path="/handlelogouts" element ={<HandleLogout />}/> */}
+<Route path="/CompletePayments" element={<CompletePayment/>} />
+<Route path="/medicinedata" element={<Medicine />} />
+
+<Route
+        path="/profile"
+        element={
+          <PrivateRoute>
+            <CustomerProfile />
+          </PrivateRoute>
+        }
+      />
+    </Routes>
+    <Route path="/viewexampleheader" element={<ViewExample_Header />} />
+    <Route path="/abouts" element={<ABOUTUS />} />
+{/* <Route path="/adminheaders" element ={<AdminHeader />}/> */}
              {/* <Route Path="/cart.controllers" element={<Cart./> }/> */}
 {/* <Route path="/loginforgetpassword"  element ={<LoginForgetPassword />}/> */}
 
@@ -60,8 +80,7 @@ export default function Routerpage() {
         <Route path="/AdminOrder" element={<AdminOrder />} />
         <Route path="/CustomerList" element={<CustomerList />} />
         <Route path="/Medicine" element={<Medicine />} /> */}
-
-      </Routes>
+<Route path="/printervouchers" element={<PRINTER_VOUCHER />} />
     </BrowserRouter>
   );
 }

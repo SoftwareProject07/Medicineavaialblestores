@@ -236,48 +236,99 @@ body {
 
 
 /* ========== */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 30px;
-  background: #fff;
-}
-
-.right-icons {
-  display: flex;
-  align-items: center;
-}
-
-.admin-wrapper {
+/* Hero Section Layout */
+.hero-section {
   position: relative;
-}
-
-.admin-btn {
-  cursor: pointer;
+  /* Use a high-quality medicine background image */
+  background-image: url('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=2060&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  min-height: 280px;
   display: flex;
-  align-items: center;
-  gap: 5px;
+  flex-direction: column;
+  justify-content: center;
+  transition: all 0.3s ease-in-out;
 }
 
-.admin-dropdown {
+/* Darkened Overlay to ensure text readability */
+.hero-overlay {
   position: absolute;
-  top: 35px;
+  top: 0;
+  left: 0;
   right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1;
+}
+
+.hero-content, .search-wrapper {
+  z-index: 2; /* Sits above overlay */
+}
+
+/* Search Bar Styling (Matching Image 2 Style) */
+.search-bar-group {
+  max-width: 900px;
+  margin: 0 auto;
+  border-radius: 50px !important; /* Rounded pill shape */
+  overflow: hidden;
   background: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  width: 140px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.admin-dropdown a {
-  display: block;
-  padding: 8px 12px;
-  text-decoration: none;
-  color: #000;
+.location-part {
+  border: none;
+  background-color: white !important;
+  border-right: 1px solid #eee !important;
+  padding-left: 20px;
 }
 
-.admin-dropdown a:hover {
-  background: #f5f5f5;
+.pincode-input {
+  border: none;
+  width: 65px;
+  outline: none;
+  font-size: 0.9rem;
 }
+
+.main-search-input {
+  border: none;
+  font-size: 1rem;
+}
+
+.search-btn {
+  background-color: #2470e0 !important; /* Specific blue from your image */
+  border: none;
+  padding: 0 30px !important;
+}
+
+/* Sticky Class Logic */
+.sticky-active {
+  position: fixed;
+  top: 60px; /* Aligned below main navbar */
+  left: 0;
+  width: 100%;
+  height: 85px;
+  min-height: 85px;
+  z-index: 1500;
+  background-image: none !important; /* Remove image on sticky */
+  background-color: white !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  animation: slideInDown 0.4s ease-out;
+}
+
+.sticky-active .hero-overlay {
+  display: none;
+}
+
+@keyframes slideInDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Utils */
+.d-none { display: none !important; }
+
+@media (max-width: 768px) {
+  .hero-section { min-height: 220px; }
+  .deliver-label { display: none; }
+  .search-bar-group { border-radius: 10px !important; }
+}
+/* ========================= */
