@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function Orders(){
+export default function Orderstatus(){
     return (
         <div>
            

@@ -22,6 +22,7 @@ import PRINTER_VOUCHER from './User/PRINTER_VOUCHER.jsx';
 import CompletePayment from './User/CompletePayment.jsx';
 import ABOUTUS from './User/ABOUTUS.jsx';
 import ViewExample_Header from './User/ViewExample_Header.jsx';
+import Orderstatus from './User/Orders.jsx';
 // import AdminHeader from './Admin/AdminHeader.jsx';
 // import HandleLogout from '../handleLogout.jsx';
 
@@ -51,6 +52,7 @@ export default function Routerpage() {
 <Route path="/customerlists" element={<CustomerList />} />
 <Route path="/CompletePayments" element={<CompletePayment/>} />
 <Route path="/medicinedata" element={<Medicine />} />
+<Route path="/orders" element={<Orderstatus />} />
 
 <Route
         path="/profile"

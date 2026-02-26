@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2"; 
 import "../styles/headers.css";
 import "../styles/noscroll.css";
-import { red } from "@cloudinary/url-gen/actions/adjust";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -12,7 +11,32 @@ export default function Header() {
   const [search, setSearch] = useState("");
   const [isSticky, setIsSticky] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(localStorage.getItem("shopStatus") !== "OFF");
-  const [location, setLocation] = useState({ city: "Ghaziabad", pincode: "201011" });
+  
+  // --- SLIDER STATE ---
+  const [currentSlide, setCurrentSlide] = useState(0);
+  // const slides = [
+  //   { id: 1, img: "capsule_image_scoll.jpg", alt: "Lowest Price Guaranteed" },
+
+  //   { id: 2, img: "scroll_image _liquid.jpg", alt: "Up to 20% Off" },
+  //   { id: 3, img: "scroll_image.jpg", alt: "Exclusive Launch" },
+  //   { id: 4, img: "offer4.jpg", alt: "₹500 Cashback" },
+  //   { id: 5, img: "offer5.jpg", alt: "Clearance Sale" },
+  // ];
+
+  // Isko replace karein
+const slides = [
+  // Agar image 'public/uploads' folder mein hai
+  { id: 1, img: "/uploadimage/capsule_image_scoll.jpg", alt: "Lowest Price Guaranteed" },
+  { id: 2, img: "/uploadimage/image.png", alt: "Up to 20% Off" },
+  { id: 3, img: "/uploadimage/pexels-pixabay-159211.jpg", alt: "Exclusive Launch" },
+  { id: 4, img: "/uploadimage/stock-vector-various-meds-pills-capsules-blisters-glass-bottles-with-liquid-medicine-plastic-tubes-with-1409823341.jpg", alt: "₹500 Cashback" },
+];
+  const [location, setLocation] = useState({ 
+    city: "Ghaziabad", 
+    pincode: "201011", 
+    stateName: "Uttar Pradesh" 
+  });
+  
   const [medicines, setMedicines] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,28 +51,22 @@ export default function Header() {
     "Healthcare Devices", "Homeopathic Medicine", "Health Guide"
   ];
 
-  // Logic: Handle Scroll for Sticky Search
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 120) {
-        setIsSticky(true);
-      } else {
-        setIsSticky(false);
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // --- SLIDER LOGIC ---
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+  }, [slides.length]);
 
-  // Logic: Sync Cart and Shop Status
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cartItems));
-    const handleSync = () => setIsShopOpen(localStorage.getItem("shopStatus") !== "OFF");
-    window.addEventListener("storage", handleSync);
-    return () => window.removeEventListener("storage", handleSync);
-  }, [cartItems]);
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+  };
 
-  const fetchMedicines = async () => {
+  useEffect(() => {
+    const slideInterval = setInterval(nextSlide, 5000);
+    return () => clearInterval(slideInterval);
+  }, [nextSlide]);
+
+  // --- API FETCHING ---
+  const fetchMedicines = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch("https://ecommerencesite.onrender.com/api/MEDICINE/AllListMedicineProduct");
@@ -59,7 +77,20 @@ export default function Header() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => setIsSticky(window.scrollY > 120);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+    const handleSync = () => setIsShopOpen(localStorage.getItem("shopStatus") !== "OFF");
+    window.addEventListener("storage", handleSync);
+    return () => window.removeEventListener("storage", handleSync);
+  }, [cartItems]);
 
   useEffect(() => {
     fetchMedicines();
@@ -67,16 +98,21 @@ export default function Header() {
       navigator.geolocation.getCurrentPosition(async (pos) => {
         try {
           const { latitude, longitude } = pos.coords;
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`, { headers: { "User-Agent": "AKMedizostore/1.0" } });
-          const data = await res.json();
-          setLocation({
-            city: data.address.city || data.address.town || "Ghaziabad",
-            pincode: data.address.postcode || "201011",
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`, { 
+            headers: { "User-Agent": "AKMedizostore/1.0" } 
           });
-        } catch (error) { console.error(error); }
+          const data = await res.json();
+          if (data.address) {
+            setLocation({
+              city: data.address.city || data.address.town || data.address.village || "Ghaziabad",
+              pincode: data.address.postcode || "201011",
+              stateName: data.address.state || "Uttar Pradesh"
+            });
+          }
+        } catch (error) { console.error("Geolocation failed:", error); }
       });
     }
-  }, []);
+  }, [fetchMedicines]);
 
   const handlePincodeChange = async (e) => {
     const pin = e.target.value.replace(/\D/g, "");
@@ -85,25 +121,44 @@ export default function Header() {
       try {
         const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
         const data = await res.json();
-        if (data[0]?.Status === "Success") setLocation({ pincode: pin, city: data[0].PostOffice[0].District });
-      } catch (err) { console.error(err); }
+        if (data[0]?.Status === "Success") {
+          const postOffice = data[0].PostOffice[0];
+          setLocation({ pincode: pin, city: postOffice.District, stateName: postOffice.State });
+        }
+      } catch (err) { console.error("Pincode API Error:", err); }
     }
   };
 
-  const handleMedicineOrderClick = (e) => {
-    const isLoggedIn = localStorage.getItem("user") || localStorage.getItem("token");
-    if (!isLoggedIn) {
-      e.preventDefault();
-      Swal.fire({
-        icon: 'error',
-        title: 'Login Required',
-        text: 'Please login first!',
-        confirmButtonColor: '#28a745',
-        confirmButtonText: 'Login Now',
-        showCancelButton: true,
-      }).then((result) => { if (result.isConfirmed) { setSidebarOpen(false); navigate("/dashboards"); } });
-    } else { setSidebarOpen(false); }
-  };
+ const handleMedicineOrderClick = (e) => {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation(); // Yeh navigation ko rok dega
+  }
+
+  const token = localStorage.getItem("token");
+  const user = localStorage.getItem("user");
+
+  // Agar token/user null ya undefined hai toh login maangein
+  if (!token || token === "null" || !user) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Login Required',
+      text: 'Please login first!',
+      confirmButtonColor: '#28a745',
+      confirmButtonText: 'Login Now',
+      showCancelButton: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setSidebarOpen(false);
+        navigate("/login"); 
+      }
+    });
+  } else {
+    // Sirf valid login par hi navigate karein
+    setSidebarOpen(false);
+    navigate("/orders");
+  }
+};
 
   const filteredMeds = medicines.filter((m) => m.name?.toLowerCase().includes(search.toLowerCase()));
 
@@ -118,12 +173,13 @@ export default function Header() {
           </div>
           <ul className="nav flex-column gap-2">
             <li className="nav-item border-bottom pb-2"><Link to="/" className="nav-link text-dark p-0">Home</Link></li>
-            <li className="nav-item border-bottom pb-2"><Link to="/orders" className="nav-link text-dark p-0" onClick={handleMedicineOrderClick}>Medicine Order</Link></li>
- <li className="nav-item border-bottom pb-2">
-              <Link to="/contact" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>
-                Contact Us
-              </Link>
-            </li>          </ul>
+            <li className="nav-item border-bottom pb-2">
+              <div className="nav-link text-dark p-0" style={{ cursor: "pointer" }} onClick={handleMedicineOrderClick}><Link to="/orders" className="nav-link text-dark p-0">Medicine Order</Link></div>
+            </li>
+            <li className="nav-item border-bottom pb-2">
+              <Link to="/contact" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>Contact Us</Link>
+            </li>
+          </ul>
         </div>
       </div>
       {sidebarOpen && <div className="overlay" onClick={() => setSidebarOpen(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 2500 }}></div>}
@@ -158,10 +214,8 @@ export default function Header() {
         <div className="container text-center py-5" style={{marginTop: "120px"}}><h1 className="fw-bold">Shop is Currently Closed</h1></div>
       ) : (
         <div style={{marginTop: "105px"}}>
-          {/* HERO SECTION WITH IMAGE BACKGROUND */}
           <section className={`hero-section text-center ${isSticky ? "sticky-active" : ""}`}>
             <div className="hero-overlay"></div>
-            
             <div className={`hero-content position-relative ${isSticky ? "d-none" : ""}`}>
               <h2 className="fw-bold text-white pt-5">Say Goodbye to high medicine prices</h2>
               <p className="text-white-50 small mb-4">Compare prices and save up to 51% on medicines</p>
@@ -169,164 +223,58 @@ export default function Header() {
 
             <div className={`container search-wrapper position-relative ${isSticky ? "sticky-search-container" : ""}`}>
               <div className="input-group search-bar-group shadow-lg">
-                <span className="input-group-text bg-white border-end-0 location-part">
-                  <i className="fas fa-map-marker-alt text-primary me-2"></i>
-                  <span className="deliver-label text-primary fw-bold">Deliver to</span>
-                  <input type="text" value={location.pincode} onChange={handlePincodeChange} className="pincode-input fw-bold ms-1" />
+                <span className="input-group-text bg-white border-end-0 location-part flex-column align-items-start py-1">
+                  <div className="d-flex align-items-center">
+                    <i className="fas fa-map-marker-alt text-primary me-2"></i>
+                    <span className="deliver-label text-primary fw-bold" style={{fontSize: "0.75rem"}}>Deliver to</span>
+                    <input type="text" value={location.pincode} onChange={handlePincodeChange} className="pincode-input fw-bold ms-1" style={{width: "60px", border: "none", outline: "none"}} />
+                  </div>
+                  <div className="text-muted truncate-text" style={{fontSize: "0.65rem", marginLeft: "25px", maxWidth: "100px"}}>
+                    {location.city}, {location.stateName}
+                  </div>
                 </span>
                 <input type="text" className="form-control border-start-0 py-3 ps-4 main-search-input" placeholder="Search for medicines, vitamins..." onChange={(e) => setSearch(e.target.value)} />
                 <button className="btn btn-primary px-4 search-btn"><i className="fas fa-search me-2"></i><span className="fw-bold">Search</span></button>
               </div>
             </div>
+
+            {/* --- SLIDER START --- */}
+            <div className="container mt-5">
+              <hr className="mb-4" />
+              <div className="slider-viewport rounded-3 shadow-sm position-relative overflow-hidden">
+                <div 
+                  className="slider-wrapper d-flex" 
+                  style={{ 
+                    transform: `translateX(-${currentSlide * 100}%)`,
+                    transition: "transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)"
+                  }}
+                >
+                  {slides.map((slide) => (
+                    <div className="slide-item flex-shrink-0 w-100" key={slide.id}>
+                      <img src={slide.img} alt={slide.alt} className="img-fluid w-100 d-block" style={{ height: "280px", objectFit: "cover" }} />
+                    </div>
+                  ))}
+                </div>
+
+                <div className="slider-controls">
+                  <button className="slider-arrow prev" onClick={prevSlide}>❮</button>
+                  <button className="slider-arrow next" onClick={nextSlide}>❯</button>
+                </div>
+
+                <div className="slider-dots">
+                  {slides.map((_, index) => (
+                    <span 
+                      key={index} 
+                      className={`dot ${currentSlide === index ? "active" : ""}`}
+                      onClick={() => setCurrentSlide(index)}
+                    ></span>
+                  ))}
+                </div>
+              </div>
+            </div>
+            {/* --- SLIDER END --- */}
           </section>
 
-    <section className="container text-center my-5">
-  {/* Section Header with Lines */}
-  <div className="d-flex align-items-center justify-content-center mb-4">
-    <hr className="flex-grow-1" />
-    <span className="mx-3 fw-bold text-primary text-uppercase" style={{ fontSize: '0.9rem', letterSpacing: '1px' }}>
-      Place Your Order Via
-    </span>
-    <hr className="flex-grow-1" />
-  </div>
-
-  <div className="row g-3 justify-content-center">
-    {/* Call Option */}
-    <div className="col-md-5">
-      <div className="p-3 border rounded-4 d-flex align-items-center justify-content-center bg-light shadow-sm">
-        <div className="bg-white p-2 rounded-3 me-3 border">
-          <i className="bi bi-telephone-fill text-primary"></i> {/* Requires Bootstrap Icons */}
-        </div>
-        <p className="mb-0">Call <strong>09240250346</strong> to place order</p>
-      </div>
-    </div>
-
-    {/* Upload Option */}
-    <div className="col-md-5">
-      <label htmlFor="prescription-upload" className="w-100" style={{ cursor: 'pointer' }}>
-        <div className="p-3 border rounded-4 d-flex align-items-center justify-content-center bg-light shadow-sm">
-          <div className="bg-white p-2 rounded-3 me-3 border">
-            <i className="bi bi-clipboard2-plus text-primary"></i>
-          </div>
-          <p className="mb-0">Upload a <strong>prescription</strong></p>
-        </div>
-        <input type="file" id="prescription-upload" className="d-none" />
-      </label>
-    </div>
-  </div>
-</section>
-<hr/>
-<section className="container my-5">
-  {/* Main Card */}
-  <div className="card shadow-sm border rounded-4 overflow-hidden">
-    <div className="row g-0 align-items-center">
-      {/* Left Side: Image */}
-      <div className="col-md-4 position-relative">
-        <img 
-          src="image_b89978.png" 
-          alt="Save 51%" 
-          className="img-fluid w-100"
-          style={{ objectFit: 'cover' }}
-        />
-        <div className="position-absolute top-50 start-50 translate-middle">
-           <div className="bg-dark bg-opacity-50 rounded-circle p-3 d-flex align-items-center justify-content-center" style={{ width: '60px', height: '60px' }}>
-              <i className="bi bi-play-fill text-white fs-2"></i>
-           </div>
-        </div>
-      </div>
-
-      {/* Right Side: Content */}
-      <div className="col-md-8 p-4">
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h5 className="fw-bold mb-0">Substitutes are the smarter choice</h5>
-          <a href="#" className="text-primary fw-bold text-decoration-none small">Learn more</a>
-        </div>
-
-        {/* Info Icons */}
-        <div className="row mb-4">
-          <div className="col-4 border-end">
-            <p className="fw-bold mb-0 small">Safe</p>
-            <p className="text-muted small mb-0">FDA and GMP certified</p>
-          </div>
-          <div className="col-4 border-end">
-            <p className="fw-bold mb-0 small">Same</p>
-            <p className="text-muted small mb-0">Exact same salt</p>
-          </div>
-          <div className="col-4">
-            <p className="fw-bold mb-0 small">Savings</p>
-            <p className="text-muted small mb-0">Up to 51% cheaper</p>
-          </div>
-        </div>
-
-        {/* Yellow Bar */}
-        <div className="rounded-3 p-2 text-center" style={{ backgroundColor: '#fff8e1' }}>
-          <p className="mb-0 small fw-medium">All Substitutes are made by <b>top 1% manufacturers</b></p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {/* FIXED BOTTOM LINK */}
-  <div className="mt-4 text-center">
-    <p>
-      <a href="/viewexampleheader" className="fw-bold text-primary text-decoration-none">
-        View Example
-      </a> 
-      <span className="text-muted"> to compare and understand</span>
-    </p>
-  </div>
-  <hr />
-</section>
-<section class="offer-slider-container">
-    
-    <div class="slider-wrapper">
-
-        <div class="slide">
-            <div class="banner-content blue-bg">
-                <img src="offer1.jpg" alt="Lowest Price Guaranteed" />
-                </div>
-        </div>
-
-        <div class="slide">
-            <div class="banner-content red-bg">
-                <img src="offer2.jpg" alt="Up to 20% Off Seven Seas" />
-            </div>
-        </div>
-
-        <div class="slide">
-            <div class="banner-content green-bg">
-                <img src="offer3.jpg" alt="Exclusive Launch Offer" />
-            </div>
-        </div>
-
-        <div class="slide">
-            <div class="banner-content orange-bg">
-                <img src="offer4.jpg" alt="Get ₹500 Cashback" />
-            </div>
-        </div>
-
-        <div class="slide">
-            <div class="banner-content purple-bg">
-                <img src="offer5.jpg" alt="Seasonal Clearance Sale"/>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="slider-controls">
-        <button class="prev-btn">❮</button>
-        <button class="next-btn">❯</button>
-    </div>
-
-    <div class="slider-dots">
-        <span class="dot active"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-    </div>
-
-</section>
           <div className="container mb-5 pt-4">
             <div className="row g-3">
               {loading ? (
@@ -337,7 +285,10 @@ export default function Header() {
                     <div className="card h-100 border-0 shadow-sm p-3">
                        <h6 className="fw-bold">{med.name}</h6>
                        <p className="small text-muted mb-1">{med.manufacturer}</p>
-                       <div className="d-flex justify-content-between align-items-center mt-auto"><span className="text-success fw-bold">₹{med.unitPrice}</span><button className="btn btn-outline-primary btn-sm" onClick={() => setCartItems([...cartItems, med])}>Add</button></div>
+                       <div className="d-flex justify-content-between align-items-center mt-auto">
+                        <span className="text-success fw-bold">₹{med.unitPrice}</span>
+                        <button className="btn btn-outline-primary btn-sm" onClick={() => setCartItems([...cartItems, med])}>Add</button>
+                       </div>
                     </div>
                   </div>
                 ))
@@ -346,9 +297,9 @@ export default function Header() {
           </div>
         </div>
       )}
-      <hr/>
 
-<footer className="ak-footer">
+      {/* --- FOOTER --- */}
+      <footer className="ak-footer">
       {/* Top Navigation Row */}
       <div className="footer-nav-banner">
         <span>Know more about akmedicine</span>
@@ -407,14 +358,7 @@ export default function Header() {
             <button>Subscribe</button>
           </div>
 
-          {/* <h3 className="column-title mt-30">Registered Office Address</h3>
-          <div className="address-block">
-            <p className="company-name">Intellihealth Solutions Private Limited</p>
-            <p>Unit-301 & 304, Lightbridge Tunga Village, Saki Vihar Rd, Chandivali, Powai, Mumbai, Maharashtra, India, 400072.</p>
-            <p>CIN: U62099MH2019PTC320566</p>
-            <p>Telephone: <span className="highlight-blue">09240250346</span></p>
-          </div> */}
-
+        
           <h3 className="column-title mt-20">Grievance Officer</h3>
           <div className="address-block">
             <p>Name: Gautam  Dev</p>
@@ -455,7 +399,6 @@ export default function Header() {
         </div>
       </div>
     </footer>
-
     </>
   );
 }

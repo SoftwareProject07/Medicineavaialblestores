@@ -24,6 +24,7 @@ import PRINTER_VOUCHER from "./Component/User/PRINTER_VOUCHER.jsx";
 import CompletePayment from "./Component/User/CompletePayment.jsx";
 import ABOUTUS from "./Component/User/ABOUTUS.jsx";
 import ViewExample_Header from "./Component/User/ViewExample_Header.jsx";
+import Orderstatus from "./Component/User/Orders.jsx";
 
 // import AdminHeader from "./Component/Admin/AdminHeader.jsx";
 
@@ -83,6 +84,8 @@ if (loading) {
     <Route path="/viewexampleheader" element={<ViewExample_Header />} />
     {/* <Route path="/adminheaders" element={<AdminHeader />} />  */}
     <Route path="/abouts" element={<ABOUTUS />} />
+    <Route path="/orders" element={<Orderstatus />} />
+
         </Routes>
 
     </CartProvider>

@@ -11,31 +11,46 @@ export default function Contact() {
   const [isShopOpen] = useState(localStorage.getItem("shopStatus") !== "OFF");
 
   // --- Logic: Medicine Order Protection with Popup ---
-  const handleMedicineOrderClick = (e) => {
-    const isLoggedIn = localStorage.getItem("user") || localStorage.getItem("token");
+  // const handleMedicineOrderClick = (e) => {
+  //   const isLoggedIn = localStorage.getItem("user") || localStorage.getItem("token");
 
-    if (!isLoggedIn) {
-      e.preventDefault(); // Page change hone se rokein
+  //   if (!isLoggedIn) {
+  //     e.preventDefault(); // Page change hone se rokein
       
-      // Stylish Error Popup
-      Swal.fire({
-        icon: 'error',
-        title: 'Login Required',
-        text: 'Please login first to access Medicine Orders !',
-        confirmButtonColor: '#d33',
-        confirmButtonText: 'Login Now',
-        showCancelButton: true,
-        cancelButtonText: 'Close'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          setSidebarOpen(false); // Sidebar close karein
-          navigate("/dashboards"); // Login page par bhej dein
-        }
-      });
-    } else {
-      setSidebarOpen(false); // Agar login hai toh sidebar close karke orders par jane dein
-    }
-  };
+  //     // Stylish Error Popup
+  //     Swal.fire({
+  //       icon: 'error',
+  //       title: 'Login Required',
+  //       text: 'Please login first to access Medicine Orders !',
+  //       confirmButtonColor: '#d33',
+  //       confirmButtonText: 'Login Now',
+  //       showCancelButton: true,
+  //       cancelButtonText: 'Close'
+  //     }).then((result) => {
+  //       if (result.isConfirmed) {
+  //         setSidebarOpen(false); // Sidebar close karein
+  //         navigate("/dashboards"); // Login page par bhej dein
+  //       }
+  //     });
+  //   } else {
+  //     setSidebarOpen(false); // Agar login hai toh sidebar close karke orders par jane dein
+  //   }
+  // };
+
+    const handleMedicineOrderClick = (e) => {
+      const isLoggedIn = localStorage.getItem("user") || localStorage.getItem("token");
+      if (!isLoggedIn) {
+        e.preventDefault();
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Required',
+          text: 'Please login first!',
+          confirmButtonColor: '#28a745',
+          confirmButtonText: 'Login Now',
+          showCancelButton: true,
+        }).then((result) => { if (result.isConfirmed) { setSidebarOpen(false); navigate("/dashboards"); } });
+      } else { setSidebarOpen(false); }
+    };
 
   return (
     <>
@@ -69,25 +84,11 @@ export default function Contact() {
 
             {/* PROTECTED MEDICINE ORDER LINK */}
             <li className="nav-item border-bottom pb-2">
-              <Link 
-                to="/orders" 
-                className="nav-link text-dark p-0" 
-                onClick={handleMedicineOrderClick}
-              >
-                Medicine Order
-              </Link>
-            </li>
-
-            {/* <li className="nav-item border-bottom pb-2">
-              <Link to="/abouts" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>
-                About
-              </Link>
-            </li> */}
-            <li className="nav-item border-bottom pb-2">
-              <Link to="/contact" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>
-                Contact Us
-              </Link>
-            </li>
+                         <div className="nav-link text-dark p-0" style={{ cursor: "pointer" }} onClick={handleMedicineOrderClick}><Link to="/orders" className="nav-link text-dark p-0">Medicine Order</Link></div>
+                       </li>
+                       <li className="nav-item border-bottom pb-2">
+                         <Link to="/contact" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>Contact Us</Link>
+                       </li>
           </ul>
         </div>
       </div>

@@ -332,3 +332,78 @@ body {
   .search-bar-group { border-radius: 10px !important; }
 }
 /* ========================= */
+.footer-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Heading aur list ko center karega */
+    text-align: center;  /* Text ko center karega */
+}
+
+.footer-links {
+    padding: 0;          /* Left padding hatana zaroori hai center karne ke liye */
+    list-style: none;    /* Dots hatane ke liye */
+}
+
+.footer-links li {
+    margin-bottom: 8px;  /* Links ke beech thoda space */
+}
+/* ======================= */
+
+
+/* Slider Base */
+.slider-viewport {
+  background: #fff;
+  z-index: 5;
+}
+
+.slider-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.slide-item img {
+  border-radius: 8px;
+}
+
+/* Controls */
+.slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transition: 0.3s;
+}
+
+.slider-arrow:hover { background: white; }
+.slider-arrow.prev { left: 15px; }
+.slider-arrow.next { right: 15px; }
+
+/* Dots */
+.slider-dots {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.dot.active {
+  background: white;
+  width: 25px;
+  border-radius: 10px;
+}
