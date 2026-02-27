@@ -83,45 +83,115 @@ export default function Login() {
   };
 
   // ================= FORGET PASSWORD =================
-  const handleForgetPasswordPopup = async () => {
-    const { value } = await Swal.fire({
-      title: "Forget Password",
-      html: `
-        <input id="fp-identity" class="swal2-input" placeholder="Email / Mobile">
-        <input id="fp-password" type="password" class="swal2-input" placeholder="New Password">
-      `,
-      showCancelButton: true,
-      confirmButtonText: "Reset",
-      preConfirm: () => {
-        const identity = document.getElementById("fp-identity").value;
-        const newPassword = document.getElementById("fp-password").value;
-        if (!identity || !newPassword) {
-          Swal.showValidationMessage("All fields required");
-          return false;
-        }
-        return { identity, newPassword };
-      },
-    });
+  // const handleForgetPasswordPopup = async () => {
+  //   const { value } = await Swal.fire({
+  //     title: "Forget Password",
+  //     html: `
+  //       <input id="fp-identity" class="swal2-input" placeholder="Email / Mobile">
+  //       <input id="fp-password" type="password" class="swal2-input" placeholder="New Password">
+  //     `,
+  //     showCancelButton: true,
+  //     confirmButtonText: "Reset",
+  //     preConfirm: () => {
+  //       const identity = document.getElementById("fp-identity").value;
+  //       const newPassword = document.getElementById("fp-password").value;
+  //       if (!identity || !newPassword) {
+  //         Swal.showValidationMessage("All fields required");
+  //         return false;
+  //       }
+  //       return { identity, newPassword };
+  //     },
+  //   });
 
-    if (!value) return;
+  //   if (!value) return;
 
-    try {
-      await axios.post(
-        "https://ecommerencesite.onrender.com/api/USERMEDICINE/ForgetPassword",
-        {
-          Email: value.identity,
-          PhoneNumber: value.identity,
-          NewPassword: value.newPassword,
-        },
-        { headers: { "Content-Type": "application/json" } }
-      );
-      Swal.fire("Success", "Password Reset Successful", "success");
-    } catch {
-      Swal.fire("Error", "Reset Failed", "error");
-    }
+  //   try {
+  //     await axios.post(
+  //       "https://ecommerencesite.onrender.com/api/USERMEDICINE/ForgetPassword",
+  //       {
+  //         Email: value.identity,
+  //         PhoneNumber: value.identity,
+  //         NewPassword: value.newPassword,
+  //       },
+  //       { headers: { "Content-Type": "application/json" } }
+  //     );
+  //     Swal.fire("Success", "Password Reset Successful", "success");
+  //   } catch {
+  //     Swal.fire("Error", "Reset Failed", "error");
+  //   }
+  // };
+
+
+   // ================= FORGET PASSWORD =================
+const handleForgetPasswordPopup = async () => {
+  const { value } = await Swal.fire({
+    title: "Forget Password",
+    html: `
+      <div style="text-align: left; padding: 10px;">
+        <label style="font-weight: bold; color: #fff;">Email or Mobile Number</label>
+        <input id="fp-identity" class="swal2-input" placeholder="shivam12@gmail.com" style="width: 90%; margin-bottom: 15px;">
+        
+        <label style="font-weight: bold; color: #fff;">New Password</label>
+        <input id="fp-password" type="password" class="swal2-input" placeholder="Naya Password" style="width: 90%;">
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: "Reset Password",
+    showLoaderOnConfirm: true,
+    preConfirm: () => {
+      // Input ko trim aur lowercase karna zaroori hai comparison ke liye
+      const identity = document.getElementById("fp-identity").value.trim().toLowerCase();
+      const newPassword = document.getElementById("fp-password").value.trim();
+      
+      if (!identity || !newPassword) {
+        Swal.showValidationMessage("Dono fields bharna zaroori hai!");
+        return false;
+      }
+      return { identity, newPassword };
+    },
+  });
+
+  if (!value) return;
+
+  // Render server ko wake up karne ke liye loader
+  Swal.fire({
+    title: "Comparing Email...",
+    text: "Database se verify ho raha hai...",
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading(),
+  });
+
+  const isEmail = value.identity.includes("@");
+
+  // FINAL PAYLOAD: Hum dono keys bhej rahe hain taaki API crash na ho
+  const payload = {
+    Email: isEmail ? value.identity : "", 
+    PhoneNumber: !isEmail ? value.identity : "", 
+    NewPassword: value.newPassword,
   };
 
-  return (
+  try {
+    const response = await axios.post(
+      "https://ecommerencesite.onrender.com/api/USERMEDICINE/ForgetPassword",
+      payload,
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    // Backend success check
+    if (response.data.status === true || response.status === 200) {
+      Swal.fire("Success", "Password change ho gaya! Ab login karein.", "success");
+    } else {
+      // Agar email store hai fir bhi error hai, toh server message dikhayega
+      Swal.fire("Error", response.data.responseMessage || "Email match nahi hua.", "error");
+    }
+
+  } catch (error) {
+    console.error("API Error:", error.response?.data);
+    const errorMsg = error.response?.data?.responseMessage || "User nahi mila ya server slow hai.";
+    Swal.fire("Error", errorMsg, "error");
+  }
+};
+return (
     <>
       <div className="login-page">
         <i className="fas fa-times close-icon" onClick={() => navigate("/header")} />
@@ -162,15 +232,23 @@ export default function Login() {
               </span>
             </div>
 
-            <div className="options">
+         {/* <div className="options">
               <label className="remember-me">
                 <input type="checkbox" /> <span> Remember </span>me
               </label>
               <span className="forget-link" onClick={handleForgetPasswordPopup}>
                 Forget password?
               </span>
-            </div>
+            </div> */}
 
+            <div className="options">
+  <label className="remember-me">
+    <input type="checkbox" /> <span> Remember </span>me
+  </label>
+  <span className="forget-link" onClick={handleForgetPasswordPopup} style={{ cursor: 'pointer', color: 'blue' }}>
+    Forget password?
+  </span>
+</div>
             <button type="submit" className="login-btn" disabled={loading}>
               {loading ? "PROCESSING..." : "LOGIN"}
             </button>

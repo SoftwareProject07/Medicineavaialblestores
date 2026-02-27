@@ -41,6 +41,12 @@ if (loading) {
     return <div>Loading...</div>;
   }
 
+//   const PrivateRoute = ({ children }) => {
+//   const auth = localStorage.getItem("user") || localStorage.getItem("token");
+//   // Agar auth nahi hai toh orders page ki jagah home ya login par bhej dega
+//   return auth ? children : <Navigate to="/" replace />;
+// };
+
   return (
     <CartProvider >
       <Routes>
@@ -85,6 +91,8 @@ if (loading) {
     {/* <Route path="/adminheaders" element={<AdminHeader />} />  */}
     <Route path="/abouts" element={<ABOUTUS />} />
     <Route path="/orders" element={<Orderstatus />} />
+
+
 
         </Routes>
 

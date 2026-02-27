@@ -129,37 +129,79 @@ const slides = [
     }
   };
 
- const handleMedicineOrderClick = (e) => {
+//  const handleMedicineOrderClick = (e) => {
+//   if (e) {
+//     e.preventDefault();
+//     e.stopPropagation(); // Yeh navigation ko rok dega
+//   }
+
+//   const token = localStorage.getItem("token");
+//   const user = localStorage.getItem("user");
+
+//   // Agar token/user null ya undefined hai toh login maangein
+//   if (!token || token === "null" || !user) {
+//     Swal.fire({
+//       icon: 'error',
+//       title: 'Login Required',
+//       text: 'Please login first!',
+//       confirmButtonColor: '#28a745',
+//       confirmButtonText: 'Login Now',
+//       showCancelButton: true,
+//     }).then((result) => {
+//       if (result.isConfirmed) {
+//         setSidebarOpen(false);
+//         navigate("/login"); 
+//       }
+//     });
+//   } else {
+//     // Sirf valid login par hi navigate karein
+//     setSidebarOpen(false);
+//     navigate("/orders");
+//   }
+// };
+
+//  const handleMedicineOrderClick = (e) => {
+//     const isLoggedIn = localStorage.getItem("user") || localStorage.getItem("token");
+//     if (!isLoggedIn) {
+//       e.preventDefault();
+//       Swal.fire({
+//         icon: 'error',
+//         title: 'Login Required',
+//         text: 'Please login first!',
+//         confirmButtonColor: '#28a745',
+//         confirmButtonText: 'Login Now',
+//         showCancelButton: true,
+//       }).then((result) => { if (result.isConfirmed) { setSidebarOpen(false); navigate("/dashboards"); } });
+//     } else { setSidebarOpen(false); }
+//   };
+const handleMedicineOrderClick = (e) => {
+  // Event bubbling rokne ke liye
   if (e) {
     e.preventDefault();
-    e.stopPropagation(); // Yeh navigation ko rok dega
+    e.stopPropagation();
   }
 
-  const token = localStorage.getItem("token");
-  const user = localStorage.getItem("user");
+  const isLoggedIn = localStorage.getItem("user") || localStorage.getItem("token");
 
-  // Agar token/user null ya undefined hai toh login maangein
-  if (!token || token === "null" || !user) {
+  if (!isLoggedIn || isLoggedIn === "null") {
+    setSidebarOpen(false);
     Swal.fire({
       icon: 'error',
       title: 'Login Required',
-      text: 'Please login first!',
+      text: 'Bina login ke aap orders nahi dekh sakte!',
       confirmButtonColor: '#28a745',
       confirmButtonText: 'Login Now',
-      showCancelButton: true,
     }).then((result) => {
       if (result.isConfirmed) {
-        setSidebarOpen(false);
-        navigate("/login"); 
+        navigate("/login"); // Yahan sirf login par bheinjein
       }
     });
   } else {
-    // Sirf valid login par hi navigate karein
+    // Sirf yahi wo jagah hai jahan URL /orders par jayega
     setSidebarOpen(false);
     navigate("/orders");
   }
 };
-
   const filteredMeds = medicines.filter((m) => m.name?.toLowerCase().includes(search.toLowerCase()));
 
   return (
@@ -173,9 +215,20 @@ const slides = [
           </div>
           <ul className="nav flex-column gap-2">
             <li className="nav-item border-bottom pb-2"><Link to="/" className="nav-link text-dark p-0">Home</Link></li>
-            <li className="nav-item border-bottom pb-2">
-              <div className="nav-link text-dark p-0" style={{ cursor: "pointer" }} onClick={handleMedicineOrderClick}><Link to="/orders" className="nav-link text-dark p-0">Medicine Order</Link></div>
-            </li>
+            {/* --- SIDEBAR MENU KE ANDAR --- */}
+{/* --- SIDEBAR MENU KE ANDAR ISSE REPLACE KAREIN --- */}
+<li className="nav-item border-bottom pb-2">
+  <div 
+    className="nav-link text-dark p-0" 
+    style={{ cursor: "pointer" }} 
+    onClick={(e) => {
+      e.preventDefault(); // Browser default navigation ko rokne ke liye
+      handleMedicineOrderClick(e);
+    }}
+  >
+    Medicine Order
+  </div>
+</li>
             <li className="nav-item border-bottom pb-2">
               <Link to="/contact" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>Contact Us</Link>
             </li>
