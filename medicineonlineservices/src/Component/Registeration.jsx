@@ -3,50 +3,39 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-//const API_URL = "http://localhost:5256";
-
-export default function Registeration() {
+export default function Registration() {
   const navigate = useNavigate();
 
+  // States
   const [firstname, setFirstName] = useState("");
   const [middlename, setMiddleName] = useState("");
   const [lastname, setLastName] = useState("");
   const [password, setPassword] = useState("");
- // const [confirmpassword, setConfirmPassword] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
-//const [photo, setPhoto] = useState(null);
+
+  // Password visibility state
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSave = async () => {
-    // if (password !== confirmpassword) {
-    //   Swal.fire("Error", "Password not matched", "error");
-    //   return;
-    // }
+    if (!firstname || !lastname || !password || !email || !mobile) {
+      Swal.fire("Warning", "Please fill all required fields", "warning");
+      return;
+    }
 
-  //    if (!firstname || !lastname || !password || !email || !mobile) {
-  //   Swal.fire("Warning", "Please fill all required fields", "warning");
-  //   return;
-  // }
-    // ✅ MUST USE FormData
     const formData = new FormData();
     formData.append("FirstName", firstname);
     formData.append("MiddleName", middlename || "");
     formData.append("LastName", lastname);
     formData.append("Password", password);
-    //formData.append("ConfirmPassword", confirmpassword);
     formData.append("Email", email);
     formData.append("MobileNumber", mobile);
     formData.append("Fund", 0);
     formData.append("Type", "User");
     formData.append("CreateOn", new Date().toISOString());
 
-    // if (photo) {
-    //   formData.append("Photo", photo); // 🔥 FILE
-    // }
-
     try {
       const response = await axios.post(
-       // "http://localhost:5256/api/USERMEDICINE/CREATERegisterUser",
         "https://ecommerencesite.onrender.com/api/USERMEDICINE/CREATERegisterUser",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
@@ -64,43 +53,102 @@ export default function Registeration() {
     }
   };
 
+  const handleReset = () => {
+    setFirstName("");
+    setMiddleName("");
+    setLastName("");
+    setPassword("");
+    setEmail("");
+    setMobile("");
+  };
+
   return (
-    <Fragment>
-      <div className="container mt-5">
-        <h3 className="text-center mb-4">Create an account</h3>
+    <section className="h-100 bg-dark">
+      <div className="container py-5 h-100">
+        <div className="row d-flex justify-content-center align-items-center h-100">
+          <div className="col">
+            <div className="card card-registration my-4">
+              <div className="row g-0">
+                {/* Image Section */}
+                <div className="col-xl-6 d-none d-xl-block">
+                  <img 
+                    src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/img4.webp"
+                    alt="Registration" 
+                    className="img-fluid"
+                    style={{ borderTopLeftRadius: ".25rem", borderBottomLeftRadius: ".25rem" }} 
+                  />
+                </div>
 
-        <input className="form-control mb-2" placeholder="First Name"
-          value={firstname} onChange={(e) => setFirstName(e.target.value)} />
+                {/* Form Section */}
+                <div className="col-xl-6">
+                  <div className="card-body p-md-5 text-black">
+                    <h3 className="mb-5 text-uppercase"> Registration Form</h3>
 
-        <input className="form-control mb-2" placeholder="Middle Name"
-          value={middlename} onChange={(e) => setMiddleName(e.target.value)} />
+                    {/* Name Fields Row */}
+                    <div className="row">
+                      <div className="col-md-4 mb-4">
+                        <input type="text" className="form-control form-control-lg" placeholder="First Name"
+                          value={firstname} onChange={(e) => setFirstName(e.target.value)} autoComplete="off" required />
+                      </div>
+                      <div className="col-md-4 mb-4">
+                        <input type="text" className="form-control form-control-lg" placeholder="Middle Name"
+                          value={middlename} onChange={(e) => setMiddleName(e.target.value)} autoComplete="off"/>
+                      </div>
+                      <div className="col-md-4 mb-4">
+                        <input type="text" className="form-control form-control-lg" placeholder="Last Name"
+                          value={lastname} onChange={(e) => setLastName(e.target.value)} autoComplete="off" required />
+                      </div>
+                    </div>
 
-        <input className="form-control mb-2" placeholder="Last Name"
-          value={lastname} onChange={(e) => setLastName(e.target.value)} />
+                    {/* Password Field with Show/Hide */}
+                    <div className="mb-4">
+                      <div className="input-group">
+                        <input 
+                          type={showPassword ? "text" : "password"} 
+                          className="form-control form-control-lg" 
+                          placeholder="Password"
+                          value={password} 
+                          onChange={(e) => setPassword(e.target.value)}  autoComplete="off" required
+                        />
+                        <button 
+                          className="btn btn-outline-secondary" 
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? "Hide" : "Show"}
+                        </button>
+                      </div>
+                    </div>
 
-        <input type="password" className="form-control mb-2" placeholder="Password"
-          value={password} onChange={(e) => setPassword(e.target.value)} />
+                    {/* Email Field */}
+                    <div className="form-outline mb-4">
+                      <input type="email" className="form-control form-control-lg" placeholder="Email ID"
+                        value={email} onChange={(e) => setEmail(e.target.value)}  autoComplete="off" required />
+                    </div>
 
-   
+                    {/* Mobile Field */}
+                    <div className="form-outline mb-4">
+                      <input type="text" className="form-control form-control-lg" placeholder="Mobile Number"
+                        value={mobile} maxLength={10} onChange={(e) => setMobile(e.target.value)}   autoComplete="off" required/>
+                    </div>
 
-        <input type="email" className="form-control mb-2" placeholder="Email"
-          value={email} onChange={(e) => setEmail(e.target.value)} />
+                    {/* Action Buttons */}
+                    <div className="d-flex justify-content-end pt-3">
+                      <button type="button" className="btn btn-light btn-lg" onClick={handleReset}>Reset all</button>
+                      <button type="button" className="btn btn-warning btn-lg ms-2" onClick={handleSave}>Submit form</button>
+                    </div>
 
-        <input className="form-control mb-2" placeholder="Mobile"
-          value={mobile} maxLength={10}
-          onChange={(e) => setMobile(e.target.value)} />
+                    <p className="text-center mt-4">
+                      Already have an account? <Link to="/login" className="text-decoration-none">Login here</Link>
+                    </p>
 
-        {/* <input type="file" className="form-control mb-3"
-          onChange={(e) => setPhoto(e.target.files[0])} /> */}
-
-        <button className="btn btn-success w-100" onClick={handleSave}>
-          Register
-        </button>
-
-        <p className="text-center mt-3">
-          Already have an account? <Link to="/login">Login here</Link>
-        </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </Fragment>
+    </section>
   );
 }

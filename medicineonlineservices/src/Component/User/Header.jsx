@@ -10,27 +10,18 @@ export default function Header() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [isSticky, setIsSticky] = useState(false);
+  
+  // Shop status state
   const [isShopOpen, setIsShopOpen] = useState(localStorage.getItem("shopStatus") !== "OFF");
   
-  // --- SLIDER STATE ---
   const [currentSlide, setCurrentSlide] = useState(0);
-  // const slides = [
-  //   { id: 1, img: "capsule_image_scoll.jpg", alt: "Lowest Price Guaranteed" },
+  const slides = [
+    { id: 1, img: "/uploadimage/capsule_image_scoll.jpg", alt: "Lowest Price Guaranteed" },
+    { id: 2, img: "/uploadimage/image.png", alt: "Up to 20% Off" },
+    { id: 3, img: "/uploadimage/pexels-pixabay-159211.jpg", alt: "Exclusive Launch" },
+    { id: 4, img: "/uploadimage/stock-vector-various-meds-pills-capsules-blisters-glass-bottles-with-liquid-medicine-plastic-tubes-with-1409823341.jpg", alt: "₹500 Cashback" },
+  ];
 
-  //   { id: 2, img: "scroll_image _liquid.jpg", alt: "Up to 20% Off" },
-  //   { id: 3, img: "scroll_image.jpg", alt: "Exclusive Launch" },
-  //   { id: 4, img: "offer4.jpg", alt: "₹500 Cashback" },
-  //   { id: 5, img: "offer5.jpg", alt: "Clearance Sale" },
-  // ];
-
-  // Isko replace karein
-const slides = [
-  // Agar image 'public/uploads' folder mein hai
-  { id: 1, img: "/uploadimage/capsule_image_scoll.jpg", alt: "Lowest Price Guaranteed" },
-  { id: 2, img: "/uploadimage/image.png", alt: "Up to 20% Off" },
-  { id: 3, img: "/uploadimage/pexels-pixabay-159211.jpg", alt: "Exclusive Launch" },
-  { id: 4, img: "/uploadimage/stock-vector-various-meds-pills-capsules-blisters-glass-bottles-with-liquid-medicine-plastic-tubes-with-1409823341.jpg", alt: "₹500 Cashback" },
-];
   const [location, setLocation] = useState({ 
     city: "Ghaziabad", 
     pincode: "201011", 
@@ -51,7 +42,6 @@ const slides = [
     "Healthcare Devices", "Homeopathic Medicine", "Health Guide"
   ];
 
-  // --- SLIDER LOGIC ---
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
   }, [slides.length]);
@@ -65,15 +55,17 @@ const slides = [
     return () => clearInterval(slideInterval);
   }, [nextSlide]);
 
-  // --- API FETCHING ---
+  // Fetching medicines
   const fetchMedicines = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch("https://ecommerencesite.onrender.com/api/MEDICINE/AllListMedicineProduct");
-      const data = await response.json();
-      setMedicines(Array.isArray(data) ? data : data.products || []);
+      const result = await response.json();
+      const dataArray = result.lsTmedicines || result.lstmedicines || [];
+      setMedicines(Array.isArray(dataArray) ? dataArray : []);
     } catch (error) {
       console.error("Error fetching medicines:", error);
+      setMedicines([]);
     } finally {
       setLoading(false);
     }
@@ -87,31 +79,13 @@ const slides = [
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
-    const handleSync = () => setIsShopOpen(localStorage.getItem("shopStatus") !== "OFF");
-    window.addEventListener("storage", handleSync);
-    return () => window.removeEventListener("storage", handleSync);
   }, [cartItems]);
 
   useEffect(() => {
     fetchMedicines();
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        try {
-          const { latitude, longitude } = pos.coords;
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`, { 
-            headers: { "User-Agent": "AKMedizostore/1.0" } 
-          });
-          const data = await res.json();
-          if (data.address) {
-            setLocation({
-              city: data.address.city || data.address.town || data.address.village || "Ghaziabad",
-              pincode: data.address.postcode || "201011",
-              stateName: data.address.state || "Uttar Pradesh"
-            });
-          }
-        } catch (error) { console.error("Geolocation failed:", error); }
-      });
-    }
+    // Shop Status check sync
+    const status = localStorage.getItem("shopStatus");
+    setIsShopOpen(status !== "OFF");
   }, [fetchMedicines]);
 
   const handlePincodeChange = async (e) => {
@@ -129,84 +103,52 @@ const slides = [
     }
   };
 
-//  const handleMedicineOrderClick = (e) => {
-//   if (e) {
-//     e.preventDefault();
-//     e.stopPropagation(); // Yeh navigation ko rok dega
-//   }
+  const handleMedicineOrderClick = (e) => {
+    if (e) e.preventDefault();
+    const isLoggedIn = localStorage.getItem("user") || localStorage.getItem("token");
 
-//   const token = localStorage.getItem("token");
-//   const user = localStorage.getItem("user");
+    if (!isLoggedIn || isLoggedIn === "null") {
+      setSidebarOpen(false);
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Required',
+        text: 'Bina login ke aap orders nahi dekh sakte!',
+        confirmButtonColor: '#28a745',
+        confirmButtonText: 'Login Now',
+      }).then((result) => {
+        if (result.isConfirmed) navigate("/login");
+      });
+    } else {
+      setSidebarOpen(false);
+      navigate("/orders");
+    }
+  };
 
-//   // Agar token/user null ya undefined hai toh login maangein
-//   if (!token || token === "null" || !user) {
-//     Swal.fire({
-//       icon: 'error',
-//       title: 'Login Required',
-//       text: 'Please login first!',
-//       confirmButtonColor: '#28a745',
-//       confirmButtonText: 'Login Now',
-//       showCancelButton: true,
-//     }).then((result) => {
-//       if (result.isConfirmed) {
-//         setSidebarOpen(false);
-//         navigate("/login"); 
-//       }
-//     });
-//   } else {
-//     // Sirf valid login par hi navigate karein
-//     setSidebarOpen(false);
-//     navigate("/orders");
-//   }
-// };
+  const filteredMeds = medicines.filter((m) => 
+    (m?.name || "").toLowerCase().includes(search.toLowerCase())
+  );
 
-//  const handleMedicineOrderClick = (e) => {
-//     const isLoggedIn = localStorage.getItem("user") || localStorage.getItem("token");
-//     if (!isLoggedIn) {
-//       e.preventDefault();
-//       Swal.fire({
-//         icon: 'error',
-//         title: 'Login Required',
-//         text: 'Please login first!',
-//         confirmButtonColor: '#28a745',
-//         confirmButtonText: 'Login Now',
-//         showCancelButton: true,
-//       }).then((result) => { if (result.isConfirmed) { setSidebarOpen(false); navigate("/dashboards"); } });
-//     } else { setSidebarOpen(false); }
-//   };
-const handleMedicineOrderClick = (e) => {
-  // Event bubbling rokne ke liye
-  if (e) {
-    e.preventDefault();
-    e.stopPropagation();
+  // --- CONDITION: IF SHOP IS CLOSED ---
+  if (!isShopOpen) {
+    return (
+      <div className="d-flex flex-column align-items-center justify-content-center vh-100 bg-light">
+        <div className="card shadow-lg p-5 text-center border-0" style={{ maxWidth: "500px", borderRadius: "20px" }}>
+          <img src="https://cdn-icons-png.flaticon.com/512/3661/3661841.png" width="100" alt="Closed" className="mb-4 mx-auto" />
+          <h1 className="fw-bold text-danger">Shop is Closed</h1>
+          <p className="text-muted fs-5">Hum jald hi wapas aayenge. Suvidha ke liye khed hai.</p>
+          <hr />
+          <div className="mt-3">
+             <Link to="/adminlogin" className="btn btn-outline-secondary btn-sm">Admin Portal</Link>
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  const isLoggedIn = localStorage.getItem("user") || localStorage.getItem("token");
-
-  if (!isLoggedIn || isLoggedIn === "null") {
-    setSidebarOpen(false);
-    Swal.fire({
-      icon: 'error',
-      title: 'Login Required',
-      text: 'Bina login ke aap orders nahi dekh sakte!',
-      confirmButtonColor: '#28a745',
-      confirmButtonText: 'Login Now',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        navigate("/login"); // Yahan sirf login par bheinjein
-      }
-    });
-  } else {
-    // Sirf yahi wo jagah hai jahan URL /orders par jayega
-    setSidebarOpen(false);
-    navigate("/orders");
-  }
-};
-  const filteredMeds = medicines.filter((m) => m.name?.toLowerCase().includes(search.toLowerCase()));
-
+  // --- NORMAL RENDER (ONLY IF SHOP IS OPEN) ---
   return (
     <>
-      {/* --- SIDEBAR MENU --- */}
+      {/* SIDEBAR */}
       <div className={`side-menu bg-white shadow ${sidebarOpen ? "open" : ""}`} style={{ position: "fixed", top: 0, left: sidebarOpen ? 0 : "-300px", width: "280px", height: "100%", zIndex: 3000, transition: "0.3s ease" }}>
         <div className="p-4">
           <div className="d-flex justify-content-between align-items-center mb-4">
@@ -214,21 +156,12 @@ const handleMedicineOrderClick = (e) => {
             <button className="btn-close" onClick={() => setSidebarOpen(false)}></button>
           </div>
           <ul className="nav flex-column gap-2">
-            <li className="nav-item border-bottom pb-2"><Link to="/" className="nav-link text-dark p-0">Home</Link></li>
-            {/* --- SIDEBAR MENU KE ANDAR --- */}
-{/* --- SIDEBAR MENU KE ANDAR ISSE REPLACE KAREIN --- */}
-<li className="nav-item border-bottom pb-2">
-  <div 
-    className="nav-link text-dark p-0" 
-    style={{ cursor: "pointer" }} 
-    onClick={(e) => {
-      e.preventDefault(); // Browser default navigation ko rokne ke liye
-      handleMedicineOrderClick(e);
-    }}
-  >
-    Medicine Order
-  </div>
-</li>
+            <li className="nav-item border-bottom pb-2"><Link to="/" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>Home</Link></li>
+            <li className="nav-item border-bottom pb-2">
+              <div className="nav-link text-dark p-0" style={{ cursor: "pointer" }} onClick={handleMedicineOrderClick}>
+                Medicine Order
+              </div>
+            </li>
             <li className="nav-item border-bottom pb-2">
               <Link to="/contact" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>Contact Us</Link>
             </li>
@@ -237,8 +170,8 @@ const handleMedicineOrderClick = (e) => {
       </div>
       {sidebarOpen && <div className="overlay" onClick={() => setSidebarOpen(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 2500 }}></div>}
 
-      {/* --- NAVBAR --- */}
-      <nav className="navbar navbar-expand-lg fixed-top bg-white shadow-sm px-0 flex-column align-items-stretch" style={{ zIndex: 2000 }}>
+      {/* NAVBAR */}
+      <nav className="navbar navbar-expand-lg fixed-top bg-white shadow-sm px-0 flex-column align-items-stretch" style={{ z_index: 2000 }}>
         <div className="d-flex align-items-center px-3 py-2 w-100">
             <button className="btn border-0 me-2" onClick={() => setSidebarOpen(true)}><i className="fas fa-bars fa-lg"></i></button>
             <Link to="/" className="navbar-brand d-flex align-items-center"><img src="/AKMedizostore.png" width="34" alt="logo" /><span className="ms-2 fw-bold">AKMedizostore</span></Link>
@@ -252,7 +185,10 @@ const handleMedicineOrderClick = (e) => {
                   </div>
                 )}
               </div>
-              <div className="cart-icon position-relative"><span style={{ fontSize: "1.5rem" }}>🛒</span><span className="badge bg-primary position-absolute top-0 start-100 translate-middle rounded-pill">{cartItems.length}</span></div>
+              <div className="cart-icon position-relative">
+                <span style={{ fontSize: "1.5rem" }}>🛒</span>
+                <span className="badge bg-primary position-absolute top-0 start-100 translate-middle rounded-pill">{cartItems.length}</span>
+              </div>
             </div>
         </div>
         <div className="border-top overflow-hidden">
@@ -262,96 +198,81 @@ const handleMedicineOrderClick = (e) => {
         </div>
       </nav>
 
-      {/* --- MAIN CONTENT --- */}
-      {!isShopOpen ? (
-        <div className="container text-center py-5" style={{marginTop: "120px"}}><h1 className="fw-bold">Shop is Currently Closed</h1></div>
-      ) : (
-        <div style={{marginTop: "105px"}}>
-          <section className={`hero-section text-center ${isSticky ? "sticky-active" : ""}`}>
-            <div className="hero-overlay"></div>
-            <div className={`hero-content position-relative ${isSticky ? "d-none" : ""}`}>
-              <h2 className="fw-bold text-white pt-5">Say Goodbye to high medicine prices</h2>
-              <p className="text-white-50 small mb-4">Compare prices and save up to 51% on medicines</p>
-            </div>
+      {/* HERO & SEARCH */}
+      <div style={{marginTop: "105px"}}>
+        <section className={`hero-section text-center ${isSticky ? "sticky-active" : ""}`}>
+          <div className="hero-overlay"></div>
+          <div className={`hero-content position-relative ${isSticky ? "d-none" : ""}`}>
+            <h2 className="fw-bold text-white pt-5">Say Goodbye to high medicine prices</h2>
+            <p className="text-white-50 small mb-4">Compare prices and save up to 51% on medicines</p>
+          </div>
 
-            <div className={`container search-wrapper position-relative ${isSticky ? "sticky-search-container" : ""}`}>
-              <div className="input-group search-bar-group shadow-lg">
-                <span className="input-group-text bg-white border-end-0 location-part flex-column align-items-start py-1">
-                  <div className="d-flex align-items-center">
-                    <i className="fas fa-map-marker-alt text-primary me-2"></i>
-                    <span className="deliver-label text-primary fw-bold" style={{fontSize: "0.75rem"}}>Deliver to</span>
-                    <input type="text" value={location.pincode} onChange={handlePincodeChange} className="pincode-input fw-bold ms-1" style={{width: "60px", border: "none", outline: "none"}} />
-                  </div>
-                  <div className="text-muted truncate-text" style={{fontSize: "0.65rem", marginLeft: "25px", maxWidth: "100px"}}>
-                    {location.city}, {location.stateName}
-                  </div>
-                </span>
-                <input type="text" className="form-control border-start-0 py-3 ps-4 main-search-input" placeholder="Search for medicines, vitamins..." onChange={(e) => setSearch(e.target.value)} />
-                <button className="btn btn-primary px-4 search-btn"><i className="fas fa-search me-2"></i><span className="fw-bold">Search</span></button>
-              </div>
-            </div>
-
-            {/* --- SLIDER START --- */}
-            <div className="container mt-5">
-              <hr className="mb-4" />
-              <div className="slider-viewport rounded-3 shadow-sm position-relative overflow-hidden">
-                <div 
-                  className="slider-wrapper d-flex" 
-                  style={{ 
-                    transform: `translateX(-${currentSlide * 100}%)`,
-                    transition: "transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)"
-                  }}
-                >
-                  {slides.map((slide) => (
-                    <div className="slide-item flex-shrink-0 w-100" key={slide.id}>
-                      <img src={slide.img} alt={slide.alt} className="img-fluid w-100 d-block" style={{ height: "280px", objectFit: "cover" }} />
-                    </div>
-                  ))}
+          <div className={`container search-wrapper position-relative ${isSticky ? "sticky-search-container" : ""}`}>
+            <div className="input-group search-bar-group shadow-lg">
+              <span className="input-group-text bg-white border-end-0 location-part flex-column align-items-start py-1">
+                <div className="d-flex align-items-center">
+                  <i className="fas fa-map-marker-alt text-primary me-2"></i>
+                  <span className="deliver-label text-primary fw-bold" style={{fontSize: "0.75rem"}}>Deliver to</span>
+                  <input type="text" value={location.pincode} onChange={handlePincodeChange} className="pincode-input fw-bold ms-1" style={{width: "60px", border: "none", outline: "none"}} />
                 </div>
-
-                <div className="slider-controls">
-                  <button className="slider-arrow prev" onClick={prevSlide}>❮</button>
-                  <button className="slider-arrow next" onClick={nextSlide}>❯</button>
+                <div className="text-muted truncate-text" style={{fontSize: "0.65rem", marginLeft: "25px", maxWidth: "100px"}}>
+                  {location.city}, {location.stateName}
                 </div>
-
-                <div className="slider-dots">
-                  {slides.map((_, index) => (
-                    <span 
-                      key={index} 
-                      className={`dot ${currentSlide === index ? "active" : ""}`}
-                      onClick={() => setCurrentSlide(index)}
-                    ></span>
-                  ))}
-                </div>
-              </div>
-            </div>
-            {/* --- SLIDER END --- */}
-          </section>
-
-          <div className="container mb-5 pt-4">
-            <div className="row g-3">
-              {loading ? (
-                <div className="text-center py-5 w-100"><div className="spinner-border text-primary"></div></div>
-              ) : filteredMeds.length > 0 ? (
-                filteredMeds.map((med, i) => (
-                  <div className="col-6 col-md-4 col-lg-3" key={med._id || i}>
-                    <div className="card h-100 border-0 shadow-sm p-3">
-                       <h6 className="fw-bold">{med.name}</h6>
-                       <p className="small text-muted mb-1">{med.manufacturer}</p>
-                       <div className="d-flex justify-content-between align-items-center mt-auto">
-                        <span className="text-success fw-bold">₹{med.unitPrice}</span>
-                        <button className="btn btn-outline-primary btn-sm" onClick={() => setCartItems([...cartItems, med])}>Add</button>
-                       </div>
-                    </div>
-                  </div>
-                ))
-              ) : (<div className="text-center py-5 w-100">No medicines found.</div>)}
+              </span>
+              <input type="text" value={search} className="form-control border-start-0 py-3 ps-4 main-search-input" placeholder="Search for medicines..." onChange={(e) => setSearch(e.target.value)} />
+              <button className="btn btn-primary px-4 search-btn"><i className="fas fa-search me-2"></i><span className="fw-bold">Search</span></button>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* --- FOOTER --- */}
+          {/* SLIDER */}
+          <div className="container mt-5">
+            <hr className="mb-4" />
+            <div className="slider-viewport rounded-3 shadow-sm position-relative overflow-hidden">
+              <div className="slider-wrapper d-flex" style={{ transform: `translateX(-${currentSlide * 100}%)`, transition: "0.6s cubic-bezier(0.4, 0, 0.2, 1)" }}>
+                {slides.map((slide) => (
+                  <div className="slide-item flex-shrink-0 w-100" key={slide.id}>
+                    <img src={slide.img} alt={slide.alt} className="img-fluid w-100 d-block" style={{ height: "280px", objectFit: "cover" }} />
+                  </div>
+                ))}
+              </div>
+              <div className="slider-controls">
+                <button className="slider-arrow prev" onClick={prevSlide}>❮</button>
+                <button className="slider-arrow next" onClick={nextSlide}>❯</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* MEDICINE LIST */}
+        <div className="container mb-5 pt-4">
+          <h4 className="fw-bold mb-4">Available Medicines ({filteredMeds.length})</h4>
+          <div className="row g-3">
+            {loading ? (
+              <div className="text-center py-5 w-100"><div className="spinner-border text-primary"></div></div>
+            ) : filteredMeds.length > 0 ? (
+              filteredMeds.map((med) => (
+                <div className="col-6 col-md-4 col-lg-3" key={med.id}> 
+                  <div className="card h-100 border-0 shadow-sm p-3">
+                     <h6 className="fw-bold">{med.name}</h6>
+                     <p className="small text-muted mb-1">{med.manufacturer}</p>
+                     <div className="d-flex justify-content-between align-items-center mt-auto">
+                      <span className="text-success fw-bold">₹{med.unitPrice}</span>
+                      <button className="btn btn-outline-primary btn-sm" onClick={() => setCartItems([...cartItems, med])}>Add</button>
+                     </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-5 w-100">
+                <img src="https://cdn-icons-png.flaticon.com/512/6134/6134065.png" width="80" alt="not found" className="mb-3" />
+                <p className="text-muted">No medicines found.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+     {/* --- FOOTER --- */}
       <footer className="ak-footer">
       {/* Top Navigation Row */}
       <div className="footer-nav-banner">

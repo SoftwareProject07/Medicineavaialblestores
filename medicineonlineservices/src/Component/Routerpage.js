@@ -23,13 +23,7 @@ import CompletePayment from './User/CompletePayment.jsx';
 import ABOUTUS from './User/ABOUTUS.jsx';
 import ViewExample_Header from './User/ViewExample_Header.jsx';
 import Orderstatus from './User/Orders.jsx';
-// import AdminHeader from './Admin/AdminHeader.jsx';
-// import HandleLogout from '../handleLogout.jsx';
-// const PrivateRoute = ({ children }) => {
-//   const auth = localStorage.getItem("user") || localStorage.getItem("token");
-//   // Agar auth nahi hai toh orders page ki jagah home ya login par bhej dega
-//   return auth ? children : <Navigate to="/" replace />;
-// };
+
 export default function Routerpage() {
   return (
     <BrowserRouter>

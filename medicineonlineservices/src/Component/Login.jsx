@@ -161,17 +161,98 @@ export default function Login() {
 
 
 // FORGET PASSWORD
+// ================================
+// const handleForgetPasswordPopup = async () => {
+//   const { value } = await Swal.fire({
+//     title: "Forget Password",
+//     html: `
+//       <div style="text-align: left;">
+//         <label style="color: gray; font-size: 12px;">Email or Mobile</label>
+//         <input id="fp-identity" class="swal2-input" placeholder="example@gmail.com">
+//         <label style="color: gray; font-size: 12px;">New Password</label>
+//         <input id="fp-password" type="password" class="swal2-input" placeholder="********">
+//          <span onClick={() => setShowPassword(!showPassword)}>
+//                 {showPassword ? "🙈" : "👁️"}
+//               </span>
+//       </div>
+//     `,
+//     showCancelButton: true,
+//     confirmButtonText: "Reset Password",
+//     showLoaderOnConfirm: true,
+//     preConfirm: async () => {
+//       const identity = document.getElementById("fp-identity").value.trim();
+//       const newPassword = document.getElementById("fp-password").value.trim();
+
+//       if (!identity || !newPassword) {
+//         Swal.showValidationMessage("Both fields are required");
+//         return false;
+//       }
+
+//       const isEmail = identity.includes("@");
+      
+//       // PAYLOAD: Ensure keys match C# DTO exactly
+//       const payload = {
+//         Email: isEmail ? identity : "",
+//         PhoneNumber: !isEmail ? identity : "",
+//         NewPassword: newPassword,
+//         UserName: "" 
+//       };
+
+//       try {
+//         const response = await axios.post(
+//           "https://ecommerencesite.onrender.com/api/USERMEDICINE/ForgetPassword",
+//         //  "http://localhost:5256/api/USERMEDICINE/ForgetPassword",
+//           payload,
+//           { 
+//             headers: { "Content-Type": "application/json" },
+//             timeout: 30000 // Render wake-up time
+//           }
+//         );
+//         return response.data;
+//       } catch (error) {
+//         const msg = error.response?.data?.message || "Server Error";
+//         Swal.showValidationMessage(`Request failed: ${msg}`);
+//       }
+//     }
+//   });
+
+
+//   if (value && value.status === true) {
+//     Swal.fire("Success", "Password reset successfully!", "success");
+//   }
+// };
+
+// =================FORGET PASSWORD with Password Toggle in Swal===========================
 const handleForgetPasswordPopup = async () => {
   const { value } = await Swal.fire({
     title: "Forget Password",
+    background: '#1a1a1a',
+    color: '#fff',
     html: `
-      <div style="text-align: left;">
-        <label style="color: gray; font-size: 12px;">Email or Mobile</label>
-        <input id="fp-identity" class="swal2-input" placeholder="example@mail.com">
-        <label style="color: gray; font-size: 12px;">New Password</label>
-        <input id="fp-password" type="password" class="swal2-input" placeholder="********">
+      <div style="text-align: left; padding: 10px; position: relative;">
+        <label style="color: gray; font-size: 12px; display: block; margin-bottom: 5px;">Email or Mobile</label>
+        <input id="fp-identity" class="swal2-input" placeholder="example@gmail.com" style="width: 90%; margin-bottom: 15px;">
+        
+        <label style="color: gray; font-size: 12px; display: block; margin-bottom: 5px;">New Password</label>
+        <div style="position: relative;">
+          <input id="fp-password" type="password" class="swal2-input" placeholder="********" style="width: 90%; padding-right: 40px;">
+          <span id="togglePassword" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; z-index: 10;">
+            👁️
+          </span>
+        </div>
       </div>
     `,
+    didOpen: () => {
+      // Password toggle logic inside Swal
+      const toggleBtn = document.getElementById('togglePassword');
+      const passwordInput = document.getElementById('fp-password');
+      
+      toggleBtn.addEventListener('click', () => {
+        const isPassword = passwordInput.getAttribute('type') === 'password';
+        passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+        toggleBtn.textContent = isPassword ? '🙈' : '👁️';
+      });
+    },
     showCancelButton: true,
     confirmButtonText: "Reset Password",
     showLoaderOnConfirm: true,
@@ -185,8 +266,6 @@ const handleForgetPasswordPopup = async () => {
       }
 
       const isEmail = identity.includes("@");
-      
-      // PAYLOAD: Ensure keys match C# DTO exactly
       const payload = {
         Email: isEmail ? identity : "",
         PhoneNumber: !isEmail ? identity : "",
@@ -197,17 +276,14 @@ const handleForgetPasswordPopup = async () => {
       try {
         const response = await axios.post(
           "https://ecommerencesite.onrender.com/api/USERMEDICINE/ForgetPassword",
-        //  "http://localhost:5256/api/USERMEDICINE/ForgetPassword",
           payload,
-          { 
-            headers: { "Content-Type": "application/json" },
-            timeout: 30000 // Render wake-up time
-          }
+          { headers: { "Content-Type": "application/json" }, timeout: 30000 }
         );
-        return response.data;
+        
+        if (response.data.status === true) return response.data;
+        else throw new Error(response.data.message || "User not found");
       } catch (error) {
-        const msg = error.response?.data?.message || "Server Error";
-        Swal.showValidationMessage(`Request failed: ${msg}`);
+        Swal.showValidationMessage(`Request failed: ${error.message || "Server Error"}`);
       }
     }
   });

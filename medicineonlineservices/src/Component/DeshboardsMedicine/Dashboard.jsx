@@ -43,7 +43,7 @@ const bpData = [
 const COLORS = ["#0088FE", "#00C49F", "#FF8042"];
 // Customer Side  Dashboard.jsx
 
-export default function Dashboard(userId) {
+export default function Dashboard(userId) { // customer dashboard
   const { cartItems } = useCart(); // ✅ CART ITEMS
 
   const [openDashboard, setOpenDashboard] = useState(false);

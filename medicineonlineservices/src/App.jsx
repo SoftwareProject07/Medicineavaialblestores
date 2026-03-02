@@ -26,7 +26,6 @@ import ABOUTUS from "./Component/User/ABOUTUS.jsx";
 import ViewExample_Header from "./Component/User/ViewExample_Header.jsx";
 import Orderstatus from "./Component/User/Orders.jsx";
 
-// import AdminHeader from "./Component/Admin/AdminHeader.jsx";
 
 
 
