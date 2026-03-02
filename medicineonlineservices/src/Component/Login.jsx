@@ -60,6 +60,8 @@ export default function Login() {
           email: user.email,
           phoneNumber: user.phoneNumber,
         };
+
+        
         localStorage.setItem("user", JSON.stringify(userData));
         
         // 3. Update Auth & Sync Cart
@@ -82,113 +84,136 @@ export default function Login() {
     }
   };
 
-  // ================= FORGET PASSWORD =================
-  // const handleForgetPasswordPopup = async () => {
-  //   const { value } = await Swal.fire({
-  //     title: "Forget Password",
-  //     html: `
-  //       <input id="fp-identity" class="swal2-input" placeholder="Email / Mobile">
-  //       <input id="fp-password" type="password" class="swal2-input" placeholder="New Password">
-  //     `,
-  //     showCancelButton: true,
-  //     confirmButtonText: "Reset",
-  //     preConfirm: () => {
-  //       const identity = document.getElementById("fp-identity").value;
-  //       const newPassword = document.getElementById("fp-password").value;
-  //       if (!identity || !newPassword) {
-  //         Swal.showValidationMessage("All fields required");
-  //         return false;
-  //       }
-  //       return { identity, newPassword };
-  //     },
-  //   });
-
-  //   if (!value) return;
-
-  //   try {
-  //     await axios.post(
-  //       "https://ecommerencesite.onrender.com/api/USERMEDICINE/ForgetPassword",
-  //       {
-  //         Email: value.identity,
-  //         PhoneNumber: value.identity,
-  //         NewPassword: value.newPassword,
-  //       },
-  //       { headers: { "Content-Type": "application/json" } }
-  //     );
-  //     Swal.fire("Success", "Password Reset Successful", "success");
-  //   } catch {
-  //     Swal.fire("Error", "Reset Failed", "error");
-  //   }
-  // };
-
 
    // ================= FORGET PASSWORD =================
+// const handleForgetPasswordPopup = async () => {
+//   const { value } = await Swal.fire({
+//     title: "Forget Password",
+//     html: `
+//       <div style="text-align: left; padding: 10px;">
+//         <label style="font-weight: bold; color: #fff;">Email or Mobile Number</label>
+//         <input id="fp-identity" class="swal2-input" placeholder="shivam12@gmail.com" style="width: 90%; margin-bottom: 15px;">
+        
+//         <label style="font-weight: bold; color: #fff;">New Password</label>
+//         <input id="fp-password" type="password" class="swal2-input" placeholder="Enter New Password" style="width: 90%;">
+//       </div>
+//     `,
+//     showCancelButton: true,
+//     confirmButtonText: "Reset Password",
+//     showLoaderOnConfirm: true,
+//     preConfirm: () => {
+//       // Comparison ke liye email ko lowercase aur trim karna best practice hai
+//       const identity = document.getElementById("fp-identity").value.trim().toLowerCase();
+//       const newPassword = document.getElementById("fp-password").value.trim();
+      
+//       if (!identity || !newPassword) {
+//         Swal.showValidationMessage("Dono fields bharna zaroori hai!");
+//         return false;
+//       }
+//       return { identity, newPassword };
+//     },
+//   });
+
+//   if (!value) return;
+
+//   // Loader start karein taaki user ko lage ki process ho raha hai
+//   Swal.fire({
+//     title: "Verifying Email...",
+//     text: "Database se compare ho raha hai...",
+//     allowOutsideClick: false,
+//     didOpen: () => Swal.showLoading(),
+//   });
+
+//   const isEmail = value.identity.includes("@");
+
+//   // Dynamic Payload: Backend ko wahi field bhej rahe hain jo zaruri hai
+//   const payload = {
+//     Email: isEmail ? value.identity : "", 
+//     PhoneNumber: !isEmail ? value.identity : "", 
+//     NewPassword: value.newPassword,
+//   };
+
+//   try {
+//     // ⚠️ SABSE BADA FIX: axios.get ko axios.post mein badal diya gaya hai
+//     const response = await axios.post(
+//     //  "http://localhost:5256/api/USERMEDICINE/ForgetPassword", // Local testing ke liye
+//        "https://ecommerencesite.onrender.com/api/USERMEDICINE/ForgetPassword", // Live ke liye
+//       payload,
+//       { headers: { "Content-Type": "application/json" } }
+//     );
+
+//     // Backend success check (Response code 200 ya status true)
+//     if (response.data.status === true || response.status === 200) {
+//       Swal.fire("Success", "shivam12@gmail.com ka password successfully badal gaya!", "success");
+//     } else {
+//       Swal.fire("Error", response.data.responseMessage || "User match nahi hua.", "error");
+//     }
+
+//   } catch (error) {
+//     console.error("API Error Detail:", error.response?.data);
+    
+//     // Agar server 404 ya 400 error bhejta hai toh message yaha se aayega
+//     const errorMsg = error.response?.data?.responseMessage || "User nahi mila ya database comparison fail ho gaya.";
+//     Swal.fire("Error", errorMsg, "error");
+//   }
+// };
+
+
+
+// FORGET PASSWORD
 const handleForgetPasswordPopup = async () => {
   const { value } = await Swal.fire({
     title: "Forget Password",
     html: `
-      <div style="text-align: left; padding: 10px;">
-        <label style="font-weight: bold; color: #fff;">Email or Mobile Number</label>
-        <input id="fp-identity" class="swal2-input" placeholder="shivam12@gmail.com" style="width: 90%; margin-bottom: 15px;">
-        
-        <label style="font-weight: bold; color: #fff;">New Password</label>
-        <input id="fp-password" type="password" class="swal2-input" placeholder="Naya Password" style="width: 90%;">
+      <div style="text-align: left;">
+        <label style="color: gray; font-size: 12px;">Email or Mobile</label>
+        <input id="fp-identity" class="swal2-input" placeholder="example@mail.com">
+        <label style="color: gray; font-size: 12px;">New Password</label>
+        <input id="fp-password" type="password" class="swal2-input" placeholder="********">
       </div>
     `,
     showCancelButton: true,
     confirmButtonText: "Reset Password",
     showLoaderOnConfirm: true,
-    preConfirm: () => {
-      // Input ko trim aur lowercase karna zaroori hai comparison ke liye
-      const identity = document.getElementById("fp-identity").value.trim().toLowerCase();
+    preConfirm: async () => {
+      const identity = document.getElementById("fp-identity").value.trim();
       const newPassword = document.getElementById("fp-password").value.trim();
-      
+
       if (!identity || !newPassword) {
-        Swal.showValidationMessage("Dono fields bharna zaroori hai!");
+        Swal.showValidationMessage("Both fields are required");
         return false;
       }
-      return { identity, newPassword };
-    },
-  });
 
-  if (!value) return;
+      const isEmail = identity.includes("@");
+      
+      // PAYLOAD: Ensure keys match C# DTO exactly
+      const payload = {
+        Email: isEmail ? identity : "",
+        PhoneNumber: !isEmail ? identity : "",
+        NewPassword: newPassword,
+        UserName: "" 
+      };
 
-  // Render server ko wake up karne ke liye loader
-  Swal.fire({
-    title: "Comparing Email...",
-    text: "Database se verify ho raha hai...",
-    allowOutsideClick: false,
-    didOpen: () => Swal.showLoading(),
-  });
-
-  const isEmail = value.identity.includes("@");
-
-  // FINAL PAYLOAD: Hum dono keys bhej rahe hain taaki API crash na ho
-  const payload = {
-    Email: isEmail ? value.identity : "", 
-    PhoneNumber: !isEmail ? value.identity : "", 
-    NewPassword: value.newPassword,
-  };
-
-  try {
-    const response = await axios.post(
-      "https://ecommerencesite.onrender.com/api/USERMEDICINE/ForgetPassword",
-      payload,
-      { headers: { "Content-Type": "application/json" } }
-    );
-
-    // Backend success check
-    if (response.data.status === true || response.status === 200) {
-      Swal.fire("Success", "Password change ho gaya! Ab login karein.", "success");
-    } else {
-      // Agar email store hai fir bhi error hai, toh server message dikhayega
-      Swal.fire("Error", response.data.responseMessage || "Email match nahi hua.", "error");
+      try {
+        const response = await axios.post(
+          "https://ecommerencesite.onrender.com/api/USERMEDICINE/ForgetPassword",
+        //  "http://localhost:5256/api/USERMEDICINE/ForgetPassword",
+          payload,
+          { 
+            headers: { "Content-Type": "application/json" },
+            timeout: 30000 // Render wake-up time
+          }
+        );
+        return response.data;
+      } catch (error) {
+        const msg = error.response?.data?.message || "Server Error";
+        Swal.showValidationMessage(`Request failed: ${msg}`);
+      }
     }
+  });
 
-  } catch (error) {
-    console.error("API Error:", error.response?.data);
-    const errorMsg = error.response?.data?.responseMessage || "User nahi mila ya server slow hai.";
-    Swal.fire("Error", errorMsg, "error");
+  if (value && value.status === true) {
+    Swal.fire("Success", "Password reset successfully!", "success");
   }
 };
 return (
