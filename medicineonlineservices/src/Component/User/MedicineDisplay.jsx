@@ -7,6 +7,7 @@ import "../styles/dashboardsprofiles.css";
 export default function MedicineDisplay() {
   const { addToCart, cartItems = [] } = useCart();
   const navigate = useNavigate();
+  const[openMasterUpdate, setOpenMasterUpdate] = useState(false);
 
   const [user, setUser] = useState(null);
   const [meds, setMeds] = useState([]);
@@ -44,7 +45,7 @@ export default function MedicineDisplay() {
       rawData.forEach((item) => {
         // We trim spaces and lowercase the name to catch "Paracetamol" vs "paracetamol "
         const normalizedName = item.name.trim().toLowerCase();
-        
+
         // If the name isn't in our Map yet, add the whole object
         if (!uniqueMedsMap.has(normalizedName)) {
           uniqueMedsMap.set(normalizedName, item);
@@ -78,7 +79,7 @@ export default function MedicineDisplay() {
               {user ? `${user.firstName} ${user.lastName}` : "User"}
             </span>
           </div>
-  
+
           <ul>
             <li className="menu-group">
               <button
@@ -87,7 +88,7 @@ export default function MedicineDisplay() {
               >
                 Dashboard <span>{openDashboard ? "▾" : "▸"}</span>
               </button>
-  
+
               {openDashboard && (
                 <ul className="submenu">
                   <li><Link to="/medication-tracker">Medication Tracker</Link></li>
@@ -101,13 +102,40 @@ export default function MedicineDisplay() {
                 </ul>
               )}
             </li>
-  
+    {/* MASTER UPDATE DROPDOWN */}
+      <li className="menu-group">
+        <button className="sidebar-btn dropdown-toggle" onClick={() => setOpenMasterUpdate(!openMasterUpdate)}>
+          <div className="btn-content">
+            <i className="fas fa-edit"></i> Master Update
+          </div>
+          <span>{openMasterUpdate ? "▾" : "▸"}</span>
+        </button>
+        {openMasterUpdate && (
+          <ul className="submenu">
+            <li>
+              <Link to="/deliveryaddress">
+                <i className="fas fa-map-marker-alt"></i> Delivery Address
+              </Link>
+            </li>
+                <li>
+                        <Link to="/CompletePayments" className="sidebar-btn active-btn">
+                          <div className="btn-content"><i className="fas fa-credit-card"></i> Order Payment</div>
+                        </Link>
+                      </li>
+                             <li>
+                              <Link to="/">
+                                <i className="fas fa-map-marker-alt"></i> Refund Order Amount
+                              </Link>
+                            </li>
+          </ul>
+        )}
+      </li>
             <li>
               <Link to="/medicinedisplay" className="btn btn-success mb-2">
                 Medicines
               </Link>
             </li>
-  
+
             {/* ✅ CART WITH COUNT */}
              <Link to="/carts" className="nav-link">
                        <i className="fas fa-shopping-cart me-2"></i> My Cart
@@ -117,23 +145,23 @@ export default function MedicineDisplay() {
                          </span>
                        )}
                      </Link>
-   
+{/* 
              <li>
               <Link to="/deliveryaddress" className="btn btn-success mb-2">
                 Delivery Address
               </Link>
-            </li>
+            </li> */}
            
-            <li><Link to="/CompletePayments" className="btn btn-success mb-2">
+            {/* <li><Link to="/CompletePayments" className="btn btn-success mb-2">
                ORDER PAYMENT
-              </Link></li>
-             <li>OrderItem</li>
-  
-            <li>CustomerTracking</li>
-  
+              </Link></li> */}
+             <li ><Link to="/orders" className="btn btn-success mb-2">OrderStatus </Link></li>
+
+            {/* <li>CustomerTracking</li> */}
+
             <Link to="/profile"  className="btn btn-success">CustomerProfile</Link>
-  
-  
+
+
             <li>
               <Link to="/header">
                 <i className="fas fa-sign-out-alt"></i>  LogOut

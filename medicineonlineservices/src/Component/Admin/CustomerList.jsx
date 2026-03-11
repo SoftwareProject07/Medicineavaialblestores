@@ -64,10 +64,10 @@ export default function CustomerList() {
         <ul>
           <Link to="/deshboardpanel" className="btn btn-success mb-2">Admin Dashboard</Link>
           {/* <li>Cart</li> */}
-          <li>OrdersPayment</li>
+          <li>OrdersPaymentList</li>
           <li><Link to="/customerlists" className="btn btn-success mb-2">Customer LIST</Link></li>
-          <li>OrderList</li>
-          <li><Link to="/adminlogin"><i className="fas fa-sign-out-alt"></i> LogOut</Link></li>
+          <li>OrderStatusList</li>
+          <li><Link to="/header"><i className="fas fa-sign-out-alt"></i> LogOut</Link></li>
         </ul>
       </div>
 

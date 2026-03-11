@@ -42,18 +42,3 @@ export default function CartItem({ item, handleQuantity, remove }) {
 
 
 
-// CartItem.jsx
-// import React from 'react';
-
-// const CartItem = ({ item, removeFromCart, updateQuantity }) => {
-//   return (
-//     // Aapka existing JSX code...
-//     <tr>
-//       <td>{item.name}</td>
-//       {/* ... rest of the code */}
-//     </tr>
-//   );
-// };
-
-// // YEH LINE MISSING HO SAKTI HAI:
-// export default CartItem;

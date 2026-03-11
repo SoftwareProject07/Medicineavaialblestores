@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2"; 
 import "../styles/headers.css";
@@ -6,12 +6,13 @@ import "../styles/noscroll.css";
 
 export default function Header() {
   const navigate = useNavigate();
+  const medicineSectionRef = useRef(null); // Fixed: Added Reference
+  
   const [adminOpen, setAdminOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [isSticky, setIsSticky] = useState(false);
   
-  // Shop status state
   const [isShopOpen, setIsShopOpen] = useState(localStorage.getItem("shopStatus") !== "OFF");
   
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -42,6 +43,13 @@ export default function Header() {
     "Healthcare Devices", "Homeopathic Medicine", "Health Guide"
   ];
 
+  // --- SMOOTH SCROLL LOGIC ---
+  const handleCategoryClick = (category) => {
+    if (category === "Medicines" && medicineSectionRef.current) {
+      medicineSectionRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
   }, [slides.length]);
@@ -55,7 +63,6 @@ export default function Header() {
     return () => clearInterval(slideInterval);
   }, [nextSlide]);
 
-  // Fetching medicines
   const fetchMedicines = useCallback(async () => {
     try {
       setLoading(true);
@@ -83,7 +90,6 @@ export default function Header() {
 
   useEffect(() => {
     fetchMedicines();
-    // Shop Status check sync
     const status = localStorage.getItem("shopStatus");
     setIsShopOpen(status !== "OFF");
   }, [fetchMedicines]);
@@ -106,7 +112,6 @@ export default function Header() {
   const handleMedicineOrderClick = (e) => {
     if (e) e.preventDefault();
     const isLoggedIn = localStorage.getItem("user") || localStorage.getItem("token");
-
     if (!isLoggedIn || isLoggedIn === "null") {
       setSidebarOpen(false);
       Swal.fire({
@@ -128,24 +133,20 @@ export default function Header() {
     (m?.name || "").toLowerCase().includes(search.toLowerCase())
   );
 
-  // --- CONDITION: IF SHOP IS CLOSED ---
   if (!isShopOpen) {
     return (
       <div className="d-flex flex-column align-items-center justify-content-center vh-100 bg-light">
         <div className="card shadow-lg p-5 text-center border-0" style={{ maxWidth: "500px", borderRadius: "20px" }}>
           <img src="https://cdn-icons-png.flaticon.com/512/3661/3661841.png" width="100" alt="Closed" className="mb-4 mx-auto" />
           <h1 className="fw-bold text-danger">Shop is Closed</h1>
-          <p className="text-muted fs-5">Hum jald hi wapas aayenge. Suvidha ke liye khed hai.</p>
+          <p className="text-muted fs-5">Hum jald hi wapas aayenge.</p>
           <hr />
-          <div className="mt-3">
-             <Link to="/adminlogin" className="btn btn-outline-secondary btn-sm">Admin Portal</Link>
-          </div>
+          <Link to="/adminlogin" className="btn btn-outline-secondary btn-sm">Admin Portal</Link>
         </div>
       </div>
     );
   }
 
-  // --- NORMAL RENDER (ONLY IF SHOP IS OPEN) ---
   return (
     <>
       {/* SIDEBAR */}
@@ -158,20 +159,16 @@ export default function Header() {
           <ul className="nav flex-column gap-2">
             <li className="nav-item border-bottom pb-2"><Link to="/" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>Home</Link></li>
             <li className="nav-item border-bottom pb-2">
-              <div className="nav-link text-dark p-0" style={{ cursor: "pointer" }} onClick={handleMedicineOrderClick}>
-                Medicine Order
-              </div>
+              <div className="nav-link text-dark p-0" style={{ cursor: "pointer" }} onClick={handleMedicineOrderClick}>Medicine Order</div>
             </li>
-            <li className="nav-item border-bottom pb-2">
-              <Link to="/contact" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>Contact Us</Link>
-            </li>
+            <li className="nav-item border-bottom pb-2"><Link to="/contact" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>Contact Us</Link></li>
           </ul>
         </div>
       </div>
       {sidebarOpen && <div className="overlay" onClick={() => setSidebarOpen(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 2500 }}></div>}
 
       {/* NAVBAR */}
-      <nav className="navbar navbar-expand-lg fixed-top bg-white shadow-sm px-0 flex-column align-items-stretch" style={{ z_index: 2000 }}>
+      <nav className="navbar navbar-expand-lg fixed-top bg-white shadow-sm px-0 flex-column align-items-stretch" style={{ zIndex: 2000 }}>
         <div className="d-flex align-items-center px-3 py-2 w-100">
             <button className="btn border-0 me-2" onClick={() => setSidebarOpen(true)}><i className="fas fa-bars fa-lg"></i></button>
             <Link to="/" className="navbar-brand d-flex align-items-center"><img src="/AKMedizostore.png" width="34" alt="logo" /><span className="ms-2 fw-bold">AKMedizostore</span></Link>
@@ -193,7 +190,14 @@ export default function Header() {
         </div>
         <div className="border-top overflow-hidden">
           <div className="category-bar d-flex justify-content-center align-items-center overflow-auto py-2 gap-4 no-scrollbar" style={{ whiteSpace: "nowrap" }}>
-            {categories.map((cat, index) => (<span key={index} className="text-muted fw-medium category-item" style={{ cursor: "pointer", fontSize: "0.85rem" }}>{cat}</span>))}
+            {categories.map((cat, index) => (
+              <span key={index} 
+                className="text-muted fw-medium category-item" 
+                style={{ cursor: "pointer", fontSize: "0.85rem" }}
+                onClick={() => handleCategoryClick(cat)}> {/* Fixed: Added click handler */}
+                {cat}
+              </span>
+            ))}
           </div>
         </div>
       </nav>
@@ -215,7 +219,8 @@ export default function Header() {
                   <span className="deliver-label text-primary fw-bold" style={{fontSize: "0.75rem"}}>Deliver to</span>
                   <input type="text" value={location.pincode} onChange={handlePincodeChange} className="pincode-input fw-bold ms-1" style={{width: "60px", border: "none", outline: "none"}} />
                 </div>
-                <div className="text-muted truncate-text" style={{fontSize: "0.65rem", marginLeft: "25px", maxWidth: "100px"}}>
+                {/* Fixed: Location text alignment */}
+                <div className="text-muted truncate-text" style={{fontSize: "0.65rem", marginLeft: "25px", textAlign: "left", width: "100%"}}>
                   {location.city}, {location.stateName}
                 </div>
               </span>
@@ -243,8 +248,8 @@ export default function Header() {
           </div>
         </section>
 
-        {/* MEDICINE LIST */}
-        <div className="container mb-5 pt-4">
+        {/* MEDICINE LIST - Fixed: Added medicineSectionRef */}
+        <div className="container mb-5 pt-4" ref={medicineSectionRef}>
           <h4 className="fw-bold mb-4">Available Medicines ({filteredMeds.length})</h4>
           <div className="row g-3">
             {loading ? (
@@ -272,6 +277,7 @@ export default function Header() {
         </div>
       </div>
 
+      {/* FOOTER - Same as yours */}
      {/* --- FOOTER --- */}
       <footer className="ak-footer">
       {/* Top Navigation Row */}

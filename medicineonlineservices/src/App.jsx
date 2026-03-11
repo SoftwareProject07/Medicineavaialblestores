@@ -24,7 +24,7 @@ import PRINTER_VOUCHER from "./Component/User/PRINTER_VOUCHER.jsx";
 import CompletePayment from "./Component/User/CompletePayment.jsx";
 import ABOUTUS from "./Component/User/ABOUTUS.jsx";
 import ViewExample_Header from "./Component/User/ViewExample_Header.jsx";
-import Orderstatus from "./Component/User/Orders.jsx";
+import Orderstatus from "./Component/User/Orderstatus.jsx";
 
 
 
@@ -63,6 +63,7 @@ if (loading) {
         <Route path="/dashboards" element={<Dashboard />} />
         <Route path="/medicinedisplay" element={<MedicineDisplay />} />
         <Route path="/cartitems" element={<CartItem />} />
+        {/* <Route path="/cartitems" element={<CartItem cart={Carts} setCart={setCart} />} /> */}
         <Route path="/carts" element={<Carts />} />
         <Route path="/customerdetails" element={<Customerdetails />} />
         <Route path="/contact" element={<Contact />} />
@@ -75,7 +76,7 @@ if (loading) {
         <Route path="/medicinelist" element={<MedicineList />} /> 
  <Route path="/customerlists" element={<CustomerList />} />
  <Route path="/CompletePayments" element={<CompletePayment/>} />
- 
+ {/* <Route path="/CompletePayments" element={<CompletePayment cartItems={Carts} />} /> */}
 <Route
         path="/profile"
         element={

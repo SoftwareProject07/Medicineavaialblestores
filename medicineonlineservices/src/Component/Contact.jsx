@@ -10,33 +10,7 @@ export default function Contact() {
   const [cartItems] = useState([]);
   const [isShopOpen] = useState(localStorage.getItem("shopStatus") !== "OFF");
 
-  // --- Logic: Medicine Order Protection with Popup ---
-  // const handleMedicineOrderClick = (e) => {
-  //   const isLoggedIn = localStorage.getItem("user") || localStorage.getItem("token");
-
-  //   if (!isLoggedIn) {
-  //     e.preventDefault(); // Page change hone se rokein
-      
-  //     // Stylish Error Popup
-  //     Swal.fire({
-  //       icon: 'error',
-  //       title: 'Login Required',
-  //       text: 'Please login first to access Medicine Orders !',
-  //       confirmButtonColor: '#d33',
-  //       confirmButtonText: 'Login Now',
-  //       showCancelButton: true,
-  //       cancelButtonText: 'Close'
-  //     }).then((result) => {
-  //       if (result.isConfirmed) {
-  //         setSidebarOpen(false); // Sidebar close karein
-  //         navigate("/dashboards"); // Login page par bhej dein
-  //       }
-  //     });
-  //   } else {
-  //     setSidebarOpen(false); // Agar login hai toh sidebar close karke orders par jane dein
-  //   }
-  // };
-
+  
     const handleMedicineOrderClick = (e) => {
       const isLoggedIn = localStorage.getItem("user") || localStorage.getItem("token");
       if (!isLoggedIn) {

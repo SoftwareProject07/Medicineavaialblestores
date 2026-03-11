@@ -22,7 +22,7 @@ import PRINTER_VOUCHER from './User/PRINTER_VOUCHER.jsx';
 import CompletePayment from './User/CompletePayment.jsx';
 import ABOUTUS from './User/ABOUTUS.jsx';
 import ViewExample_Header from './User/ViewExample_Header.jsx';
-import Orderstatus from './User/Orders.jsx';
+import Orderstatus from './User/Orderstatus.jsx';
 
 export default function Routerpage() {
   return (

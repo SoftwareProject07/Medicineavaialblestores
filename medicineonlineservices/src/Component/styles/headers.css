@@ -407,3 +407,13 @@ body {
   width: 25px;
   border-radius: 10px;
 }
+
+/* Add this to your headers.css */
+.fa-map-marker-alt {
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.fa-map-marker-alt:hover {
+  transform: scale(1.2);
+  color: #0056b3 !important; /* Darker blue on hover */
+}
