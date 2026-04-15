@@ -123,25 +123,25 @@ export default function Header() {
     }
   };
 
-  const handleMedicineOrderClick = (e) => {
-    if (e) e.preventDefault();
-    const isLoggedIn = localStorage.getItem("user") || localStorage.getItem("token");
-    if (!isLoggedIn || isLoggedIn === "null") {
-      setSidebarOpen(false);
-      Swal.fire({
-        icon: 'error',
-        title: 'Login Required',
-        text: 'Bina login ke aap orders nahi dekh sakte!',
-        confirmButtonColor: '#28a745',
-        confirmButtonText: 'Login Now',
-      }).then((result) => {
-        if (result.isConfirmed) navigate("/login");
-      });
-    } else {
-      setSidebarOpen(false);
-      navigate("/orders");
-    }
-  };
+  // const handleMedicineOrderClick = (e) => {
+  //   if (e) e.preventDefault();
+  //   const isLoggedIn = localStorage.getItem("user") || localStorage.getItem("token");
+  //   if (!isLoggedIn || isLoggedIn === "null") {
+  //     setSidebarOpen(false);
+  //     Swal.fire({
+  //       icon: 'error',
+  //       title: 'Login Required',
+  //       text: 'Bina login ke aap orders nahi dekh sakte!',
+  //       confirmButtonColor: '#28a745',
+  //       confirmButtonText: 'Login Now',
+  //     }).then((result) => {
+  //       if (result.isConfirmed) navigate("/login");
+  //     });
+  //   } else {
+  //     setSidebarOpen(false);
+  //     navigate("/orders");
+  //   }
+  // };
 
   if (!isShopOpen) {
     return (
@@ -168,9 +168,9 @@ export default function Header() {
           </div>
           <ul className="nav flex-column gap-2">
             <li className="nav-item border-bottom pb-2"><Link to="/" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>Home</Link></li>
-            <li className="nav-item border-bottom pb-2">
+            {/* <li className="nav-item border-bottom pb-2">
               <div className="nav-link text-dark p-0" style={{ cursor: "pointer" }} onClick={handleMedicineOrderClick}>Medicine Order</div>
-            </li>
+            </li> */}
             <li className="nav-item border-bottom pb-2"><Link to="/contact" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>Contact Us</Link></li>
           </ul>
         </div>
