@@ -333,15 +333,6 @@ return (
               </span>
             </div>
 
-         {/* <div className="options">
-              <label className="remember-me">
-                <input type="checkbox" /> <span> Remember </span>me
-              </label>
-              <span className="forget-link" onClick={handleForgetPasswordPopup}>
-                Forget password?
-              </span>
-            </div> */}
-
             <div className="options">
   <label className="remember-me">
     <input type="checkbox" /> <span> Remember </span>me
@@ -363,7 +354,7 @@ return (
 
       <footer className="footer">
         Copyright © 2025-2027 Ultra IT Solutions! All rights reserved.
-        <span> - Developed by Gautam Dev vite v5.4.21</span>
+        <span> - Developed by Gautam Dev  v5.4.21</span>
       </footer>
     </>
   );

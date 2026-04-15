@@ -1,135 +1,176 @@
-// import React, { Fragment, useState } from "react";
-// import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import Swal from "sweetalert2";
 
-// import axios from "axios";
+export default function AdminRegisteration() {
+  const navigate = useNavigate();
 
-// export default function AdminRegisteration() {
-//    const navigate = useNavigate();
-  
-//     const [firstname, setFirstName] = useState("");
-//     const [middlename, setMiddleName] = useState("");
-//     const [lastname, setLastName] = useState("");
-//     const [password, setPassword] = useState("");
-//     const [email, setEmail] = useState("");
-  
-//     // ✅ decimal safe
-//     const [found, setFound] = useState(0);
-//     const [type,setType] = useState("");
-//     const [createon,setCreateOn] = useState(null);
+  // States
+  const [firstname, setFirstName] = useState("");
+  const [middlename, setMiddleName] = useState("");
+  const [lastname, setLastName] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-//     const handleSave = async () => {
-//       const data = {
-//         FirstName: firstname,
-//         MiddleName: middlename,
-//         LastName: lastname,
-//         Password: password,
-//         Email: email,
-//         Fund: 0,
-//         Type: "User",
-//         CreateOn: new Date().toISOString(), // ✅ VERY IMPORTANT
-//       };
-    
-//       try {
-//         const response = await axios.post(
-//           "https://ecommerencesite-api.onrender.com/api/USERMEDICINE/CREATERegisterUser",
-//           data,
-//           {
-//             headers: {
-//               "Content-Type": "application/json",
-//             },
-//           }
-//         );
-    
-//         console.log("API Response:", response.data);
-    
-//         alert("Registration Successful");
-//         navigate("/login");
-//       } catch (error) {
-//         console.error("API Error:", error.response?.data || error.message);
-//         alert("Registration Failed");
-//       }
-//     };
-//   return (
+  const handleSave = async () => {
+    if (!firstname || !lastname || !password || !email || !mobile) {
+      Swal.fire("Warning", "Please fill all required fields", "warning");
+      return;
+    }
 
-//     <>
-//     <Fragment>
-//     <div>
-//       <section class="vh-100" style="background-color: #eee;">
-//   <div class="container h-100">
-//     <div class="row d-flex justify-content-center align-items-center h-100">
-//       <div class="col-lg-12 col-xl-11">
-//         <div class="card text-black" style="border-radius: 25px;">
-//           <div class="card-body p-md-5">
-//             <div class="row justify-content-center">
-//               <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
+    const formData = new FormData();
+    formData.append("FirstName", firstname);
+    formData.append("MiddleName", middlename || "");
+    formData.append("LastName", lastname);
+    formData.append("Password", password);
+    formData.append("Email", email);
+    formData.append("MobileNumber", mobile);
+    formData.append("Fund", 0);
+    formData.append("Type", "User");
+    formData.append("CreateOn", new Date().toISOString());
 
-//                 <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Admin Sign up</p>
+    try {
+      const response = await axios.post(
+        "https://ecommerencesite.onrender.com/api/AdminApi/CREATERegisterAdmin",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
 
-//                 <form class="mx-1 mx-md-4">
+      if (response.data?.isSuccess) {
+        Swal.fire("Success", "Admin Registration Successful", "success")
+          .then(() => navigate("/adminlogin"));
+      } else {
+        Swal.fire("Error", response.data?.message || "Failed", "error");
+      }
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Server Error", "Please try again later", "error");
+    }
+  };
 
-//                   <div class="d-flex flex-row align-items-center mb-4">
-//                     <i class="fas fa-user fa-lg me-3 fa-fw"></i>
-//                     <div data-mdb-input-init class="form-outline flex-fill mb-0">
-//                       <input type="text" id="form3Example1c" class="form-control" />
-//                       <label class="form-label" for="form3Example1c">Your Name</label>
-//                     </div>
-//                   </div>
+  const handleReset = () => {
+    setFirstName("");
+    setMiddleName("");
+    setLastName("");
+    setPassword("");
+    setEmail("");
+    setMobile("");
+  };
 
-//                   <div class="d-flex flex-row align-items-center mb-4">
-//                     <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
-//                     <div data-mdb-input-init class="form-outline flex-fill mb-0">
-//                       <input type="email" id="form3Example3c" class="form-control" />
-//                       <label class="form-label" for="form3Example3c">Your Email</label>
-//                     </div>
-//                   </div>
+  return (
+    <div className="d-flex" style={{ minHeight: "100vh" }}>
+      {/* SIDEBAR MENU */}
+      <nav className="bg-light border-end p-3" style={{ width: "280px" }}>
+ <div className="brand mb-4 d-flex align-items-center">
+          <img src="/AKMedizostore.png" alt="logo" width="40px" className="me-2" />
+          <h5 className="m-0 text-success fw-bold">AKMedizo</h5>
+        </div>        <ul className="list-unstyled">
+           <li><Link to="/deshboardpanel" className="btn btn-outline-success w-100 mb-2 text-start">Dashboard</Link></li> 
+                      <li><Link to="/customerlists" className="btn btn-outline-success w-100 mb-2 text-start">Customer LIST</Link></li>
+                    <li><Link to="/customerlists" className="btn btn-outline-success w-100 mb-2 text-start">OrderPaymentList</Link></li>
 
-//                   <div class="d-flex flex-row align-items-center mb-4">
-//                     <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
-//                     <div data-mdb-input-init class="form-outline flex-fill mb-0">
-//                       <input type="password" id="form3Example4c" class="form-control" />
-//                       <label class="form-label" for="form3Example4c">Password</label>
-//                     </div>
-//                   </div>
+               <li><Link to="/" className="btn btn-outline-success w-100 mb-2 text-start">OrderStatusLIST</Link></li>
 
-//                   <div class="d-flex flex-row align-items-center mb-4">
-//                     <i class="fas fa-key fa-lg me-3 fa-fw"></i>
-//                     <div data-mdb-input-init class="form-outline flex-fill mb-0">
-//                       <input type="password" id="form3Example4cd" class="form-control" />
-//                       <label class="form-label" for="form3Example4cd">Repeat your password</label>
-//                     </div>
-//                   </div>
+                      <li><Link to="/adminFeedbackcustomerlists" className="btn btn-success w-100 mb-2 text-start">Feedback List</Link></li>
+                      <li><Link to="/adminloginlists" className="btn btn-outline-success w-100 mb-2 text-start">Admin Login List</Link></li>
+                     <li><Link to="/adminUnavailableMedicines" className="btn btn-outline-success w-100 mb-2 text-start">AdminUnavailableMedicineList</Link></li>
 
-//                   <div class="form-check d-flex justify-content-center mb-5">
-//                     <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3c" />
-//                     <label class="form-check-label" for="form2Example3">
-//                       I agree all statements in <a href="#!">Terms of service</a>
-//                     </label>
-//                   </div>
+                       <li><Link to="/adminregisterationform" className="btn btn-outline-success w-100 mb-2 text-start">Admin Registeartion Form  </Link></li>
 
-//                   <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-//                     <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg">Register</button>
-//                   </div>
+                                              <li><Link to="/adminCustomerHelpIssueLists" className="btn btn-outline-success w-100 mb-2 text-start">AdminCustomerHelpIssueList </Link></li>
 
-//                 </form>
+                      <li className="mt-3">
+                          <button onClick={() => navigate('/header')} className="btn btn-link text-danger text-decoration-none p-0">
+                              <i className="fas fa-sign-out-alt"></i> LogOut
+                          </button>
+                      </li>
+        </ul>
+      </nav>
 
-//               </div>
-//               <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
+      {/* MAIN CONTENT AREA */}
+      <section className="flex-grow-1 bg-dark overflow-auto">
+        <div className="container py-5 h-100">
+          <div className="row d-flex justify-content-center align-items-center h-100">
+            <div className="col-12">
+              <div className="card card-registration my-4 shadow-lg">
+                <div className="row g-0">
+                  {/* Image Section */}
+                  <div className="col-xl-5 d-none d-xl-block">
+                    <img 
+                      src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/img4.webp"
+                      alt="Registration" 
+                      className="img-fluid h-100"
+                      style={{ borderTopLeftRadius: ".25rem", borderBottomLeftRadius: ".25rem", objectFit: 'cover' }} 
+                    />
+                  </div>
 
-//                 <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/draw1.webp"
-//                   class="img-fluid" alt="Sample image"/>
+                  {/* Form Section */}
+                  <div className="col-xl-7">
+                    <div className="card-body p-md-5 text-black">
+                      <h3 className="mb-4 text-uppercase fw-bold">Admin Registration</h3>
+                      <hr />
 
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   </div>
-// </section>
-//     </div>
-//     </Fragment>
-//     </>
-//   )
-// }
+                      <div className="row mt-4">
+                        <div className="col-md-4 mb-4">
+                          <label className="form-label">First Name</label>
+                          <input type="text" className="form-control" placeholder="First Name"
+                            value={firstname} onChange={(e) => setFirstName(e.target.value)} required />
+                        </div>
+                        <div className="col-md-4 mb-4">
+                          <label className="form-label">Middle Name</label>
+                          <input type="text" className="form-control" placeholder="Middle Name"
+                            value={middlename} onChange={(e) => setMiddleName(e.target.value)} />
+                        </div>
+                        <div className="col-md-4 mb-4">
+                          <label className="form-label">Last Name</label>
+                          <input type="text" className="form-control" placeholder="Last Name"
+                            value={lastname} onChange={(e) => setLastName(e.target.value)} required />
+                        </div>
+                      </div>
 
-// // checking
+                      <div className="mb-4">
+                        <label className="form-label">Password</label>
+                        <div className="input-group">
+                          <input 
+                            type={showPassword ? "text" : "password"} 
+                            className="form-control" 
+                            placeholder="Password"
+                            value={password} 
+                            onChange={(e) => setPassword(e.target.value)} required
+                          />
+                          <button className="btn btn-outline-secondary" type="button" onClick={() => setShowPassword(!showPassword)}>
+                            {showPassword ? "Hide" : "Show"}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="mb-4">
+                        <label className="form-label">Email ID</label>
+                        <input type="email" className="form-control" placeholder="Email ID"
+                          value={email} onChange={(e) => setEmail(e.target.value)} required />
+                      </div>
+
+                      <div className="mb-4">
+                        <label className="form-label">Mobile Number</label>
+                        <input type="text" className="form-control" placeholder="Mobile Number"
+                          value={mobile} maxLength={10} onChange={(e) => setMobile(e.target.value)} required/>
+                      </div>
+
+                      <div className="d-flex justify-content-end pt-3">
+                        <button type="button" className="btn btn-light btn-lg me-2" onClick={handleReset}>Reset</button>
+                        <button type="button" className="btn btn-warning btn-lg px-5" onClick={handleSave}>Register Admin</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}

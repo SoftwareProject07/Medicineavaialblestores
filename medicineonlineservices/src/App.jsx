@@ -25,6 +25,14 @@ import CompletePayment from "./Component/User/CompletePayment.jsx";
 import ABOUTUS from "./Component/User/ABOUTUS.jsx";
 import ViewExample_Header from "./Component/User/ViewExample_Header.jsx";
 import Orderstatus from "./Component/User/Orderstatus.jsx";
+import AdminRegisteration from "./Component/Admin/AdminRegisteration.jsx";
+import AdminLoginList from "./Component/Admin/AdminLoginList.jsx";
+import FeedbackCustomer from "./Component/User/FeedbackCusotmer.jsx";
+import AdminFeedbackcustomerlist from "./Component/Admin/AdminFeedbackcustomerlist.jsx";
+import CustomerAddMedicine from "./Component/User/CustomerAddMedicine.jsx";
+import AdminUnavailableMedicinecustomer from "./Component/Admin/AdminUnavailableMedicinecustomer.jsx";
+import CustomerHelpIssue from "./Component/User/CustomerHelpIssue.jsx";
+import AdminCustomerHelpIssueList from "./Component/Admin/AdminCustomerHelpIssueList.jsx";
 
 
 
@@ -91,8 +99,15 @@ if (loading) {
     {/* <Route path="/adminheaders" element={<AdminHeader />} />  */}
     <Route path="/abouts" element={<ABOUTUS />} />
     <Route path="/orders" element={<Orderstatus />} />
+<Route path="/adminregisterationform" element={<AdminRegisteration />} />
 
-
+<Route path="/adminloginlists" element={<AdminLoginList />} />
+<Route path="/feedbackcustomers" element={<FeedbackCustomer />} />
+<Route path="/adminFeedbackcustomerlists" element={<AdminFeedbackcustomerlist />} />
+<Route path="/customeraddmedicines" element={<CustomerAddMedicine />} />
+<Route path="/adminUnavailableMedicines" element={<AdminUnavailableMedicinecustomer />} /> 
+<Route path="/customerhelpissues" element={<CustomerHelpIssue />} />
+<Route path="/adminCustomerHelpIssueLists" element={<AdminCustomerHelpIssueList />} />
 
         </Routes>
 

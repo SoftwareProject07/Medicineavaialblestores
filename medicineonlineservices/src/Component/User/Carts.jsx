@@ -195,9 +195,22 @@ export default function Carts() {
               </h4>
             </div>
             
-            <button className={`btn btn-lg px-5 fw-bold ${selectedAddress ? 'btn-primary shadow' : 'btn-secondary disabled'}`} onClick={() => navigate("/CompletePayments")}>
+            {/* <button className={`btn btn-lg px-5 fw-bold ${selectedAddress ? 'btn-primary shadow' : 'btn-secondary disabled'}`} onClick={() => navigate("/CompletePayments")}>
               Proceed
-            </button>
+            </button> */}
+
+<button 
+  className={`btn btn-lg px-5 fw-bold ${selectedAddress ? 'btn-primary shadow' : 'btn-secondary disabled'}`} 
+  onClick={() => {
+    if (selectedAddress) {
+      // ✅ Address data ko state ke saath OrderDetails page par bhejna
+      navigate("/orders", { state: { selectedAddress } }); 
+    }
+  }}
+>
+  Proceed
+</button>
+
           </div>
         </div>
 

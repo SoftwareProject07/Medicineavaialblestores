@@ -23,6 +23,14 @@ import CompletePayment from './User/CompletePayment.jsx';
 import ABOUTUS from './User/ABOUTUS.jsx';
 import ViewExample_Header from './User/ViewExample_Header.jsx';
 import Orderstatus from './User/Orderstatus.jsx';
+import AdminRegisteration from './Admin/AdminRegisteration.jsx';
+import AdminLoginList from './Admin/AdminLoginList.jsx';
+import FeedbackCustomer from './User/FeedbackCusotmer.jsx';
+import AdminFeedbackcustomerlist from './Admin/AdminFeedbackcustomerlist.jsx';
+import CustomerAddMedicine from './User/CustomerAddMedicine.jsx';
+import AdminUnavailableMedicinecustomer from './Admin/AdminUnavailableMedicinecustomer.jsx';
+import CustomerHelpIssue from './User/CustomerHelpIssue.jsx';
+import AdminCustomerHelpIssueList from './Admin/AdminCustomerHelpIssueList.jsx';
 
 export default function Routerpage() {
   return (
@@ -51,6 +59,7 @@ export default function Routerpage() {
 <Route path="/CompletePayments" element={<CompletePayment/>} />
 <Route path="/medicinedata" element={<Medicine />} />
 <Route path="/orders" element={<Orderstatus />} />
+<Route path="/feedbackcustomers" element={<FeedbackCustomer />} />
 
 <Route
         path="/profile"
@@ -63,24 +72,15 @@ export default function Routerpage() {
     </Routes>
     <Route path="/viewexampleheader" element={<ViewExample_Header />} />
     <Route path="/abouts" element={<ABOUTUS />} />
-{/* <Route path="/adminheaders" element ={<AdminHeader />}/> */}
-             {/* <Route Path="/cart.controllers" element={<Cart./> }/> */}
-{/* <Route path="/loginforgetpassword"  element ={<LoginForgetPassword />}/> */}
 
-
-    {/* <Route path="/Deskboard" element={<Deskboard />} /> */}
-        {/* <Route path="/Orders" element={<Orders />} />
-        <Route path="/Profile" element={<Profile />} />
-        <Route path="/MedicineDisplay" element={<MedicineDisplay />} />
-        <Route path="/Carts" element={<Carts />} /> */}
-
-        {/* Admin Routes */}
-        {/* <Route path="/AdminDeskboard" element={<AdminDeskboard />} />
-        <Route path="/AdminHeader" element={<AdminHeader />} />
-        <Route path="/AdminOrder" element={<AdminOrder />} />
-        <Route path="/CustomerList" element={<CustomerList />} />
-        <Route path="/Medicine" element={<Medicine />} /> */}
 <Route path="/printervouchers" element={<PRINTER_VOUCHER />} />
+<Route path="/adminregisterationform" element={<AdminRegisteration />} />
+<Route path="/adminFeedbackcustomerlists" element={<AdminFeedbackcustomerlist />} />
+<Route path="/adminloginlists" element={<AdminLoginList/>} /> 
+<Route path="/customeraddmedicines" element={<CustomerAddMedicine />} />
+<Route path="/adminUnavailableMedicines" element={<AdminUnavailableMedicinecustomer />} />
+<Route path="/customerhelpissues" element={<CustomerHelpIssue />} />
+<Route path="/admincustomerhelpissuelist" element={<AdminCustomerHelpIssueList />} />
     </BrowserRouter>
   );
 }

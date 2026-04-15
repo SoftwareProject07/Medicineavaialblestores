@@ -62,12 +62,25 @@ export default function CustomerList() {
           <span>AKMedizostore</span>
         </div>
         <ul>
-          <Link to="/deshboardpanel" className="btn btn-success mb-2">Admin Dashboard</Link>
-          {/* <li>Cart</li> */}
-          <li>OrdersPaymentList</li>
-          <li><Link to="/customerlists" className="btn btn-success mb-2">Customer LIST</Link></li>
-          <li>OrderStatusList</li>
-          <li><Link to="/header"><i className="fas fa-sign-out-alt"></i> LogOut</Link></li>
+       <li><Link to="/deshboardpanel" className="btn btn-outline-success w-100 mb-2 text-start">Dashboard</Link></li> 
+                      <li><Link to="/customerlists" className="btn btn-outline-success w-100 mb-2 text-start">Customer LIST</Link></li>
+                    <li><Link to="/customerlists" className="btn btn-outline-success w-100 mb-2 text-start">OrderPaymentList</Link></li>
+
+               <li><Link to="/" className="btn btn-outline-success w-100 mb-2 text-start">OrderStatusLIST</Link></li>
+
+                      <li><Link to="/adminFeedbackcustomerlists" className="btn btn-success w-100 mb-2 text-start">Feedback List</Link></li>
+                      <li><Link to="/adminloginlists" className="btn btn-outline-success w-100 mb-2 text-start">Admin Login List</Link></li>
+                     <li><Link to="/adminUnavailableMedicines" className="btn btn-outline-success w-100 mb-2 text-start">AdminUnavailableMedicineList</Link></li>
+
+                       <li><Link to="/adminregisterationform" className="btn btn-outline-success w-100 mb-2 text-start">Admin Registeartion Form  </Link></li>
+
+                                              <li><Link to="/adminCustomerHelpIssueLists" className="btn btn-outline-success w-100 mb-2 text-start">AdminCustomerHelpIssueList </Link></li>
+
+                      <li className="mt-3">
+                          <button onClick={() => navigate('/header')} className="btn btn-link text-danger text-decoration-none p-0">
+                              <i className="fas fa-sign-out-alt"></i> LogOut
+                          </button>
+                      </li>
         </ul>
       </div>
 

@@ -82,7 +82,7 @@ export default function Registration() {
                 {/* Form Section */}
                 <div className="col-xl-6">
                   <div className="card-body p-md-5 text-black">
-                    <h3 className="mb-5 text-uppercase"> Registration Form</h3>
+                    <h3 className="mb-5 text-uppercase"> Admin Registration Form</h3>
 
                     {/* Name Fields Row */}
                     <div className="row">
