@@ -11,20 +11,20 @@ export default function Contact() {
   const [isShopOpen] = useState(localStorage.getItem("shopStatus") !== "OFF");
 
   
-    const handleMedicineOrderClick = (e) => {
-      const isLoggedIn = localStorage.getItem("user") || localStorage.getItem("token");
-      if (!isLoggedIn) {
-        e.preventDefault();
-        Swal.fire({
-          icon: 'error',
-          title: 'Login Required',
-          text: 'Please login first!',
-          confirmButtonColor: '#28a745',
-          confirmButtonText: 'Login Now',
-          showCancelButton: true,
-        }).then((result) => { if (result.isConfirmed) { setSidebarOpen(false); navigate("/dashboards"); } });
-      } else { setSidebarOpen(false); }
-    };
+    // const handleMedicineOrderClick = (e) => {
+    //   const isLoggedIn = localStorage.getItem("user") || localStorage.getItem("token");
+    //   if (!isLoggedIn) {
+    //     e.preventDefault();
+    //     Swal.fire({
+    //       icon: 'error',
+    //       title: 'Login Required',
+    //       text: 'Please login first!',
+    //       confirmButtonColor: '#28a745',
+    //       confirmButtonText: 'Login Now',
+    //       showCancelButton: true,
+    //     }).then((result) => { if (result.isConfirmed) { setSidebarOpen(false); navigate("/dashboards"); } });
+    //   } else { setSidebarOpen(false); }
+    // };
 
   return (
     <>
@@ -57,9 +57,9 @@ export default function Contact() {
             </li>
 
             {/* PROTECTED MEDICINE ORDER LINK */}
-            <li className="nav-item border-bottom pb-2">
+            {/* <li className="nav-item border-bottom pb-2">
                          <div className="nav-link text-dark p-0" style={{ cursor: "pointer" }} onClick={handleMedicineOrderClick}><Link to="/orders" className="nav-link text-dark p-0">Medicine Order</Link></div>
-                       </li>
+                       </li> */}
                        <li className="nav-item border-bottom pb-2">
                          <Link to="/contact" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>Contact Us</Link>
                        </li>
