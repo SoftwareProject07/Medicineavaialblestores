@@ -10,25 +10,25 @@ export default function CompletePayment() {
   const [user, setUser] = useState(null);
 
   // --- STATE MANAGEMENT ---
-  const [activeMethod, setActiveMethod] = useState("UPI"); // Controls which method is shown
+  const [activeMethod, setActiveMethod] = useState("UPI");
   const [upiId, setUpiId] = useState("");
   const [isVerified, setIsVerified] = useState(false);
   const [openDashboard, setOpenDashboard] = useState(true);
   const [openMasterUpdate, setOpenMasterUpdate] = useState(false);
 
-  // --- DYNAMIC DATA RETRIEVAL ---
+  // --- DYNAMIC DATA RETRIEVAL & ERROR HANDLING ---
+  // Fix: Ensure we safely access location.state.priceDetails or use fallbacks
   const fallbackMRP = cartItems.reduce((acc, item) => acc + ((item.unitPrice + 30) * (item.quantity || 1)), 0);
   const fallbackSelling = cartItems.reduce((acc, item) => acc + (item.unitPrice * (item.quantity || 1)), 0);
   const fallbackDiscount = cartItems.reduce((acc, item) => acc + (30 * (item.quantity || 1)), 0);
 
-  const { priceDetails } = location.state || {
-    priceDetails: {
-      mrp: fallbackMRP,
-      discount: fallbackDiscount,
-      platformFee: 7,
-      coupons: 8,
-      totalAmount: (fallbackSelling + 7 - 8)
-    }
+  // Safely extract priceDetails with a complete default object
+  const priceDetails = location.state?.priceDetails || {
+    mrp: fallbackMRP,
+    discount: fallbackDiscount,
+    platformFee: 7,
+    coupons: 8,
+    totalAmount: (fallbackSelling + 7 - 8)
   };
 
   useEffect(() => {
@@ -36,7 +36,6 @@ export default function CompletePayment() {
     if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
-  // Reset verification if user changes the UPI ID text
   useEffect(() => {
     setIsVerified(false);
   }, [upiId]);
@@ -57,106 +56,91 @@ export default function CompletePayment() {
   return (
     <div className="app-container bg-dark min-vh-100 text-white">
       {/* 1. SIDEBAR */}
-   <div className="sidebar">
-            <div className="brand">
-              <Link to="/dashboards">
-                <img src="/AKMedizostore.png" alt="logo" width="55" />
-              </Link>
-              <span>
-                {user ? `${user.firstName} ${user.lastName}` : "User"}
+      <div className="sidebar">
+        <div className="brand">
+          <Link to="/dashboards">
+            <img src="/AKMedizostore.png" alt="logo" width="55" />
+          </Link>
+          <span>
+            {user ? `${user.firstName} ${user.lastName}` : "User"}
+          </span>
+        </div>
+
+        <ul>
+          <li className="menu-group">
+            <button
+              className="menu-title btn btn-success mb-2 d-flex justify-content-between align-items-center"
+              onClick={() => setOpenDashboard(!openDashboard)}
+            >
+              Dashboard <span>{openDashboard ? "▾" : "▸"}</span>
+            </button>
+
+            {openDashboard && (
+              <ul className="submenu">
+                <li><Link to="/medication-tracker">Medication Tracker</Link></li>
+                <li><Link to="/test-reports">Test Reports</Link></li>
+                <li><Link to="/health-history">Health History</Link></li>
+                <li><Link to="/monthly-progress">Monthly Progress</Link></li>
+                <li><Link to="/prescriptions">Prescriptions</Link></li>
+                <li><Link to="/history">History</Link></li>
+                <li><Link to="/support">Help & Support</Link></li>
+                <li><Link to="/settings">Settings</Link></li>
+              </ul>
+            )}
+          </li>
+
+          <li className="menu-group">
+            <button className="sidebar-btn dropdown-toggle" onClick={() => setOpenMasterUpdate(!openMasterUpdate)}>
+              <div className="btn-content">
+                <i className="fas fa-edit"></i> Master Update
+              </div>
+              <span>{openMasterUpdate ? "▾" : "▸"}</span>
+            </button>
+            {openMasterUpdate && (
+              <ul className="submenu">
+                <li>
+                  <Link to="/deliveryaddress">
+                    <i className="fas fa-map-marker-alt"></i> Delivery Address
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/CompletePayments" className="sidebar-btn active-btn">
+                    <div className="btn-content"><i className="fas fa-credit-card"></i> Order Payment</div>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/">
+                    <i className="fas fa-undo"></i> Refund Order Amount
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
+          <li>
+            <Link to="/medicinedisplay" className="btn btn-success mb-2">
+              Medicines
+            </Link>
+          </li>
+
+          <Link to="/carts" className="nav-link">
+            <i className="fas fa-shopping-cart me-2"></i> My Cart
+            {cartItems.length > 0 && (
+              <span className="cart-count badge bg-danger rounded-pill ms-2">
+                {cartItems.length}
               </span>
-            </div>
-  
-            <ul>
-              <li className="menu-group">
-                <button
-                  className="menu-title btn btn-success mb-2 d-flex justify-content-between align-items-center"
-                  onClick={() => setOpenDashboard(!openDashboard)}
-                >
-                  Dashboard <span>{openDashboard ? "▾" : "▸"}</span>
-                </button>
-  
-                {openDashboard && (
-                  <ul className="submenu">
-                    <li><Link to="/medication-tracker">Medication Tracker</Link></li>
-                    <li><Link to="/test-reports">Test Reports</Link></li>
-                    <li><Link to="/health-history">Health History</Link></li>
-                    <li><Link to="/monthly-progress">Monthly Progress</Link></li>
-                    <li><Link to="/prescriptions">Prescriptions</Link></li>
-                    <li><Link to="/history">History</Link></li>
-                    <li><Link to="/support">Help & Support</Link></li>
-                    <li><Link to="/settings">Settings</Link></li>
-                  </ul>
-                )}
-              </li>
-      {/* MASTER UPDATE DROPDOWN */}
-        <li className="menu-group">
-          <button className="sidebar-btn dropdown-toggle" onClick={() => setOpenMasterUpdate(!openMasterUpdate)}>
-            <div className="btn-content">
-              <i className="fas fa-edit"></i> Master Update
-            </div>
-            <span>{openMasterUpdate ? "▾" : "▸"}</span>
-          </button>
-          {openMasterUpdate && (
-            <ul className="submenu">
-              <li>
-                <Link to="/deliveryaddress">
-                  <i className="fas fa-map-marker-alt"></i> Delivery Address
-                </Link>
-              </li>
-                  <li>
-                          <Link to="/CompletePayments" className="sidebar-btn active-btn">
-                            <div className="btn-content"><i className="fas fa-credit-card"></i> Order Payment</div>
-                          </Link>
-                        </li>
-                               <li>
-                                <Link to="/">
-                                  <i className="fas fa-map-marker-alt"></i> Refund Order Amount
-                                </Link>
-                              </li>
-            </ul>
-          )}
-        </li>
-              <li>
-                <Link to="/medicinedisplay" className="btn btn-success mb-2">
-                  Medicines
-                </Link>
-              </li>
-  
-              {/* ✅ CART WITH COUNT */}
-               <Link to="/carts" className="nav-link">
-                         <i className="fas fa-shopping-cart me-2"></i> My Cart
-                         {cartItems.length > 0 && (
-                           <span className="cart-count badge bg-danger rounded-pill ms-2">
-                             {cartItems.length}
-                           </span>
-                         )}
-                       </Link>
-  {/* 
-               <li>
-                <Link to="/deliveryaddress" className="btn btn-success mb-2">
-                  Delivery Address
-                </Link>
-              </li> */}
-             
-              {/* <li><Link to="/CompletePayments" className="btn btn-success mb-2">
-                 ORDER PAYMENT
-                </Link></li> */}
-               <li ><Link to="/orders" className="btn btn-success mb-2">OrderStatus </Link></li>
-  
-              {/* <li>CustomerTracking</li> */}
-  
-              <Link to="/profile"  className="btn btn-success">CustomerProfile</Link>
-  
-  
-              <li>
-                <Link to="/header">
-                  <i className="fas fa-sign-out-alt"></i>  LogOut
-                </Link>
-              </li>
-            </ul>
-          </div>
-   
+            )}
+          </Link>
+
+          <li><Link to="/orders" className="btn btn-success mb-2">OrderStatus</Link></li>
+          <Link to="/profile" className="btn btn-success">CustomerProfile</Link>
+
+          <li>
+            <Link to="/header">
+              <i className="fas fa-sign-out-alt"></i> LogOut
+            </Link>
+          </li>
+        </ul>
+      </div>
 
       {/* 2. MAIN CONTENT */}
       <div className="main-content-area">
@@ -168,14 +152,12 @@ export default function CompletePayment() {
           <div className="fk-main-body">
             <div className="fk-payment-container">
               
-              {/* Column 1: Payment Options (Left Sidebar) */}
               <div className="fk-left-sidebar">
                 <div className="fk-section-header">
                   <span className="back-arrow" onClick={() => navigate(-1)} style={{cursor:'pointer'}}>←</span>
                   <span className="header-title">Complete Payment</span>
                 </div>
                 
-                {/* UPI Option */}
                 <div className={`fk-method-row ${activeMethod === "UPI" ? "active" : ""}`} onClick={() => setActiveMethod("UPI")}>
                   <div className="fk-icon-sq">UPI</div>
                   <div className="fk-method-details">
@@ -184,7 +166,6 @@ export default function CompletePayment() {
                   </div>
                 </div>
 
-                {/* Card Option */}
                 <div className={`fk-method-row ${activeMethod === "CARD" ? "active" : ""}`} onClick={() => setActiveMethod("CARD")}>
                   <div className="fk-icon-sq">CARD</div>
                   <div className="fk-method-details">
@@ -193,27 +174,19 @@ export default function CompletePayment() {
                   </div>
                 </div>
 
-                {/* COD Option */}
                 <div className={`fk-method-row ${activeMethod === "COD" ? "active" : ""}`} onClick={() => setActiveMethod("COD")}>
                   <div className="fk-icon-sq">COD</div>
                   <p className="m-title">Cash on Delivery</p>
                 </div>
 
-                {/* Net Banking Option */}
                 <div className={`fk-method-row ${activeMethod === "NB" ? "active" : ""}`} onClick={() => setActiveMethod("NB")}>
                   <div className="fk-icon-sq">NB</div>
                   <p className="m-title">Net Banking</p>
                 </div>
               </div>
 
-
-
-
-              {/* CENTER: DYNAMIC INPUT AREA */}
               <div className="fk-center-content">
                 <div className="fk-upi-card">
-                  
-                  {/* --- CASE 1: UPI --- */}
                   {activeMethod === "UPI" && (
                     <>
                       <div className="fk-selection-header">
@@ -243,7 +216,6 @@ export default function CompletePayment() {
                     </>
                   )}
 
-                  {/* --- CASE 2: CARD --- */}
                   {activeMethod === "CARD" && (
                     <div className="fk-card-details-form">
                       <h6>Enter Card Details</h6>
@@ -261,7 +233,6 @@ export default function CompletePayment() {
                     </div>
                   )}
 
-                  {/* --- CASE 3: COD --- */}
                   {activeMethod === "COD" && (
                     <div className="cod-confirm text-center p-3">
                       <div className="cod-icon mb-3">
@@ -275,7 +246,6 @@ export default function CompletePayment() {
                     </div>
                   )}
 
-                  {/* --- CASE 4: NET BANKING --- */}
                   {activeMethod === "NB" && (
                     <div className="nb-selection p-2">
                       <h6>Select Your Bank</h6>
@@ -290,11 +260,9 @@ export default function CompletePayment() {
                       </button>
                     </div>
                   )}
-
                 </div>
               </div>
 
-              {/* RIGHT: DYNAMIC PRICE DETAILS (Fixed) */}
               <div className="fk-right-sidebar">
                 <div className="price-header">
                   <span>PRICE DETAILS</span>
@@ -324,7 +292,7 @@ export default function CompletePayment() {
                     <span>₹{priceDetails.totalAmount}</span>
                   </div>
                   <div className="savings-msg mt-3 text-success small fw-bold text-center">
-                    You will save ₹{priceDetails.discount + priceDetails.coupons} on this order
+                    You will save ₹{(priceDetails.discount || 0) + (priceDetails.coupons || 0)} on this order
                   </div>
                 </div>
               </div>
