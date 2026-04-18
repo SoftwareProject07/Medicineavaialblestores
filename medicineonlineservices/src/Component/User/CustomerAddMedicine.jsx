@@ -108,29 +108,31 @@ export default function CustomerAddMedicine() {
                <li><Link to="/medicinedisplay" className="btn btn-success mb-2">Medicines</Link></li>
      
                <li>
-                 <Link to="/carts" className="nav-link">
-                   <i className="fas fa-shopping-cart me-2"></i> My Cart
-                   {cartItems.length > 0 && (
-                     <span className="cart-count badge bg-danger rounded-pill ms-2">
-                       {cartItems.length}
-                     </span>
-                   )}
-                 </Link>
-               </li>
-     
-               <li><Link to="/orders" className="btn btn-success mb-2">OrderStatus</Link></li>
-               <li><Link to="/feedbackcustomers" className="btn btn-success mb-2">CustomerFeedback</Link></li>
-               <li><Link to="/customeraddmedicines" className="btn btn-success mb-2">UnvailableAddMedicine</Link></li>
-               <li><Link to="/profile" className="btn btn-success">CustomerProfile</Link></li>
-     
-     
-               <li className="mt-3">
-                 <Link to="/header" className="text-danger text-decoration-none">
-                   <i className="fas fa-sign-out-alt"></i> LogOut
-                 </Link>
-               </li>
-             </ul>
-           </div>
+                         <Link to="/carts" className="nav-link">
+                           <i className="fas fa-shopping-cart me-2"></i> My Cart
+                           {cartItems.length > 0 && (
+                             <span className="cart-count badge bg-danger rounded-pill ms-2">
+                               {cartItems.length}
+                             </span>
+                           )}
+                         </Link>
+                       </li>
+             
+                       <li><Link to="/orders" className="btn btn-success mb-2">OrderStatus</Link></li>
+                       <li><Link to="/feedbackcustomers" className="btn btn-success mb-2">CustomerFeedback</Link></li>
+                       <li><Link to="/customeraddmedicines" className="btn btn-success mb-2">UnvailableAddMedicine</Link></li>
+                       <li><Link to="/profile" className="btn btn-success">CustomerProfile</Link></li>
+                      <li><Link to="/customerhelpissues" className="btn btn-success">customerhelpissues</Link></li>
+             
+             
+                       <li className="mt-3">
+                         <Link to="/header" className="text-danger text-decoration-none">
+                           <i className="fas fa-sign-out-alt"></i> LogOut
+                         </Link>
+                       </li>
+                     </ul>
+                   </div>
+             
       {/* --- MAIN CONTENT --- */}
       <div className="flex-grow-1 p-4">
         <div className="container">

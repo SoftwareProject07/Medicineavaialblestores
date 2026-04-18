@@ -1,28 +1,284 @@
-.ak-footer {
-    background-color: #f1f7ff; /* Exact background tint */
-    color: #5b6c7d;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    border-top: 1px solid #e2eaf2;
+/* ================= GLOBAL ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ================= FOOTER ================= */
+
+.ak-footer {
+  background-color: #f1f7ff;
+  color: #5b6c7d;
+  border-top: 1px solid #e2eaf2;
+}
+
+/* Top Banner */
 .footer-nav-banner {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 5%;
+  border-bottom: 1px solid #e2eaf2;
+  font-size: 13px;
+  color: #1a73e8;
+  font-weight: 500;
+}
+
+/* Main Content */
+.footer-main-content {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+  padding: 40px 5%;
+  max-width: 1400px;
+  margin: auto;
+}
+
+.column-title {
+  color: #2d3e50;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.footer-links {
+  list-style: none;
+}
+
+.footer-links li {
+  font-size: 13px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.footer-links li:hover {
+  color: #1a73e8;
+}
+
+/* Social */
+.social-row {
+  display: flex;
+  gap: 10px;
+}
+
+.social-box {
+  width: 34px;
+  height: 34px;
+  background: #1a73e8;
+  color: #fff;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+
+/* Subscribe */
+.subscribe-input-group {
+  display: flex;
+  margin-top: 10px;
+}
+
+.subscribe-input-group input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px 0 0 6px;
+}
+
+.subscribe-input-group button {
+  background: #1a73e8;
+  color: #fff;
+  border: none;
+  padding: 0 15px;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+}
+
+/* Footer Bottom */
+.footer-bottom-bar {
+  border-top: 1px solid #e2eaf2;
+  padding: 20px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+/* ================= ABOUT PAGE ================= */
+
+.about-wrapper {
+  background: #fff;
+  padding: 30px 5%;
+  color: #333;
+}
+
+.about-container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Breadcrumb */
+.about-breadcrumb {
+  font-size: 14px;
+  margin-bottom: 30px;
+  color: #888;
+}
+
+/* Hero */
+.about-hero {
+  display: flex;
+  gap: 50px;
+  align-items: center;
+  margin-bottom: 60px;
+}
+
+.hero-content h1 {
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 500;
+}
+
+.hero-content p {
+  font-size: 15px;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Vision */
+.about-vision {
+  display: flex;
+  gap: 50px;
+  align-items: center;
+  margin-bottom: 60px;
+}
+
+.vision-text h2 {
+  font-size: clamp(20px, 2.5vw, 28px);
+}
+
+/* Stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.stat-card {
+  padding: 20px;
+  text-align: center;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.stat-card h3 {
+  font-size: 22px;
+}
+
+/* Founders */
+.founders-layout {
+  display: flex;
+  gap: 40px;
+  margin-top: 40px;
+}
+
+.founder-image-box img {
+  width: 100%;
+  border-radius: 12px;
+}
+
+.founder-quote {
+  font-size: 20px;
+  padding-left: 30px;
+}
+
+/* ================= TABLET ================= */
+@media (max-width: 1024px) {
+
+  .footer-main-content {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .about-hero,
+  .about-vision {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .founders-layout {
+    flex-direction: column;
+  }
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 768px) {
+
+  .footer-nav-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .footer-main-content {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .footer-bottom-bar {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .about-hero,
+  .about-vision {
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ========================correct css========================= */
+
+
+/* .ak-footer {
+    background-color: #f1f7ff; */
+     /* Exact background tint */
+    /* color: #5b6c7d;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    border-top: 1px solid #e2eaf2;
+} */
+
+/* .footer-nav-banner {
     display: flex;
     justify-content: space-between;
     padding: 12px 60px;
     border-bottom: 1px solid #e2eaf2;
-    font-size: 13px;
-    color: #1a73e8; /* Blue brand color */
-    font-weight: 500;
-}
+    font-size: 13px; */
+    /* color: #1a73e8; /* Blue brand color */
+   /* font-weight: 500;
+}  */
 
-.footer-main-content {
+ /* .footer-main-content {
     display: grid;
     grid-template-columns: 1.2fr 1fr 1.5fr 1.5fr; /* Matches visual weight */
-    gap: 40px;
+    /* gap: 40px;
     padding: 40px 60px;
     max-width: 1440px;
-    margin: 0 auto;
-}
+    margin: 0 auto; 
+} 
 
 .column-title {
     color: #2d3e50;
@@ -35,9 +291,9 @@
     list-style: none;
     padding: 0;
     margin: 0;
-}
+} 
 
-.footer-links li {
+/* .footer-links li {
     font-size: 13px;
     margin-bottom: 10px;
     cursor: pointer;
@@ -46,9 +302,9 @@
 
 .footer-links li:hover {
     color: #1a73e8;
-}
+} */
 
-.social-row {
+/* .social-row {
     display: flex;
     gap: 12px;
 }
@@ -78,9 +334,9 @@
     border-radius: 6px 0 0 6px;
     font-size: 13px;
     outline: none;
-}
+} */
 
-.subscribe-input-group button {
+/* .subscribe-input-group button {
     background-color: #1a73e8;
     color: white;
     border: none;
@@ -106,8 +362,8 @@
 .company-name {
     font-weight: 600;
     color: #2d3e50;
-}
-
+} */
+/* 
 .highlight-blue {
     color: #1a73e8;
     font-weight: 500;
@@ -124,9 +380,9 @@
     display: flex;
     gap: 10px;
     margin: 15px 0;
-}
+} */
 
-.store-badge {
+/* .store-badge {
     background-color: #000;
     color: white;
     padding: 8px 16px;
@@ -148,9 +404,9 @@
     font-size: 11px;
     color: #adb5bd;
     margin-top: 15px;
-}
+} */
 
-.footer-bottom-bar {
+/* .footer-bottom-bar {
     border-top: 1px solid #e2eaf2;
     padding: 25px 60px;
     display: flex;
@@ -170,25 +426,25 @@
     letter-spacing: 1px;
     margin-top: 5px;
     color: #6c757d;
-}
+} */
 
 /* Helper Spacing */
-.mt-30 { margin-top: 30px; }
-.mt-20 { margin-top: 20px; }
+/* .mt-30 { margin-top: 30px; }
+.mt-20 { margin-top: 20px; } */
 
 /* Responsive */
-@media (max-width: 1024px) {
+/* @media (max-width: 1024px) {
     .footer-main-content {
         grid-template-columns: 1fr 1fr;
         padding: 40px 20px;
     }
-}
+} */
 
 
 /* ================== */
 
 /* Container and Layout */
-.about-wrapper {
+/* .about-wrapper {
   background-color: #fff;
   padding: 20px 5%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -209,20 +465,20 @@
 .about-breadcrumb a {
   text-decoration: none;
   color: #666;
-}
+} */
 
 /* Section Labels */
-.label-grey {
+/* .label-grey {
   display: block;
   font-size: 12px;
   font-weight: 600;
   color: #b0b0b0;
   letter-spacing: 2px;
   margin-bottom: 15px;
-}
+} */
 
 /* Hero Section */
-.about-hero {
+/* .about-hero {
   display: flex;
   gap: 60px;
   margin-bottom: 80px;
@@ -242,10 +498,10 @@
   line-height: 1.6;
   margin-bottom: 20px;
   font-size: 16px;
-}
+} */
 
 /* Vision Section */
-.about-vision {
+/* .about-vision {
   display: flex;
   flex-direction: row-reverse; /* Vision image on right */
   gap: 60px;
@@ -256,10 +512,10 @@
   font-size: 28px;
   font-weight: 400;
   margin-bottom: 20px;
-}
+} */
 
 /* Stats Grid */
-.stats-grid {
+/* .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
@@ -280,10 +536,10 @@
 .stat-card p {
   color: #888;
   font-size: 14px;
-}
+} */
 
 /* Founders Section */
-.founders-layout {
+/* .founders-layout {
   display: flex;
   gap: 50px;
   align-items: flex-start;
@@ -312,14 +568,14 @@
   top: -20px;
   font-size: 80px;
   color: #eee;
-}
+} */
 
 /* Responsive */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .about-hero, .about-vision, .founders-layout, .culture-layout {
     flex-direction: column;
   }
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-}
+} */
