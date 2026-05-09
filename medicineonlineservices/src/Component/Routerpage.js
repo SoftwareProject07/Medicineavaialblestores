@@ -31,6 +31,9 @@ import CustomerAddMedicine from './User/CustomerAddMedicine.jsx';
 import AdminUnavailableMedicinecustomer from './Admin/AdminUnavailableMedicinecustomer.jsx';
 import CustomerHelpIssue from './User/CustomerHelpIssue.jsx';
 import AdminCustomerHelpIssueList from './Admin/AdminCustomerHelpIssueList.jsx';
+import AdminBankSelectDetails from './Admin/AdminBankSelectDetails.jsx';
+import CustomerCareticket from './User/CustomerCareticket.jsx';
+import Admincreditdetails from './Admin/Admincreditdetail.jsx';
 
 export default function Routerpage() {
   return (
@@ -81,6 +84,9 @@ export default function Routerpage() {
 <Route path="/adminUnavailableMedicines" element={<AdminUnavailableMedicinecustomer />} />
 <Route path="/customerhelpissues" element={<CustomerHelpIssue />} />
 <Route path="/admincustomerhelpissuelist" element={<AdminCustomerHelpIssueList />} />
+<Route path="/adminbankselectdetailss" element={<AdminBankSelectDetails />} />
+<Route path="/customercaretickets" element={<CustomerCareticket />} />
+<Route path="/admincreditdetails" element={<Admincreditdetail/>} />
     </BrowserRouter>
   );
 }

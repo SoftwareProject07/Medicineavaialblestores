@@ -33,6 +33,9 @@ import CustomerAddMedicine from "./Component/User/CustomerAddMedicine.jsx";
 import AdminUnavailableMedicinecustomer from "./Component/Admin/AdminUnavailableMedicinecustomer.jsx";
 import CustomerHelpIssue from "./Component/User/CustomerHelpIssue.jsx";
 import AdminCustomerHelpIssueList from "./Component/Admin/AdminCustomerHelpIssueList.jsx";
+import AdminBankSelectDetails from "./Component/Admin/AdminBankSelectDetails.jsx";
+import CustomerCareticket from "./Component/User/CustomerCareticket.jsx";
+import Admincreditdetail from "./Component/Admin/Admincreditdetail.jsx";
 
 
 
@@ -108,7 +111,9 @@ if (loading) {
 <Route path="/adminUnavailableMedicines" element={<AdminUnavailableMedicinecustomer />} /> 
 <Route path="/customerhelpissues" element={<CustomerHelpIssue />} />
 <Route path="/adminCustomerHelpIssueLists" element={<AdminCustomerHelpIssueList />} />
-
+<Route path="/adminbankselectdetailss" element={<AdminBankSelectDetails />} />
+<Route path="/customercaretickets" element={<CustomerCareticket />} />  
+<Route path="/admincreditdetails" element={<Admincreditdetail />} />  
         </Routes>
 
     </CartProvider>

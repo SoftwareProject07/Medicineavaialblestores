@@ -183,6 +183,18 @@ export default function Header() {
             <button className="btn border-0 me-2" onClick={() => setSidebarOpen(true)}><i className="fas fa-bars fa-lg"></i></button>
             <Link to="/" className="navbar-brand d-flex align-items-center"><img src="/AKMedizostore.png" width="34" alt="logo" /><span className="ms-2 fw-bold">AKMedizostore</span></Link>
             <div className="ms-auto d-flex gap-3 align-items-center">
+              {/* <div className="cart-icon position-relative">
+                <i class="fa-solid fa-headset" ></i>
+              
+              </div> */}
+
+              <Link to="/customercaretickets" className="text-decoration-none">
+    <div className="cart-icon position-relative">
+        <i className="fa-solid fa-headset"></i>
+        {/* If you want a label next to it */}
+        {/* <span className="ms-2">Support</span>  */}
+    </div>
+</Link>
               <div onClick={() => setAdminOpen(!adminOpen)} style={{ cursor: "pointer" }} className="position-relative">
                 <i className="fas fa-user-circle fa-2x text-secondary"></i>
                 {adminOpen && (
