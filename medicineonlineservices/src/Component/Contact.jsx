@@ -135,7 +135,9 @@ export default function Contact() {
       {/* --- CONTACT CONTENT --- */}
       <div className="contactdesign text-center" style={{ marginTop: "120px" }}>
         <h2 className="fw-bold">AVAILABLE TIMING : 24 × 7</h2>
-        <h3 className="text-primary">Contact Person : 7033132629</h3>
+        <h3 className="text-primary">Contact Person : 7033132629/8409844260</h3>
+        <h3> Email id :customersupports01@gmail.com </h3>
+
         <div className="container mt-4">
           <div className="card shadow-sm p-4 border-0 bg-white mx-auto" style={{ maxWidth: "600px" }}>
             <p className="fw-bold mb-0">CURRENT ADDRESS:</p>

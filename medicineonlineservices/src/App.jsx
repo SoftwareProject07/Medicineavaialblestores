@@ -36,14 +36,18 @@ import AdminCustomerHelpIssueList from "./Component/Admin/AdminCustomerHelpIssue
 import AdminBankSelectDetails from "./Component/Admin/AdminBankSelectDetails.jsx";
 import CustomerCareticket from "./Component/User/CustomerCareticket.jsx";
 import Admincreditdetail from "./Component/Admin/Admincreditdetail.jsx";
+import LivenessFaceWelcome from "./Component/LIvenssfacematchproject/LivenessFaceWelcome.jsx";
+import LivenessFaceCapture from "./Component/LIvenssfacematchproject/LivenessFaceCapture.jsx";
 
 
 
 
 function PrivateRoute({ children }) {
+ // const navigate = useNavigate();
   const { user } = useAuth();
   return user ? children : <Navigate to="/" />;
 }
+
 
 function App() {
   const { loading } = useAuth();
@@ -51,21 +55,20 @@ if (loading) {
     return <div>Loading...</div>;
   }
 
-//   const PrivateRoute = ({ children }) => {
-//   const auth = localStorage.getItem("user") || localStorage.getItem("token");
-//   // Agar auth nahi hai toh orders page ki jagah home ya login par bhej dega
-//   return auth ? children : <Navigate to="/" replace />;
-// };
+
 
   return (
     <CartProvider >
       <Routes>
 
         {/* DEFAULT */}
-        <Route path="/" element={<Navigate to="/header" />} />
+        {/* <Route path="/" element={<Navigate to="/header" />} /> */}
+            <Route 
+        path="/" 
+        element={<Navigate to ="/livenessfacewelcome"  />} 
+      />
+                <Route path="/login" element={<Login />} />
 
-        {/* AUTH */}
-        <Route path="/login" element={<Login />} />
         <Route path="/registeration" element={<Registeration />} />
 
         {/* USER */}
@@ -114,6 +117,8 @@ if (loading) {
 <Route path="/adminbankselectdetailss" element={<AdminBankSelectDetails />} />
 <Route path="/customercaretickets" element={<CustomerCareticket />} />  
 <Route path="/admincreditdetails" element={<Admincreditdetail />} />  
+<Route path="/livenessfacewelcome" element={<LivenessFaceWelcome  />} />
+<Route path="/eyeblinkfacecapture" element={<LivenessFaceCapture />} />
         </Routes>
 
     </CartProvider>

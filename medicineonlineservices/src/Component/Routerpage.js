@@ -34,6 +34,8 @@ import AdminCustomerHelpIssueList from './Admin/AdminCustomerHelpIssueList.jsx';
 import AdminBankSelectDetails from './Admin/AdminBankSelectDetails.jsx';
 import CustomerCareticket from './User/CustomerCareticket.jsx';
 import Admincreditdetails from './Admin/Admincreditdetail.jsx';
+import LivenessFaceWelcome from './LIvenssfacematchproject/LivenessFaceWelcome.jsx';
+import LivenessFaceCapture from './LIvenssfacematchproject/LivenessFaceCapture.jsx';
 
 export default function Routerpage() {
   return (
@@ -87,6 +89,8 @@ export default function Routerpage() {
 <Route path="/adminbankselectdetailss" element={<AdminBankSelectDetails />} />
 <Route path="/customercaretickets" element={<CustomerCareticket />} />
 <Route path="/admincreditdetails" element={<Admincreditdetail/>} />
+<Route path="/livenessfacewelcome" element={<LivenessFaceWelcome />} />
+<Route path="/eyeblinkfacecapture" element={<LivenessFaceCapture />} />
     </BrowserRouter>
   );
 }
