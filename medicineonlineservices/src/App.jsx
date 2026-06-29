@@ -62,11 +62,11 @@ if (loading) {
       <Routes>
 
         {/* DEFAULT */}
-        {/* <Route path="/" element={<Navigate to="/header" />} /> */}
-            <Route 
+        <Route path="/" element={<Navigate to="/header" />} />
+            {/* <Route 
         path="/" 
         element={<Navigate to ="/livenessfacewelcome"  />} 
-      />
+      /> */}
                 <Route path="/login" element={<Login />} />
 
         <Route path="/registeration" element={<Registeration />} />
