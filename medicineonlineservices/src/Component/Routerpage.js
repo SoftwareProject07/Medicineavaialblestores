@@ -32,10 +32,32 @@ import AdminUnavailableMedicinecustomer from './Admin/AdminUnavailableMedicinecu
 import CustomerHelpIssue from './User/CustomerHelpIssue.jsx';
 import AdminCustomerHelpIssueList from './Admin/AdminCustomerHelpIssueList.jsx';
 import AdminBankSelectDetails from './Admin/AdminBankSelectDetails.jsx';
-import CustomerCareticket from './User/CustomerCareticket.jsx';
 import Admincreditdetails from './Admin/Admincreditdetail.jsx';
 import LivenessFaceWelcome from './LIvenssfacematchproject/LivenessFaceWelcome.jsx';
 import LivenessFaceCapture from './LIvenssfacematchproject/LivenessFaceCapture.jsx';
+import AdminLivenessimageList from './Admin/AdminLivenessimageList.jsx';
+import AdminSupportTicketList from './Admin/adminSupportTicketList.jsx';
+import CustomerticketRaise from './User/CustomerticketRaise.jsx';
+import MedicineChartAI from './User/MedicineChartAI.jsx';
+import AdminCustomerticktRaiseList from './Admin/AdminCustomerticktRaiseList.jsx';
+import AddIssueType from './Admin/MASTER/AddIssueType.jsx';
+import AddMasterAssignedTo from './Admin/MASTER/AddMasterAssignedTo.jsx';
+import AddBankRefundableAmount from './User/AddBankRefundableAmount.jsx';
+import CustomerBankDetailsRefundList from './Admin/customer_bankdetailsrefundList.jsx';
+import DeliveryAddressLIst from './Admin/DeliveryAddressLIst.jsx';
+import BankRefundabledetailsList from './User/BankRefundabledetailsList.jsx';
+import AdminLiveTracker from './Admin/AdminLiveTracker.jsx';
+import Orders from './User/Orders.jsx';
+import DoctorAssignto from './Admin/MASTER/DoctorAssignto.jsx';
+import Doctor_patientsDetailsList from './Admin/Doctor_patientsDetailsList.jsx';
+import AddAdminType from './Admin/MASTER/AddAdminType.jsx';
+import Hiring_candidateapplied from './Admin/Hiring_candidateapplied.jsx';
+import DeliveryOrderPersonPanel from './Admin/DeliveryOrderPersonPanel.jsx';
+import DoctorsPanel from './Admin/DoctorsPanel.jsx';
+import LanguageMasterPanel from './Admin/MASTER/LanguageMasterPanel.jsx';
+import StateNameMaster from './Admin/MASTER/StateNameMaster.jsx';
+import CityNameMaster from './Admin/MASTER/CityNameMaster.jsx';
+
 
 export default function Routerpage() {
   return (
@@ -65,6 +87,7 @@ export default function Routerpage() {
 <Route path="/medicinedata" element={<Medicine />} />
 <Route path="/orders" element={<Orderstatus />} />
 <Route path="/feedbackcustomers" element={<FeedbackCustomer />} />
+<Route path="/adminsupportticketlist" element={<AdminSupportTicketList />} />
 
 <Route
         path="/profile"
@@ -87,10 +110,37 @@ export default function Routerpage() {
 <Route path="/customerhelpissues" element={<CustomerHelpIssue />} />
 <Route path="/admincustomerhelpissuelist" element={<AdminCustomerHelpIssueList />} />
 <Route path="/adminbankselectdetailss" element={<AdminBankSelectDetails />} />
-<Route path="/customercaretickets" element={<CustomerCareticket />} />
 <Route path="/admincreditdetails" element={<Admincreditdetail/>} />
 <Route path="/livenessfacewelcome" element={<LivenessFaceWelcome />} />
 <Route path="/eyeblinkfacecapture" element={<LivenessFaceCapture />} />
+<Route path="/adminLivenessimageLists" element={<AdminLivenessimageList />} />
+<Route path="/customerticketraised" element={<CustomerticketRaise />} />  
+<Route path="/medicinechartai" element={<MedicineChartAI />} /> "
+<Route path="/admincustomerticketraiselist" element={<AdminCustomerticktRaiseList />} />
+<Route path="/addbankrefundableamounts" element={<AddBankRefundableAmount />} />
+<ROute path="/customerdeliveryaddresslist" element={<DeliveryAddressLIst  />} />
+<Route path="/bankdetailsrefundlist" element={<BankRefundabledetailsList />} /> 
+
+<Route path="/adminlivetracker" element={<AdminLiveTracker />} />
+<Route path="/order" element ={<Orders/>}/>
+{/* /*Master page admin*/}
+<Route path="/adminissuetype" element={<AddIssueType />} />
+<Route path="/adminmasterassignedto" element={<AddMasterAssignedTo />} />
+<Route path="/doctorassignto" element={<DoctorAssignto/>}/>
+<Route path="/doctor_patientdetailslists" element={<Doctor_patientsDetailsList/>} />
+<Route path="/addadmintypes" element={<AddAdminType/>}/>
+<Route path="/statenamemasters"  element={<StateNameMaster/>}/> 
+<Route path="/citynamemasters" element={<CityNameMaster/>}/>  
+
+{/* hiring_candidateapplied */}
+<Route path="/hiringcandidteapplieds" element={<Hiring_candidateapplied/>}/>
+
+
+{/* DeliveryOrderPersonPanel */}
+<Route path="/deliveryorderpersonpanel" element={<DeliveryOrderPersonPanel />} />
+{/* //DoctorPanels */}
+<Route path="/doctorpanels" element={<DoctorsPanel />} />
+<Route path="/languagematerpanels" element={<LanguageMasterPanel />} />
     </BrowserRouter>
   );
 }

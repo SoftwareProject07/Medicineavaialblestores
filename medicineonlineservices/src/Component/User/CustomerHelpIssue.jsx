@@ -114,8 +114,10 @@ export default function CustomerHelpIssue() {
                   {openMasterUpdate && (
                     <ul className="submenu">
                       <li><Link to="/deliveryaddress"><i className="fas fa-map-marker-alt"></i> Delivery Address</Link></li>
-                      <li><Link to="/CompletePayments" className="sidebar-btn active-btn"><i className="fas fa-credit-card"></i> Order Payment</Link></li>
-                      <li><Link to="/"><i className="fas fa-map-marker-alt"></i> Refund Order Amount</Link></li>
+                      {/* <li><Link to="/CompletePayments" className="sidebar-btn active-btn"><i className="fas fa-credit-card"></i> Order Payment</Link></li> */}
+                  <li><Link to="/addbankrefundableamounts"><i className="fas fa-undo me-2"></i>Refund Bank Details</Link></li>
+                                                                                          <li><Link to="/bankdetailsrefundlist" style={{ textDecoration: 'none', color: '#0fa462', fontWeight: '600', fontSize: '0.9rem' }}><i className="fas fa-undo me-2"></i>Bankdetailsrefundlist</Link></li>
+                  
                     </ul>
                   )}
                 </li>
@@ -133,11 +135,11 @@ export default function CustomerHelpIssue() {
                   </Link>
                 </li>
       
-                <li><Link to="/orders" className="btn btn-success mb-2">OrderStatus</Link></li>
+                <li><Link to="/order" className="btn btn-success mb-2">OrderS</Link></li>
                 <li><Link to="/feedbackcustomers" className="btn btn-success mb-2">CustomerFeedback</Link></li>
                 <li><Link to="/customeraddmedicines" className="btn btn-success mb-2">UnvailableAddMedicine</Link></li>
                 <li><Link to="/profile" className="btn btn-success">CustomerProfile</Link></li>
-                          <li><Link to="/customerhelpissues" className="btn btn-success">customerhelpissues</Link></li>
+                          {/* <li><Link to="/customerhelpissues" className="btn btn-success">customerhelpissues</Link></li> */}
       
       
                 <li className="mt-3">

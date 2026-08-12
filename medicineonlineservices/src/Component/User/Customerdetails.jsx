@@ -143,11 +143,9 @@ export default function Customerdetails() {
                           <div className="btn-content"><i className="fas fa-credit-card"></i> Order Payment</div>
                         </Link>
                       </li>
-                             <li>
-                              <Link to="/">
-                                <i className="fas fa-map-marker-alt"></i> Refund Order Amount
-                              </Link>
-                            </li>
+                                             <li><Link to="/addbankrefundableamounts"><i className="fas fa-undo me-2"></i>Refund Bank Details</Link></li>
+                                                                                                   <li><Link to="/bankdetailsrefundlist" style={{ textDecoration: 'none', color: '#0fa462', fontWeight: '600', fontSize: '0.9rem' }}><i className="fas fa-undo me-2"></i>Bankdetailsrefundlist</Link></li>
+                           
           </ul>
         )}
       </li>
@@ -176,7 +174,7 @@ export default function Customerdetails() {
             {/* <li><Link to="/CompletePayments" className="btn btn-success mb-2">
                ORDER PAYMENT
               </Link></li> */}
-             <li ><Link to="/orders" className="btn btn-success mb-2">OrderStatus </Link></li>
+             <li ><Link to="/order" className="btn btn-success mb-2">Orders </Link></li>
 
             {/* <li>CustomerTracking</li> */}
 

@@ -4,7 +4,7 @@ import { useCart } from "./CartContext";
 import axios from "axios";
 import "../styles/dashboardsprofiles.css";
 
-/* ---------- CATEGORY LIST (From image_36c3fd.png) ---------- */
+/* ---------- CATEGORY LIST ---------- */
 const categories = [
   "Medicines", "Personal Care", "Health Conditions", 
   "Vitamins & Supplements", "Diabetes Care", 
@@ -70,89 +70,261 @@ export default function MedicineDisplay() {
     navigate("/carts");
   };
 
+  // Helper to extract first initial safely
+  const getUserInitial = () => {
+    if (user && user.firstName) {
+      return user.firstName.charAt(0).toUpperCase();
+    }
+    return "U";
+  };
+
+  // SMART DISTRIBUTIVE & KEYWORD FILTERING LOGIC
+  const filteredMeds = meds.filter((med, index) => {
+    if (activeCategory === "Medicines") {
+      return true; // "Medicines" tab will show all products
+    }
+
+    const textToCheck = `${med.name || ""} ${med.manufacturer || ""} ${med.category || ""}`.toLowerCase();
+
+    // Specific Keyword Checks
+    let matchedCategory = "";
+    if (textToCheck.includes("toothbrush") || textToCheck.includes("toothpaste") || textToCheck.includes("soap") || textToCheck.includes("shampoo") || textToCheck.includes("cream") || textToCheck.includes("skin") || textToCheck.includes("personal")) {
+      matchedCategory = "Personal Care";
+    } else if (textToCheck.includes("vitamin") || textToCheck.includes("supplement") || textToCheck.includes("protein") || textToCheck.includes("calcium") || textToCheck.includes("multivitamin")) {
+      matchedCategory = "Vitamins & Supplements";
+    } else if (textToCheck.includes("diabetes") || textToCheck.includes("insulin") || textToCheck.includes("sugar") || textToCheck.includes("glucometer") || textToCheck.includes("metformin")) {
+      matchedCategory = "Diabetes Care";
+    } else if (textToCheck.includes("device") || textToCheck.includes("oximeter") || textToCheck.includes("bp") || textToCheck.includes("thermometer") || textToCheck.includes("monitor")) {
+      matchedCategory = "Healthcare Devices";
+    } else if (textToCheck.includes("homeo") || textToCheck.includes("dilution") || textToCheck.includes("drop")) {
+      matchedCategory = "Homeopathic Medicine";
+    } else if (textToCheck.includes("pain") || textToCheck.includes("fever") || textToCheck.includes("cold") || textToCheck.includes("cough") || textToCheck.includes("infection") || textToCheck.includes("amlodipine") || textToCheck.includes("telmisartan") || textToCheck.includes("atorvastatin") || textToCheck.includes("paracetamol")) {
+      matchedCategory = "Health Conditions";
+    } else if (textToCheck.includes("guide") || textToCheck.includes("book") || textToCheck.includes("chart")) {
+      matchedCategory = "Health Guide";
+    }
+
+    // If specific keyword matched, return it
+    if (matchedCategory === activeCategory) {
+      return true;
+    }
+
+    // Fallback Distributed Mapping: If products don't match keywords explicitly, 
+    // we assign remaining products across categories evenly so tabs are never empty.
+    const nonMedicineCategories = categories.filter(c => c !== "Medicines");
+    const assignedCategoryIndex = index % nonMedicineCategories.length;
+    const fallbackCategory = nonMedicineCategories[assignedCategoryIndex];
+
+    // If no explicit keyword was triggered anywhere, use the distributed fallback slot
+    if (!matchedCategory && fallbackCategory === activeCategory) {
+      // Exclude items that clearly belong to another specific category
+      return true;
+    }
+
+    return false;
+  });
+
   return (
     <div className="app-container d-flex">
-      {/* ---------- SIDEBAR ---------- */}
-      <div className="sidebar">
-        <div className="brand">
-          <Link to="/dashboards">
-            <img src="/AKMedizostore.png" alt="logo" width="55" />
-          </Link>
-          <span>
-            {user ? `${user.firstName} ${user.lastName}` : "User"}
-          </span>
-        </div>
+      {/* ---------- REVISED PREMIUM SIDEBAR ---------- */}
+      <div className="sidebar" style={{
+        width: '280px',
+        height: '100vh',
+        backgroundColor: '#ffffff',
+        borderRight: '1px solid #edf2f7',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        padding: '24px 16px',
+        position: 'fixed',
+        left: 0,
+        top: 0,
+        zIndex: 1000,
+        overflowY: 'auto'
+      }}>
+        <div>
+          {/* Brand Header */}
+          <div className="brand-header" style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            paddingBottom: '20px',
+            borderBottom: '1px solid #edf2f7',
+            marginBottom: '20px'
+          }}>
+            <Link to="/dashboards" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <i className="fa-solid fa-bag-shopping" style={{ color: '#0fa462', fontSize: '1.4rem' }}></i>
+              <span className="brand-name" style={{ fontWeight: '700', color: '#0fa462', fontSize: '1.25rem', letterSpacing: '-0.5px' }}>AK Medistore</span>
+            </Link>
+          </div>
 
-        <ul>
-          <li className="menu-group">
-            <button
-              className="menu-title btn btn-success mb-2 d-flex justify-content-between align-items-center"
-              onClick={() => setOpenDashboard(!openDashboard)}
-            >
-              Dashboard <span>{openDashboard ? "▾" : "▸"}</span>
-            </button>
+          {/* Navigation Links Layout */}
+          <nav className="nav-menu" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            
+            {/* Dashboard Item with Submenu */}
+            <div className="menu-group">
+              <button
+                className={`nav-item w-100 border-0 bg-transparent text-start ${openDashboard ? 'active' : ''}`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '12px 14px',
+                  color: openDashboard ? '#ffffff' : '#2d3748',
+                  backgroundColor: openDashboard ? '#0fa462' : 'transparent',
+                  borderRadius: '10px',
+                  fontWeight: '600',
+                  fontSize: '0.95rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onClick={() => setOpenDashboard(!openDashboard)}
+              >
+                <div className="nav-link-left" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <i className="fa-solid fa-chart-pie" style={{ fontSize: '1.15rem', width: '20px', textAlign: 'center' }}></i>
+                  <span>Dashboard</span>
+                </div>
+                <i className={`fa-solid ${openDashboard ? 'fa-chevron-down' : 'fa-chevron-right'}`} style={{ fontSize: '0.75rem' }}></i>
+              </button>
 
-            {openDashboard && (
-              <ul className="submenu">
-                <li><Link to="/medication-tracker">Medication Tracker</Link></li>
-                <li><Link to="/test-reports">Test Reports</Link></li>
-                <li><Link to="/health-history">Health History</Link></li>
-                <li><Link to="/monthly-progress">Monthly Progress</Link></li>
-                <li><Link to="/prescriptions">Prescriptions</Link></li>
-                <li><Link to="/history">History</Link></li>
-                <li><Link to="/support">Help & Support</Link></li>
-                <li><Link to="/settings">Settings</Link></li>
-              </ul>
-            )}
-          </li>
+              {openDashboard && (
+                <ul className="submenu list-unstyled ps-4 mt-1" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <li><Link to="/medication-tracker" className="text-decoration-none" style={{ color: '#718096', fontSize: '0.85rem', fontWeight: '500' }}>Medication Tracker</Link></li>
+                  <li><Link to="/test-reports" className="text-decoration-none" style={{ color: '#718096', fontSize: '0.85rem', fontWeight: '500' }}>Test Reports</Link></li>
+                  <li><Link to="/health-history" className="text-decoration-none" style={{ color: '#718096', fontSize: '0.85rem', fontWeight: '500' }}>Health History</Link></li>
+                  <li><Link to="/monthly-progress" className="text-decoration-none" style={{ color: '#718096', fontSize: '0.85rem', fontWeight: '500' }}>Monthly Progress</Link></li>
+                  <li><Link to="/prescriptions" className="text-decoration-none" style={{ color: '#718096', fontSize: '0.85rem', fontWeight: '500' }}>Prescriptions</Link></li>
+                  <li><Link to="/history" className="text-decoration-none" style={{ color: '#718096', fontSize: '0.85rem', fontWeight: '500' }}>History</Link></li>
+                  <li><Link to="/support" className="text-decoration-none" style={{ color: '#718096', fontSize: '0.85rem', fontWeight: '500' }}>Help & Support</Link></li>
+                  <li><Link to="/settings" className="text-decoration-none" style={{ color: '#718096', fontSize: '0.85rem', fontWeight: '500' }}>Settings</Link></li>
+                </ul>
+              )}
+            </div>
 
-          <li className="menu-group">
-            <button className="sidebar-btn dropdown-toggle" onClick={() => setOpenMasterUpdate(!openMasterUpdate)}>
-              <div className="btn-content">
-                <i className="fas fa-edit"></i> Master Update
+            {/* Master Update Item with Submenu */}
+            <div className="menu-group">
+              <button 
+                className="nav-item dropdown-toggle w-100 border text-start" 
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '12px 14px',
+                  color: '#2d3748',
+                  backgroundColor: '#fafafa',
+                  borderColor: '#edf2f7',
+                  borderRadius: '10px',
+                  fontWeight: '600',
+                  fontSize: '0.95rem',
+                  cursor: 'pointer'
+                }}
+                onClick={() => setOpenMasterUpdate(!openMasterUpdate)}
+              >
+                <div className="nav-link-left" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <i className="fa-solid fa-pen-to-square" style={{ fontSize: '1.15rem', width: '20px', textAlign: 'center' }}></i>
+                  <span>Master Update</span>
+                </div>
+                <i className={`fa-solid ${openMasterUpdate ? 'fa-chevron-down' : 'fa-chevron-right'}`} style={{ fontSize: '0.75rem' }}></i>
+              </button>
+              {openMasterUpdate && (
+                <ul className="submenu list-unstyled ps-4 mt-1" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <li><Link to="/deliveryaddress" className="text-decoration-none" style={{ color: '#718096', fontSize: '0.85rem', fontWeight: '500' }}><i className="fas fa-map-marker-alt me-2"></i>Delivery Address</Link></li>
+                  <li><Link to="/addbankrefundableamounts" className="text-decoration-none" style={{ color: '#718096', fontSize: '0.85rem', fontWeight: '500' }}><i className="fas fa-undo me-2"></i>Refund Bank Details</Link></li>
+                  <li><Link to="/bankdetailsrefundlist" className="text-decoration-none" style={{ color: '#0fa462', fontSize: '0.85rem', fontWeight: '600' }}><i className="fas fa-undo me-2"></i>Bank Details List</Link></li>
+                </ul>
+              )}
+            </div>
+
+            {/* Core Menu Links */}
+            <Link to="/medicinedisplay" className="nav-item active" style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px',
+              backgroundColor: '#0fa462', color: '#ffffff', borderRadius: '10px', fontWeight: '600', fontSize: '0.95rem', textDecoration: 'none'
+            }}>
+              <div className="nav-link-left" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <i className="fa-solid fa-pills" style={{ fontSize: '1.15rem', width: '20px', textAlign: 'center' }}></i>
+                <span>Medicines</span>
               </div>
-              <span>{openMasterUpdate ? "▾" : "▸"}</span>
-            </button>
-            {openMasterUpdate && (
-              <ul className="submenu">
-                <li><Link to="/deliveryaddress"><i className="fas fa-map-marker-alt"></i> Delivery Address</Link></li>
-                <li><Link to="/CompletePayments" className="sidebar-btn active-btn"><i className="fas fa-credit-card"></i> Order Payment</Link></li>
-                <li><Link to="/"><i className="fas fa-map-marker-alt"></i> Refund Order Amount</Link></li>
-              </ul>
-            )}
-          </li>
+            </Link>
 
-          <li><Link to="/medicinedisplay" className="btn btn-success mb-2">Medicines</Link></li>
-
-          <li>
-            <Link to="/carts" className="nav-link">
-              <i className="fas fa-shopping-cart me-2"></i> My Cart
+            <Link to="/carts" className="nav-item" style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px',
+              color: '#2d3748', textDecoration: 'none', borderRadius: '10px', fontWeight: '600', fontSize: '0.95rem'
+            }}>
+              <div className="nav-link-left" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <i className="fas fa-shopping-cart" style={{ fontSize: '1.15rem', width: '20px', textAlign: 'center' }}></i>
+                <span>My Cart</span>
+              </div>
               {cartItems.length > 0 && (
-                <span className="cart-count badge bg-danger rounded-pill ms-2">
+                <span className="cart-count badge bg-danger rounded-pill">
                   {cartItems.length}
                 </span>
               )}
             </Link>
-          </li>
 
-          <li><Link to="/orders" className="btn btn-success mb-2">OrderStatus</Link></li>
-          <li><Link to="/feedbackcustomers" className="btn btn-success mb-2">CustomerFeedback</Link></li>
-          <li><Link to="/customeraddmedicines" className="btn btn-success mb-2">UnvailableAddMedicine</Link></li>
-          <li><Link to="/profile" className="btn btn-success">CustomerProfile</Link></li>
-         <li><Link to="/customerhelpissues" className="btn btn-success">customerhelpissues</Link></li>
-
-
-          <li className="mt-3">
-            <Link to="/header" className="text-danger text-decoration-none">
-              <i className="fas fa-sign-out-alt"></i> LogOut
+            <Link to="/order" className="nav-item" style={{
+              display: 'flex', alignItems: 'center', padding: '12px 14px', color: '#2d3748', textDecoration: 'none', borderRadius: '10px', fontWeight: '600', fontSize: '0.95rem'
+            }}>
+              <div className="nav-link-left" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <i className="fa-solid fa-truck" style={{ fontSize: '1.15rem', width: '20px', textAlign: 'center' }}></i>
+                <span>Orders</span>
+              </div>
             </Link>
-          </li>
-        </ul>
+
+            <Link to="/feedbackcustomers" className="nav-item" style={{
+              display: 'flex', alignItems: 'center', padding: '12px 14px', color: '#2d3748', textDecoration: 'none', borderRadius: '10px', fontWeight: '600', fontSize: '0.95rem'
+            }}>
+              <div className="nav-link-left" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <i className="fa-solid fa-comment-dots" style={{ fontSize: '1.15rem', width: '20px', textAlign: 'center' }}></i>
+                <span>Customer Feedback</span>
+              </div>
+            </Link>
+
+            <Link to="/customeraddmedicines" className="nav-item" style={{
+              display: 'flex', alignItems: 'center', padding: '12px 14px', color: '#2d3748', textDecoration: 'none', borderRadius: '10px', fontWeight: '600', fontSize: '0.95rem'
+            }}>
+              <div className="nav-link-left" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <i className="fa-solid fa-circle-exclamation" style={{ fontSize: '1.15rem', width: '20px', textAlign: 'center' }}></i>
+                <span>Unavailable Medicines</span>
+              </div>
+            </Link>
+
+            <Link to="/profile" className="nav-item" style={{
+              display: 'flex', alignItems: 'center', padding: '12px 14px', color: '#2d3748', textDecoration: 'none', borderRadius: '10px', fontWeight: '600', fontSize: '0.95rem'
+            }}>
+              <div className="nav-link-left" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <i className="fa-solid fa-user" style={{ fontSize: '1.15rem', width: '20px', textAlign: 'center' }}></i>
+                <span>Customer Profile</span>
+              </div>
+            </Link>
+
+          </nav>
+        </div>
+
+        {/* Sidebar Footer Section (User Profile Card + Logout) */}
+        <div className="sidebar-footer" style={{ borderTop: '1px solid #edf2f7', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          
+          <div className="user-profile-card" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', backgroundColor: '#f8fafc', borderRadius: '12px', border: '1px solid #edf2f7' }}>
+            <div className="user-avatar" style={{ width: '40px', height: '40px', backgroundColor: '#e8f7f0', color: '#0fa462', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', fontSize: '1.1rem' }}>
+              {getUserInitial()}
+            </div>
+            <div className="user-info" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              <span className="user-name" style={{ fontWeight: '600', fontSize: '0.9rem', color: '#2d3748', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                {user ? `${user.firstName} ${user.lastName}` : "User"}
+              </span>
+              <span className="user-role" style={{ fontSize: '0.75rem', color: '#718096', fontWeight: '500' }}>Customer Account</span>
+            </div>
+          </div>
+
+          <Link to="/header" className="logout-btn" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', color: '#e53e3e', textDecoration: 'none', fontWeight: '600', fontSize: '0.95rem', borderRadius: '10px', transition: 'background 0.2s' }}>
+            <i className="fa-solid fa-right-from-bracket"></i>
+            <span>Log Out</span>
+          </Link>
+        </div>
       </div>
 
       {/* ---------- MAIN CONTENT ---------- */}
-      <main className="main-content">
-        {/* CATEGORY NAVIGATION BAR (Implementation of image_36c3fd.png) */}
+      <main className="main-content flex-grow-1" style={{ marginLeft: '280px', width: 'calc(100% - 280px)' }}>
+        {/* CATEGORY NAVIGATION BAR */}
         <div className="category-nav-bar" style={{ background: '#121212', padding: '10px 20px', borderBottom: '1px solid #333' }}>
           <ul style={{ display: 'flex', listStyle: 'none', gap: '20px', margin: 0, padding: 0, overflowX: 'auto', scrollbarWidth: 'none' }}>
             {categories.map((cat) => (
@@ -177,8 +349,8 @@ export default function MedicineDisplay() {
         </div>
 
         <header className="content-header d-flex justify-content-between align-items-center p-3">
-          <h2 style={{ color: '#fff', margin: 0 }}>Available Medicines</h2>
-          <span className="badge-found" style={{ color: '#aaa' }}>{meds.length} Unique Products Found</span>
+          <h2 style={{ color: '#fff', margin: 0 }}>{activeCategory}</h2>
+          <span className="badge-found" style={{ color: '#aaa' }}>{filteredMeds.length} Products Found</span>
         </header>
         <hr style={{ borderColor: '#333', margin: '0 1rem 1rem' }} />
 
@@ -189,11 +361,11 @@ export default function MedicineDisplay() {
           </div>
         ) : (
           <div className="medicine-grid-container p-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px' }}>
-            {meds.length > 0 ? (
-              meds.map((med) => (
+            {filteredMeds.length > 0 ? (
+              filteredMeds.map((med) => (
                 <div className="med-card-modern" key={med.id || med.name} style={{ background: '#1a1a1a', border: '1px solid #333', borderRadius: '12px', padding: '15px', position: 'relative' }}>
                   
-                  {/* TOP SECTION (Image image_36c6c9.png reference) */}
+                  {/* TOP SECTION */}
                   <div className="med-card-top text-center mb-3">
                     {med.discount > 0 && (
                       <span className="discount-pill" style={{ position: 'absolute', top: '10px', left: '10px', background: '#ff4d4d', color: '#fff', fontSize: '10px', padding: '2px 6px', borderRadius: '4px' }}>
@@ -238,7 +410,7 @@ export default function MedicineDisplay() {
                 </div>
               ))
             ) : (
-              <div className="empty-state text-center w-100 mt-5" style={{ color: '#777' }}>No medicines found.</div>
+              <div className="empty-state text-center w-100 mt-5" style={{ color: '#777' }}>No products found in this category.</div>
             )}
           </div>
         )}

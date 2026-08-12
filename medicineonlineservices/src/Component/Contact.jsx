@@ -11,21 +11,7 @@ export default function Contact() {
   const [isShopOpen] = useState(localStorage.getItem("shopStatus") !== "OFF");
 
   
-    // const handleMedicineOrderClick = (e) => {
-    //   const isLoggedIn = localStorage.getItem("user") || localStorage.getItem("token");
-    //   if (!isLoggedIn) {
-    //     e.preventDefault();
-    //     Swal.fire({
-    //       icon: 'error',
-    //       title: 'Login Required',
-    //       text: 'Please login first!',
-    //       confirmButtonColor: '#28a745',
-    //       confirmButtonText: 'Login Now',
-    //       showCancelButton: true,
-    //     }).then((result) => { if (result.isConfirmed) { setSidebarOpen(false); navigate("/dashboards"); } });
-    //   } else { setSidebarOpen(false); }
-    // };
-
+  
   return (
     <>
       {/* --- SIDEBAR MENU --- */}
@@ -63,6 +49,12 @@ export default function Contact() {
                        <li className="nav-item border-bottom pb-2">
                          <Link to="/contact" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>Contact Us</Link>
                        </li>
+                       <li className="nav-item border-bottom pb-2">
+
+                                            <li className="nav-item border-bottom pb-2"><Link to="/customerticketraised" className="nav-link text-dark p-0" onClick={() => setSidebarOpen(false)}>Add Ticket Raised </Link></li>
+                                                                   </li>
+
+                       
           </ul>
         </div>
       </div>
@@ -96,6 +88,12 @@ export default function Contact() {
         </Link>
 
         <div className="ms-auto d-flex gap-3 align-items-center">
+                        <Link to="/medicinechartai" className="text-decoration-none">
+                   <div className="cart-icon position-relative">
+                       <i className="fa-solid fa-headset"></i>
+                      
+                   </div>
+               </Link>
           <div className="admin-wrapper position-relative">
             <div onClick={() => setAdminOpen(!adminOpen)} style={{ cursor: "pointer" }}>
               <i className="fas fa-user-circle fa-2x text-secondary"></i>
@@ -142,9 +140,7 @@ export default function Contact() {
           <div className="card shadow-sm p-4 border-0 bg-white mx-auto" style={{ maxWidth: "600px" }}>
             <p className="fw-bold mb-0">CURRENT ADDRESS:</p>
             <p className="text-muted">
-              2nd Floor, Flat No. 206, JS Roop Homes,
-              <br />
-              Near Vihar Heritage Sector-1,
+               JS Roop Homes, Near Vihar Heritage Sector-1,
               <br />
               Gautam Buddh Nagar, Greater Noida Extension
             </p>
