@@ -36,7 +36,7 @@ import Admincreditdetails from './Admin/Admincreditdetail.jsx';
 import LivenessFaceWelcome from './LIvenssfacematchproject/LivenessFaceWelcome.jsx';
 import LivenessFaceCapture from './LIvenssfacematchproject/LivenessFaceCapture.jsx';
 import AdminLivenessimageList from './Admin/AdminLivenessimageList.jsx';
-import AdminSupportTicketList from './Admin/adminSupportTicketList.jsx';
+// import AdminSupportTicketList from './Admin/adminSupportTicketList.jsx';
 import CustomerticketRaise from './User/CustomerticketRaise.jsx';
 import MedicineChartAI from './User/MedicineChartAI.jsx';
 import AdminCustomerticktRaiseList from './Admin/AdminCustomerticktRaiseList.jsx';
@@ -87,7 +87,7 @@ export default function Routerpage() {
 <Route path="/medicinedata" element={<Medicine />} />
 <Route path="/orders" element={<Orderstatus />} />
 <Route path="/feedbackcustomers" element={<FeedbackCustomer />} />
-<Route path="/adminsupportticketlist" element={<AdminSupportTicketList />} />
+{/* <Route path="/adminsupportticketlist" element={<AdminSupportTicketList />} /> */}
 
 <Route
         path="/profile"

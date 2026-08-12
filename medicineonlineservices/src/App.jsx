@@ -38,7 +38,7 @@ import Admincreditdetail from "./Component/Admin/Admincreditdetail.jsx";
 import LivenessFaceWelcome from "./Component/LIvenssfacematchproject/LivenessFaceWelcome.jsx";
 import LivenessFaceCapture from "./Component/LIvenssfacematchproject/LivenessFaceCapture.jsx";
 import AdminLivenessimageList from "./Component/Admin/AdminLivenessimageList.jsx";
-import AdminSupportTicketList from "./Component/Admin/adminSupportTicketList.jsx";
+// import AdminSupportTicketList from "./Component/Admin/adminSupportTicketList.jsx";
 import CustomerticketRaise from "./Component/User/CustomerticketRaise.jsx";
 import MedicineChartAI from "./Component/User/MedicineChartAI.jsx";
 import AdminCustomerticktRaiseList from "./Component/Admin/AdminCustomerticktRaiseList.jsx";
@@ -140,7 +140,7 @@ if (loading) {
 <Route path="/adminLivenessimageLists" element={<AdminLivenessimageList />} />
 <Route path="/customerticketraised" element={<CustomerticketRaise />} />  
 
-<Route path="/adminsupportticketlist" element={<AdminSupportTicketList />} />
+{/* <Route path="/adminsupportticketlist" element={<AdminSupportTicketList />} /> */}
 <Route path="/medicinechartai" element={<MedicineChartAI />} /> 
 <Route path="/admincustomerticketraiselist" element={<AdminCustomerticktRaiseList />} />
 <Route path="/addbankrefundableamounts" element={<AddBankRefundableAmount />} />

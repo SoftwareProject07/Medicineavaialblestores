@@ -821,6 +821,7 @@ export default function CityNameMaster() {
                           <button type="button" onClick={() => handleDelete(item, absoluteIndex)} style={{ backgroundColor: '#dc3545', color: '#fff', border: 'none', padding: '5px 7px', borderRadius: '4px', marginRight: '3px', fontWeight: 'bold', cursor: 'pointer', fontSize: '11px' }}>Del</button>
                         </td>
                       </tr>
+                      
                     );
                   })
                 ) : (
