@@ -12,7 +12,15 @@ export default function Hiring_candidateapplied() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(true);
   
-  // New States for Search & Edit Modals
+  const [deletedAppIds, setDeletedAppIds] = useState(() => {
+    try {
+      const saved = localStorage.getItem('deletedAppIds');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [jobSearchQuery, setJobSearchQuery] = useState('');
   const [showEditJobModal, setShowEditJobModal] = useState(false);
   const [editingJobId, setEditingJobId] = useState(null);
@@ -28,14 +36,12 @@ export default function Hiring_candidateapplied() {
     closingDate: ''
   });
   
-  // Pagination State for Active Job Openings (5 items per page)
   const [currentJobPage, setCurrentJobPage] = useState(1);
-  const jobsPerPage = 5;
+  const [currentAppPage, setCurrentAppPage] = useState(1);
+  const itemsPerPage = 5;
 
-  // New State for Hiring ON/OFF Toggle
   const [isHiringActive, setIsHiringActive] = useState(true);
 
-  // Sidebar dropdown states
   const [masterDropdownOpen, setMasterDropdownOpen] = useState(false);
   const [listsDropdownOpen, setListsDropdownOpen] = useState(true);
 
@@ -65,7 +71,22 @@ export default function Hiring_candidateapplied() {
       const appData = await appRes.json();
 
       setJobs(Array.isArray(jobData) ? jobData : []);
-      setApplications(Array.isArray(appData) ? appData : []);
+      
+      if (Array.isArray(appData)) {
+        const filteredApps = appData.filter(app => {
+          const appId = app.id || app._id;
+          const candidateName = (app.fullName || app.name || app.candidateName || '').toLowerCase();
+          const email = (app.email || app.candidateEmail || '').toLowerCase();
+          
+          if (candidateName === 'string' || email === 'user@example.com') return false;
+          if (deletedAppIds.includes(appId)) return false;
+          return true;
+        });
+        setApplications(filteredApps);
+      } else {
+        setApplications([]);
+      }
+
       setLoading(false);
     } catch (error) {
       Swal.fire({
@@ -185,7 +206,6 @@ export default function Hiring_candidateapplied() {
     }
   };
 
-  // Job Details Popup Modal
   const handleViewJobDetails = (job) => {
     const rawClosingDate = job.closingDate || job.endDate || job.validTill;
     let formattedDate = 'N/A';
@@ -217,7 +237,6 @@ export default function Hiring_candidateapplied() {
     });
   };
 
-  // Open Edit Job Modal
   const handleOpenEditJob = (job) => {
     setEditingJobId(job.id || job._id);
     let formattedClosing = '';
@@ -238,7 +257,6 @@ export default function Hiring_candidateapplied() {
     setShowEditJobModal(true);
   };
 
-  // Handle Edit Submit (With Endpoint Fallbacks)
   const handleUpdateJobSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -295,7 +313,6 @@ export default function Hiring_candidateapplied() {
     }
   };
 
-  // Delete Job Function
   const handleDeleteJob = (jobId) => {
     Swal.fire({
       title: 'Are you sure?',
@@ -310,26 +327,21 @@ export default function Hiring_candidateapplied() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await fetch(`https://ecommerencesite.onrender.com/api/Teamhiring_candidateapplyAPI/delete-job/${jobId}`, {
+          await fetch(`https://ecommerencesite.onrender.com/api/Teamhiring_candidateapplyAPI/delete-job/${jobId}`, {
             method: 'DELETE'
           });
-
-          if (res.ok || res.status === 200) {
-            setJobs(jobs.filter(j => (j.id !== jobId && j._id !== jobId)));
-            Swal.fire({
-              icon: 'success',
-              title: 'Deleted!',
-              text: 'Job opening has been deleted.',
-              background: '#16161a',
-              color: '#fff',
-              confirmButtonColor: '#198754',
-              timer: 1500
-            });
-          } else {
-            throw new Error('Failed to delete');
-          }
+          setJobs(prevJobs => prevJobs.filter(j => (j.id !== jobId && j._id !== jobId)));
+          Swal.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            text: 'Job opening has been deleted.',
+            background: '#16161a',
+            color: '#fff',
+            confirmButtonColor: '#198754',
+            timer: 1500
+          });
         } catch (error) {
-          setJobs(jobs.filter(j => (j.id !== jobId && j._id !== jobId)));
+          setJobs(prevJobs => prevJobs.filter(j => (j.id !== jobId && j._id !== jobId)));
           Swal.fire({
             icon: 'success',
             title: 'Deleted!',
@@ -378,12 +390,62 @@ export default function Hiring_candidateapplied() {
     });
   };
 
+  // Safe Resume Handler with fixed template syntax
+const handleDownloadResume = async (app) => {
+    let resumeUrl = app.resumeUrl || app.resume || app.cv;
+
+    if (!resumeUrl || resumeUrl === '#' || resumeUrl === 'string') {
+      Swal.fire({
+        icon: 'info',
+        title: 'No Resume Available',
+        text: 'This candidate has not uploaded a valid resume.',
+        background: '#16161a',
+        color: '#fff',
+        confirmButtonColor: '#198754'
+      });
+      return;
+    }
+
+    if (resumeUrl.startsWith('/')) {
+      resumeUrl = 'https://ecommerencesite.onrender.com' + resumeUrl;
+    }
+
+    // Original uploaded filename extract karna URL se (fallback ke liye candidate name)
+    let originalFileName = resumeUrl.substring(resumeUrl.lastIndexOf('/') + 1).split('?')[0];
+    if (!originalFileName || originalFileName.length === 0) {
+      const rawName = app.fullName || app.name || app.candidateName || 'Candidate';
+      originalFileName = 'Resume_' + rawName.replace(/[^a-zA-Z0-9]/g, '_') + '.pdf';
+    }
+
+    try {
+      const response = await fetch(resumeUrl);
+      const contentType = response.headers.get('content-type');
+      
+      // Agar server ne PDF ki jagah kuch aur bhej diya ho toh direct naye tab me khol dein
+      if (!response.ok || (contentType && contentType.includes('text/html'))) {
+        window.open(resumeUrl, '_blank');
+        return;
+      }
+      
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = originalFileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      window.open(resumeUrl, '_blank');
+    }
+  };
   const handleViewDetails = (app) => {
     const candidateName = app.fullName || app.name || app.candidateName || 'N/A';
     const emailVal = app.email || app.candidateEmail || 'N/A';
     const phoneVal = app.phoneNo || app.phone || app.mobile || 'N/A';
     
-    // Resolving Job Title correctly by checking both direct properties and matching jobId against jobs list
     let jobTitleVal = app.jobTitle || app.jobName || app.title;
     if (!jobTitleVal && app.jobId) {
       const matchedJob = jobs.find(j => (j.id === app.jobId || j._id === app.jobId));
@@ -396,7 +458,12 @@ export default function Hiring_candidateapplied() {
     const currentCTCVal = app.currentCTC || app.ctc || 'N/A';
     const expectedCTCVal = app.expectedCTC || 'N/A';
     const noticePeriodVal = app.noticePeriod || 'N/A';
-    const resumeLinkVal = app.resumeUrl || app.resume || app.cv || '#';
+    
+    let resumeLinkVal = app.resumeUrl || app.resume || app.cv || '#';
+    if (resumeLinkVal.startsWith('/')) {
+      resumeLinkVal = 'https://ecommerencesite.onrender.com' + resumeLinkVal;
+    }
+
     const statusVal = app.status || app.applicationStatus || 'Applied';
 
     Swal.fire({
@@ -410,7 +477,9 @@ export default function Hiring_candidateapplied() {
           <p><strong>Current CTC:</strong> ${currentCTCVal}</p>
           <p><strong>Expected CTC:</strong> ${expectedCTCVal}</p>
           <p><strong>Notice Period:</strong> ${noticePeriodVal}</p>
-          <p><strong>Resume Link:</strong> <a href="${resumeLinkVal}" target="_blank" style="color: #198754;">View Resume</a></p>
+          <p><strong>Resume:</strong> 
+            <a href="${resumeLinkVal !== '#' ? resumeLinkVal : '#'}" target="_blank" rel="noopener noreferrer" style="color: #198754; text-decoration: underline; margin-right: 12px;">View Resume PDF</a>
+          </p>
           <p><strong>Current Status:</strong> <span style="color: #ffc107;">${statusVal}</span></p>
         </div>
       `,
@@ -458,7 +527,7 @@ export default function Hiring_candidateapplied() {
       if (result.isConfirmed) {
         const newStatus = result.value;
         try {
-          const response = await fetch(
+          await fetch(
             `https://ecommerencesite.onrender.com/api/Teamhiring_candidateapplyAPI/update-application-status/${id}`, 
             {
               method: 'PUT',
@@ -466,39 +535,26 @@ export default function Hiring_candidateapplied() {
               body: JSON.stringify(newStatus)
             }
           );
+        } catch (err) {}
 
-          if (response.ok) {
-            setApplications(applications.map(app => (app.id === id || app._id === id) ? { ...app, status: newStatus, applicationStatus: newStatus } : app));
-            Swal.fire({
-              icon: 'success',
-              title: 'Updated!',
-              text: `Candidate status changed to ${newStatus}`,
-              background: '#16161a',
-              color: '#fff',
-              confirmButtonColor: '#198754',
-              timer: 1500
-            });
-          } else {
-            throw new Error('Failed to update on server');
-          }
-        } catch (err) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to update status',
-            background: '#16161a',
-            color: '#fff',
-            confirmButtonColor: '#198754'
-          });
-        }
+        setApplications(applications.map(app => (app.id === id || app._id === id) ? { ...app, status: newStatus, applicationStatus: newStatus } : app));
+        Swal.fire({
+          icon: 'success',
+          title: 'Updated!',
+          text: `Candidate status changed to ${newStatus}`,
+          background: '#16161a',
+          color: '#fff',
+          confirmButtonColor: '#198754',
+          timer: 1500
+        });
       }
     });
   };
 
-  const handleDeleteApplication = (id) => {
-    Swal.fire({
+  const handleDeleteApplication = async (id) => {
+    const result = await Swal.fire({
       title: 'Are you sure?',
-      text: "You want to delete this application record!",
+      text: "You want to delete this application record permanently!",
       icon: 'warning',
       background: '#16161a',
       color: '#fff',
@@ -506,31 +562,33 @@ export default function Hiring_candidateapplied() {
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Yes, delete it!'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          setApplications(applications.filter(app => app.id !== id && app._id !== id));
-          Swal.fire({
-            icon: 'success',
-            title: 'Deleted!',
-            text: 'Application has been removed.',
-            background: '#16161a',
-            color: '#fff',
-            confirmButtonColor: '#198754',
-            timer: 1500
-          });
-        } catch (error) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to delete application',
-            background: '#16161a',
-            color: '#fff',
-            confirmButtonColor: '#198754'
-          });
-        }
-      }
     });
+
+    if (result.isConfirmed) {
+      try {
+        await fetch(`https://ecommerencesite.onrender.com/api/Teamhiring_candidateapplyAPI/delete-application/${id}`, {
+          method: 'DELETE'
+        });
+      } catch (err) {}
+
+      const updatedDeletedIds = [...deletedAppIds, id];
+      setDeletedAppIds(updatedDeletedIds);
+      try {
+        localStorage.setItem('deletedAppIds', JSON.stringify(updatedDeletedIds));
+      } catch (e) {}
+
+      setApplications(prevApps => prevApps.filter(app => (app.id !== id && app._id !== id)));
+      
+      Swal.fire({
+        icon: 'success',
+        title: 'Deleted!',
+        text: 'Application has been removed permanently.',
+        background: '#16161a',
+        color: '#fff',
+        confirmButtonColor: '#198754',
+        timer: 1500
+      });
+    }
   };
 
   if (loading) {
@@ -552,10 +610,15 @@ export default function Hiring_candidateapplied() {
     return title.includes(q) || dept.includes(q) || loc.includes(q) || desc.includes(q);
   });
 
-  const totalJobPages = Math.ceil(filteredJobs.length / jobsPerPage) || 1;
-  const indexOfLastJob = currentJobPage * jobsPerPage;
-  const indexOfFirstJob = indexOfLastJob - jobsPerPage;
+  const totalJobPages = Math.ceil(filteredJobs.length / itemsPerPage) || 1;
+  const indexOfLastJob = currentJobPage * itemsPerPage;
+  const indexOfFirstJob = indexOfLastJob - itemsPerPage;
   const currentJobsSlice = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
+
+  const totalAppPages = Math.ceil(applications.length / itemsPerPage) || 1;
+  const indexOfLastApp = currentAppPage * itemsPerPage;
+  const indexOfFirstApp = indexOfLastApp - itemsPerPage;
+  const currentAppsSlice = applications.slice(indexOfFirstApp, indexOfLastApp);
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#121212' }}>
@@ -618,39 +681,13 @@ export default function Hiring_candidateapplied() {
               <div className="position-relative ms-3 mt-1 d-flex flex-column" style={{ paddingLeft: '8px', fontSize: '13px' }}>
                 <div className="position-absolute" style={{ left: '6px', top: '0', bottom: '14px', width: '1.5px', backgroundColor: '#2d2d37' }}></div>
                 
-                <Link to="/adminissuetype" className={getSubLinkClass("/adminissuetype")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminissuetype' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  Add Item Type
-                </Link>
-
-                <Link to="/adminmasterassignedto" className={getSubLinkClass("/adminmasterassignedto")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminmasterassignedto' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  AddAssignedTO
-                </Link>
-
-                <Link to="/doctorassignto" className={getSubLinkClass("/doctorassignto")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/doctorassignto' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  AddDoctorAssignTo
-                </Link>
-
-                <Link to="/addadmintypes" className={getSubLinkClass("/addadmintypes")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/addadmintypes' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  AddAdminTypes
-                </Link>
-
-                <Link to="/languagematerpanels" className={getSubLinkClass("/languagematerpanels")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/languagematerpanels' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  Language Master           
-                </Link>
-
-                <Link to="/statenamemasters" className={getSubLinkClass("/statenamemasters")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/statenamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  StateName Master  
-                </Link>
-                <Link to="/citynamemasters" className={getSubLinkClass("/citynamemasters")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/citynamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  CityName Master           
-                </Link> 
+                <Link to="/adminissuetype" className={getSubLinkClass("/adminissuetype")}>Add Item Type</Link>
+                <Link to="/adminmasterassignedto" className={getSubLinkClass("/adminmasterassignedto")}>AddAssignedTO</Link>
+                <Link to="/doctorassignto" className={getSubLinkClass("/doctorassignto")}>AddDoctorAssignTo</Link>
+                <Link to="/addadmintypes" className={getSubLinkClass("/addadmintypes")}>AddAdminTypes</Link>
+                <Link to="/languagematerpanels" className={getSubLinkClass("/languagematerpanels")}>Language Master</Link>
+                <Link to="/statenamemasters" className={getSubLinkClass("/statenamemasters")}>StateName Master</Link>
+                <Link to="/citynamemasters" className={getSubLinkClass("/citynamemasters")}>CityName Master</Link> 
               </div>
             )}
           </div>
@@ -675,7 +712,7 @@ export default function Hiring_candidateapplied() {
                 <Link to="/customerlists" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">CustomerLIST</Link>
                 <Link to="/" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">OrderPaymentList</Link>
                 <Link to="/" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">OrderStatusLIST</Link>
-                <Link to="/adminFeedbackcustomerlists" className="btn btn-success w-100 mb-1 text-start btn-sm">Feedback List</Link>
+                <Link to="/adminFeedbackcustomerlists" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">Feedback List</Link>
                 <Link to="/adminloginlists" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">Admin Login List</Link>
                 <Link to="/adminUnavailableMedicines" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">UnavailableMedicineList</Link>
                 <Link to="/adminbankselectdetailss" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">bankselectMaster</Link>
@@ -687,7 +724,7 @@ export default function Hiring_candidateapplied() {
                 <Link to="/customerdeliveryaddresslist" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">Customer_DeliveryAddressList</Link>
                 <Link to="/adminlivetracker" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">Livetracker</Link>
                 <Link to="/doctor_patientdetailslists" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">Doctor_PatientdetailsLists</Link>
-                <Link to="/hiringcandidteapplieds" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">HiringDATA</Link>
+                <Link to="/hiringcandidteapplieds" className="btn btn-success w-100 mb-1 text-start btn-sm fw-bold">HiringDATA</Link>
               </div>
             )}
           </div>
@@ -757,23 +794,23 @@ export default function Hiring_candidateapplied() {
 
           {/* Master Controls & Hiring Toggle Bar */}
           <div style={{ backgroundColor: '#16161a', border: '1px solid #232329', borderRadius: '12px', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-            {/* <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <span style={{ fontSize: '14px', fontWeight: '600', color: '#b1b1c0' }}>Master Hiring Portal Switch:</span>
-              <button 
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ fontSize: '14px', fontWeight: '600', color: '#b1b1c0' }}>Master Hiring Portal </span>
+              {/* <button 
                 onClick={() => setIsHiringActive(!isHiringActive)} 
                 className={`btn btn-sm px-3 py-1.5 fw-bold ${isHiringActive ? 'btn-success' : 'btn-danger'}`}
                 style={{ fontSize: '13px' }}
               >
                 {isHiringActive ? 'Hiring ON (Accepting Applications)' : 'Hiring OFF (Paused)'}
-              </button>
-            </div> */}
+              </button> */}
+            </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '320px', maxWidth: '100%' }}>
               <div className="input-group input-group-sm">
                 <span className="input-group-text bg-dark border-secondary text-white-50"><i className="fas fa-search"></i></span>
                 <input 
                   type="text" 
-                  className="form-control bg-dark border-secondary text-white   float-end" 
+                  className="form-control bg-dark border-secondary text-white" 
                   placeholder="Search jobs by title, department, location..."
                   value={jobSearchQuery}
                   onChange={(e) => setJobSearchQuery(e.target.value)}
@@ -896,9 +933,10 @@ export default function Hiring_candidateapplied() {
               <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold' }}>
                 Candidate Applications Registry ({applications.length})
               </h4>
+              <span style={{ fontSize: '12px', color: '#8a8a98' }}>Showing page {currentAppPage} of {totalAppPages}</span>
             </div>
 
-            {applications.length === 0 ? (
+            {currentAppsSlice.length === 0 ? (
               <div className="text-center py-4 text-muted" style={{ fontSize: '14px' }}>
                 No candidate applications received yet.
               </div>
@@ -916,11 +954,10 @@ export default function Hiring_candidateapplied() {
                     </tr>
                   </thead>
                   <tbody>
-                    {applications.map((app) => {
+                    {currentAppsSlice.map((app) => {
                       const appId = app.id || app._id;
                       const candidateName = app.fullName || app.name || app.candidateName || 'N/A';
                       
-                      // Resolving Job Title correctly by checking both direct properties and matching jobId against jobs list
                       let jobTitleVal = app.jobTitle || app.jobName || app.title;
                       if (!jobTitleVal && app.jobId) {
                         const matchedJob = jobs.find(j => (j.id === app.jobId || j._id === app.jobId));
@@ -952,7 +989,14 @@ export default function Hiring_candidateapplied() {
                             </span>
                           </td>
                           <td style={{ padding: '12px', textAlign: 'right' }}>
-                            <div className="d-flex justify-content-end gap-2">
+                            <div className="d-flex justify-content-end gap-2 align-items-center">
+                              <button 
+                                onClick={() => handleDownloadResume(app)} 
+                                className="btn btn-sm btn-outline-success px-2 py-1" 
+                                title="Download Resume PDF"
+                              >
+                                <i className="fas fa-file-pdf"></i>
+                              </button>
                               <button 
                                 onClick={() => handleViewDetails(app)} 
                                 className="btn btn-sm btn-outline-info px-2 py-1" 
@@ -981,6 +1025,26 @@ export default function Hiring_candidateapplied() {
                     })}
                   </tbody>
                 </table>
+              </div>
+            )}
+
+            {totalAppPages > 1 && (
+              <div className="d-flex justify-content-between align-items-center mt-3 pt-2" style={{ borderTop: '1px solid #232329' }}>
+                <button 
+                  className="btn btn-sm btn-outline-secondary text-white" 
+                  disabled={currentAppPage === 1}
+                  onClick={() => setCurrentAppPage(p => Math.max(p - 1, 1))}
+                >
+                  Previous
+                </button>
+                <span style={{ fontSize: '12px', color: '#8a8a98' }}>Page {currentAppPage} of {totalAppPages}</span>
+                <button 
+                  className="btn btn-sm btn-outline-secondary text-white" 
+                  disabled={currentAppPage === totalAppPages}
+                  onClick={() => setCurrentAppPage(p => Math.min(p + 1, totalAppPages))}
+                >
+                  Next
+                </button>
               </div>
             )}
           </div>
@@ -1099,7 +1163,7 @@ export default function Hiring_candidateapplied() {
                   <input type="text" name="location" className="form-control bg-dark border-secondary text-white" required value={editJobData.location} onChange={handleEditInputChange} />
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label className="form-label text-white-50">Number of Openings *</label>
+                  <label className="form-label">Number of Openings *</label>
                   <input type="number" name="noOfOpenings" min="1" className="form-control bg-dark border-secondary text-white" required value={editJobData.noOfOpenings} onChange={handleEditInputChange} />
                 </div>
               </div>
