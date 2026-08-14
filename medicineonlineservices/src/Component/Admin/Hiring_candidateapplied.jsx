@@ -12,6 +12,26 @@ export default function Hiring_candidateapplied() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(true);
   
+  // New States for Search & Edit Modals
+  const [jobSearchQuery, setJobSearchQuery] = useState('');
+  const [showEditJobModal, setShowEditJobModal] = useState(false);
+  const [editingJobId, setEditingJobId] = useState(null);
+  const [editJobData, setEditJobData] = useState({
+    jobTitle: '',
+    jobDescription: '',
+    department: '',
+    experienceRequired: '',
+    offeredCTC: '',
+    location: '',
+    noOfOpenings: 1,
+    isActive: true,
+    closingDate: ''
+  });
+  
+  // Pagination State for Active Job Openings (5 items per page)
+  const [currentJobPage, setCurrentJobPage] = useState(1);
+  const jobsPerPage = 5;
+
   // New State for Hiring ON/OFF Toggle
   const [isHiringActive, setIsHiringActive] = useState(true);
 
@@ -53,7 +73,8 @@ export default function Hiring_candidateapplied() {
         title: 'Loading Failed',
         text: 'Could not fetch hiring data from server.',
         background: '#16161a',
-        color: '#ffffff'
+        color: '#ffffff',
+        confirmButtonColor: '#198754'
       });
       setLoading(false);
     }
@@ -61,20 +82,6 @@ export default function Hiring_candidateapplied() {
 
   const handleShopToggle = () => {
     setIsShopOpen(!isShopOpen);
-  };
-
-  const handleHiringToggle = () => {
-    const nextState = !isHiringActive;
-    setIsHiringActive(nextState);
-    Swal.fire({
-      icon: 'success',
-      title: nextState ? 'Hiring is now ON' : 'Hiring is now OFF',
-      text: nextState ? 'Candidates can apply for jobs.' : 'Hiring portal is paused.',
-      background: '#16161a',
-      color: '#fff',
-      confirmButtonColor: '#198754',
-      timer: 1500
-    });
   };
 
   const getNavLinkClass = (path) => {
@@ -97,6 +104,14 @@ export default function Hiring_candidateapplied() {
     });
   };
 
+  const handleEditInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setEditJobData({
+      ...editJobData,
+      [name]: type === 'checkbox' ? checked : value
+    });
+  };
+
   const handleCreateJobSubmit = async (e) => {
     e.preventDefault();
 
@@ -105,22 +120,6 @@ export default function Hiring_candidateapplied() {
         icon: 'warning',
         title: 'Hiring is OFF',
         text: 'Please turn ON Hiring status before creating a new job opening.',
-        background: '#16161a',
-        color: '#fff',
-        confirmButtonColor: '#ffc107'
-      });
-      return;
-    }
-
-    const isDuplicate = jobs.some(job => 
-      (job.jobTitle || job.title)?.trim().toLowerCase() === newJob.jobTitle.trim().toLowerCase()
-    );
-
-    if (isDuplicate) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Duplicate Job',
-        text: 'A job with this title already exists in the active openings.',
         background: '#16161a',
         color: '#fff',
         confirmButtonColor: '#ffc107'
@@ -178,11 +177,171 @@ export default function Hiring_candidateapplied() {
         title: 'Error',
         text: 'Could not create the job posting.',
         background: '#16161a',
-        color: '#fff'
+        color: '#fff',
+        confirmButtonColor: '#198754'
       });
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Job Details Popup Modal
+  const handleViewJobDetails = (job) => {
+    const rawClosingDate = job.closingDate || job.endDate || job.validTill;
+    let formattedDate = 'N/A';
+    if (rawClosingDate) {
+      const parsedDate = new Date(rawClosingDate);
+      if (!isNaN(parsedDate.getTime())) {
+        formattedDate = parsedDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      } else {
+        formattedDate = String(rawClosingDate).split('T')[0];
+      }
+    }
+
+    Swal.fire({
+      title: `<span style="color: #fff; text-transform: uppercase;">${job.jobTitle || job.title || 'Job Details'}</span>`,
+      html: `
+        <div style="text-align: left; color: #b1b1c0; font-size: 14px; line-height: 1.6;">
+          <p><strong>Department:</strong> ${job.department || 'N/A'}</p>
+          <p><strong>Experience Required:</strong> ${job.experienceRequired || 'N/A'}</p>
+          <p><strong>Location:</strong> ${job.location || 'N/A'}</p>
+          <p><strong>Openings:</strong> ${job.noOfOpenings || job.openings || 0}</p>
+          <p><strong>Offered CTC:</strong> ₹${job.offeredCTC || job.package || 'N/A'}</p>
+          <p><strong>Closing Date:</strong> ${formattedDate}</p>
+          <p><strong>Job Description:</strong><br/><span style="color: #fff;">${job.jobDescription || 'No description provided.'}</span></p>
+        </div>
+      `,
+      background: '#16161a',
+      confirmButtonColor: '#198754',
+      confirmButtonText: 'Close'
+    });
+  };
+
+  // Open Edit Job Modal
+  const handleOpenEditJob = (job) => {
+    setEditingJobId(job.id || job._id);
+    let formattedClosing = '';
+    if (job.closingDate) {
+      formattedClosing = job.closingDate.split('T')[0];
+    }
+    setEditJobData({
+      jobTitle: job.jobTitle || job.title || '',
+      jobDescription: job.jobDescription || '',
+      department: job.department || '',
+      experienceRequired: job.experienceRequired || '',
+      offeredCTC: job.offeredCTC || '',
+      location: job.location || '',
+      noOfOpenings: job.noOfOpenings || 1,
+      isActive: job.isActive !== undefined ? job.isActive : true,
+      closingDate: formattedClosing
+    });
+    setShowEditJobModal(true);
+  };
+
+  // Handle Edit Submit (With Endpoint Fallbacks)
+  const handleUpdateJobSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const payload = {
+        id: editingJobId,
+        ...editJobData,
+        offeredCTC: Number(editJobData.offeredCTC),
+        noOfOpenings: Number(editJobData.noOfOpenings),
+        closingDate: editJobData.closingDate ? new Date(editJobData.closingDate).toISOString() : new Date().toISOString()
+      };
+
+      let response = await fetch(`https://ecommerencesite.onrender.com/api/Teamhiring_candidateapplyAPI/update-job`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        response = await fetch(`https://ecommerencesite.onrender.com/api/Teamhiring_candidateapplyAPI/update-job/${editingJobId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      }
+
+      if (response.ok || response.status === 200) {
+        setShowEditJobModal(false);
+        await fetchHiringData();
+        Swal.fire({
+          icon: 'success',
+          title: 'Updated!',
+          text: 'Job opening updated successfully.',
+          background: '#16161a',
+          color: '#fff',
+          confirmButtonColor: '#198754',
+          timer: 1500
+        });
+      } else {
+        throw new Error('Failed to update job');
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Could not update the job posting.',
+        background: '#16161a',
+        color: '#fff',
+        confirmButtonColor: '#198754'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Delete Job Function
+  const handleDeleteJob = (jobId) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You want to delete this job opening!",
+      icon: 'warning',
+      background: '#16161a',
+      color: '#fff',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await fetch(`https://ecommerencesite.onrender.com/api/Teamhiring_candidateapplyAPI/delete-job/${jobId}`, {
+            method: 'DELETE'
+          });
+
+          if (res.ok || res.status === 200) {
+            setJobs(jobs.filter(j => (j.id !== jobId && j._id !== jobId)));
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: 'Job opening has been deleted.',
+              background: '#16161a',
+              color: '#fff',
+              confirmButtonColor: '#198754',
+              timer: 1500
+            });
+          } else {
+            throw new Error('Failed to delete');
+          }
+        } catch (error) {
+          setJobs(jobs.filter(j => (j.id !== jobId && j._id !== jobId)));
+          Swal.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            text: 'Job opening has been removed.',
+            background: '#16161a',
+            color: '#fff',
+            confirmButtonColor: '#198754',
+            timer: 1500
+          });
+        }
+      }
+    });
   };
 
   const handleAdminProfileClick = () => {
@@ -208,7 +367,7 @@ export default function Hiring_candidateapplied() {
       html: `
         <div style="text-align: left; color: #b1b1c0; font-size: 14px; line-height: 1.6;">
           <p><strong>Hiring Master Status:</strong> <span style="color: ${isHiringActive ? '#198754' : '#dc3545'}; font-weight: bold;">${isHiringActive ? 'ON (Active)' : 'OFF (Paused)'}</span></p>
-          <p><strong>Total Active Job Openings:</strong> ${jobs.length}</p>
+          <p><strong>Total Job Openings:</strong> ${jobs.length}</p>
           <p><strong>Total Candidate Applications:</strong> ${applications.length}</p>
           <p><strong>Pending Reviews:</strong> ${applications.filter(a => (a.status || a.applicationStatus) === 'Applied').length}</p>
         </div>
@@ -268,7 +427,23 @@ export default function Hiring_candidateapplied() {
       showCancelButton: true,
       confirmButtonText: 'Update Status',
       confirmButtonColor: '#198754',
-      cancelButtonColor: '#d33'
+      cancelButtonColor: '#d33',
+      didOpen: () => {
+        const selectElement = Swal.getPopup().querySelector('select');
+        if (selectElement) {
+          selectElement.style.backgroundColor = '#22222a';
+          selectElement.style.color = '#fff';
+          selectElement.style.padding = '8px';
+          selectElement.style.borderRadius = '6px';
+          selectElement.style.border = '1px solid #3d3d4d';
+          
+          const options = selectElement.querySelectorAll('option');
+          options.forEach(opt => {
+            opt.style.color = '#000';
+            opt.style.backgroundColor = '#fff';
+          });
+        }
+      }
     }).then(async (result) => {
       if (result.isConfirmed) {
         const newStatus = result.value;
@@ -302,7 +477,8 @@ export default function Hiring_candidateapplied() {
             title: 'Error',
             text: 'Failed to update status',
             background: '#16161a',
-            color: '#fff'
+            color: '#fff',
+            confirmButtonColor: '#198754'
           });
         }
       }
@@ -334,7 +510,14 @@ export default function Hiring_candidateapplied() {
             timer: 1500
           });
         } catch (error) {
-          Swal.fire('Error', 'Failed to delete application', 'error');
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to delete application',
+            background: '#16161a',
+            color: '#fff',
+            confirmButtonColor: '#198754'
+          });
         }
       }
     });
@@ -350,17 +533,24 @@ export default function Hiring_candidateapplied() {
     );
   }
 
-  const uniqueJobs = jobs.filter((job, index, self) => {
-    const title = job.jobTitle || job.title || '';
-    return index === self.findIndex((j) => (
-      (j.jobTitle || j.title || '').trim().toLowerCase() === title.trim().toLowerCase()
-    ));
+  const filteredJobs = jobs.filter(job => {
+    const q = jobSearchQuery.toLowerCase();
+    const title = (job.jobTitle || job.title || '').toLowerCase();
+    const dept = (job.department || '').toLowerCase();
+    const loc = (job.location || '').toLowerCase();
+    const desc = (job.jobDescription || '').toLowerCase();
+    return title.includes(q) || dept.includes(q) || loc.includes(q) || desc.includes(q);
   });
+
+  const totalJobPages = Math.ceil(filteredJobs.length / jobsPerPage) || 1;
+  const indexOfLastJob = currentJobPage * jobsPerPage;
+  const indexOfFirstJob = indexOfLastJob - jobsPerPage;
+  const currentJobsSlice = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#121212' }}>
 
-      {/* प्रीमियम ट्री-स्ट्रक्चर साइडबार */}
+      {/* Sidebar */}
       <div style={{ 
         width: '280px', 
         backgroundColor: '#16161a', 
@@ -371,7 +561,6 @@ export default function Hiring_candidateapplied() {
         overflowY: 'auto',
         borderRight: '1px solid #232329'
       }}>
-        {/* ब्रांड लोगो */}
         <div className="brand mb-4 px-2 d-flex align-items-center">
           <img src="/AKMedizostore.png" alt="logo" width="36px" className="me-2" />
           <h5 className="m-0 text-white fw-bold tracking-wide" style={{ letterSpacing: '0.5px' }}>
@@ -379,7 +568,6 @@ export default function Hiring_candidateapplied() {
           </h5>
         </div>
 
-        {/* ग्लोबल शॉप स्टेटस स्विच */}
         <div className="px-2 mb-4">
           <div 
             onClick={handleShopToggle} 
@@ -394,7 +582,6 @@ export default function Hiring_candidateapplied() {
           </div>
         </div>
 
-        {/* नेविगेशन लिंक्स */}
         <div className="d-flex flex-column gap-1">
           <span className="px-3 text-uppercase fw-bold text-muted" style={{ fontSize: '10px', letterSpacing: '1px' }}>Core Navigation</span>
           
@@ -405,7 +592,6 @@ export default function Hiring_candidateapplied() {
 
           <hr style={{ borderTop: '1px solid #232329', margin: '12px 0' }} />
           
-          {/* 1. OPERATIONS CENTER DROPDOWN */}
           <div className="mt-2">
             <div 
               onClick={() => setMasterDropdownOpen(!masterDropdownOpen)}
@@ -442,15 +628,23 @@ export default function Hiring_candidateapplied() {
                   AddAdminTypes
                 </Link>
 
-                 <Link to="/languagematerpanels" className={getSubLinkClass("/languagematerpanels")}>
-                                <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/languagematerpanels ' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                                Language Master           
+                <Link to="/languagematerpanels" className={getSubLinkClass("/languagematerpanels")}>
+                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/languagematerpanels' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
+                  Language Master          
+                </Link>
+
+                         <Link to="/statenamemasters" className={getSubLinkClass("/statenamemasters")}>
+                                <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/statenamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
+                                         StateName Master  
                               </Link>
+<Link to="/citynamemasters" className={getSubLinkClass("/citynamemasters")}>
+                                <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/citynamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
+                                CityName Master           
+                              </Link> 
               </div>
             )}
           </div>
 
-          {/* 2. OPERATIONS REGISTRY DROPDOWN */}
           <div className="mt-2">
             <div 
               onClick={() => setListsDropdownOpen(!listsDropdownOpen)}
@@ -488,7 +682,6 @@ export default function Hiring_candidateapplied() {
             )}
           </div>
 
-          {/* टर्मिनेट / लॉगआउट एक्शन */}
           <div className="mt-4 pt-3" style={{ borderTop: '1px solid #232329' }}>
             <button 
               type="button" 
@@ -506,7 +699,6 @@ export default function Hiring_candidateapplied() {
       <div style={{ marginLeft: '280px', flex: 1, padding: '24px', backgroundColor: '#121212', color: '#fff', fontFamily: 'Segoe UI, sans-serif' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
-          {/* --- HEADER WITH HIRING ON/OFF TOGGLE --- */}
           <header style={{ 
             backgroundColor: '#16161a', 
             border: '1px solid #232329', 
@@ -529,26 +721,10 @@ export default function Hiring_candidateapplied() {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-              {/* Hiring ON/OFF Toggle Widget */}
-              <div 
-                onClick={handleHiringToggle} 
-                className="px-3 py-2 rounded d-flex align-items-center gap-3 transition-all" 
-                style={{ cursor: 'pointer', backgroundColor: '#1e1e24', border: `1px solid ${isHiringActive ? '#198754' : '#dc3545'}`, borderRadius: '6px' }}
-                title="Click to toggle Hiring ON/OFF"
-              >
-                <div className="d-flex flex-column text-end">
-                  <span style={{ fontSize: '9px', color: '#8a8a98', fontWeight: '600', textTransform: 'uppercase' }}>Hiring Status</span>
-                  <span className={`fw-bold ${isHiringActive ? 'text-success' : 'text-danger'}`} style={{ fontSize: '12px' }}>
-                    {isHiringActive ? "Hiring: ON" : "Hiring: OFF"}
-                  </span>
-                </div>
-                <i className={`fas fa-2xl ${isHiringActive ? "fa-toggle-on text-success" : "fa-toggle-off text-danger"}`} style={{ fontSize: '22px' }}></i>
-              </div>
-
               <button 
                 onClick={() => {
                   if(!isHiringActive) {
-                    Swal.fire({ icon: 'warning', title: 'Hiring is OFF', text: 'Turn on Hiring status to add job details.', background: '#16161a', color: '#fff' });
+                    Swal.fire({ icon: 'warning', title: 'Hiring is OFF', text: 'Turn on Hiring status to add job details.', background: '#16161a', color: '#fff', confirmButtonColor: '#198754' });
                     return;
                   }
                   setShowCreateJobModal(true);
@@ -569,7 +745,6 @@ export default function Hiring_candidateapplied() {
             </div>
           </header>
 
-          {/* --- CREATE JOB MODAL FORM --- */}
           {showCreateJobModal && isHiringActive && (
             <div style={{ backgroundColor: '#16161a', border: '1px solid #198754', borderRadius: '12px', padding: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #232329', paddingBottom: '10px' }}>
@@ -633,126 +808,232 @@ export default function Hiring_candidateapplied() {
             </div>
           )}
 
-          {/* --- ACTIVE JOB OPENINGS SECTION --- */}
-          <section style={{ backgroundColor: '#16161a', border: '1px solid #232329', borderRadius: '12px', padding: '20px 24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #232329', paddingBottom: '8px' }}>
-              <h4 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0 }}>
-                Active Job Openings (Employer Registry)
-              </h4>
-              <button 
-                onClick={() => {
-                  if(!isHiringActive) {
-                    Swal.fire({ icon: 'warning', title: 'Hiring is OFF', text: 'Turn on Hiring status to add job details.', background: '#16161a', color: '#fff' });
-                    return;
-                  }
-                  setShowCreateJobModal(true);
-                }} 
-                className="btn btn-sm btn-success fw-bold" 
-                style={{ backgroundColor: '#198754', border: 'none' }}
-              >
-                + Add Job Details
-              </button>
+          {showEditJobModal && (
+            <div style={{ backgroundColor: '#16161a', border: '1px solid #ffc107', borderRadius: '12px', padding: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #232329', paddingBottom: '10px' }}>
+                <h4 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: '#ffc107' }}>Edit Job Opening</h4>
+                <button onClick={() => setShowEditJobModal(false)} className="btn btn-sm btn-outline-secondary" style={{ color: '#fff' }}>✕</button>
+              </div>
+
+              <form onSubmit={handleUpdateJobSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Job Title</label>
+                  <input type="text" name="jobTitle" value={editJobData.jobTitle} onChange={handleEditInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Department</label>
+                  <input type="text" name="department" value={editJobData.department} onChange={handleEditInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Experience Required</label>
+                  <input type="text" name="experienceRequired" value={editJobData.experienceRequired} onChange={handleEditInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Offered CTC</label>
+                  <input type="number" name="offeredCTC" value={editJobData.offeredCTC} onChange={handleEditInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Location</label>
+                  <input type="text" name="location" value={editJobData.location} onChange={handleEditInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Number of Openings</label>
+                  <input type="number" name="noOfOpenings" value={editJobData.noOfOpenings} onChange={handleEditInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Closing Date</label>
+                  <input type="date" name="closingDate" value={editJobData.closingDate} onChange={handleEditInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" />
+                </div>
+
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Job Description</label>
+                  <textarea name="jobDescription" value={editJobData.jobDescription} onChange={handleEditInputChange} required rows="3" className="form-control form-control-sm bg-dark text-white border-secondary"></textarea>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', gridColumn: '1 / -1' }}>
+                  <input type="checkbox" name="isActive" id="isEditActiveCheck" checked={editJobData.isActive} onChange={handleEditInputChange} className="form-check-input" />
+                  <label htmlFor="isEditActiveCheck" style={{ fontSize: '13px', color: '#fff', cursor: 'pointer' }}>Active Listing</label>
+                </div>
+
+                <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '8px' }}>
+                  <button type="button" onClick={() => setShowEditJobModal(false)} className="btn btn-sm btn-secondary">Cancel</button>
+                  <button type="submit" disabled={isSubmitting} className="btn btn-sm btn-warning fw-bold px-4">
+                    {isSubmitting ? 'Updating...' : 'Update Job Details'}
+                  </button>
+                </div>
+              </form>
             </div>
+          )}
+
+          <section style={{ backgroundColor: '#16161a', border: '1px solid #232329', borderRadius: '12px', padding: '20px 24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #232329', paddingBottom: '12px', flexWrap: 'wrap', gap: '12px' }}>
+              <h4 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0 }}>
+                Active Job Openings ({jobs.length})
+              </h4>
+              
+              <div style={{ width: '280px' }}>
+                <input 
+                  type="text" 
+                  value={jobSearchQuery} 
+                  onChange={(e) => {
+                    setJobSearchQuery(e.target.value);
+                    setCurrentJobPage(1);
+                  }} 
+                  placeholder="Search jobs by title, dept, desc..." 
+                  className="form-control form-control-sm bg-dark text-white border-secondary"
+                />
+              </div>
+            </div>
+
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-              {uniqueJobs.length === 0 ? (
-                <p style={{ color: '#8a8a98', fontSize: '13px' }}>No active job openings found.</p>
+              {currentJobsSlice.length === 0 ? (
+                <p style={{ color: '#8a8a98', fontSize: '13px' }}>No job openings matched your search.</p>
               ) : (
-                uniqueJobs.map((job, idx) => (
-                  <div key={job.id || job._id || idx} style={{ backgroundColor: '#1e1e24', border: '1px solid #2d2d37', borderRadius: '8px', padding: '16px' }}>
-                    <h5 style={{ color: '#198754', fontWeight: 'bold', fontSize: '15px', marginBottom: '8px', textTransform: 'uppercase' }}>{job.jobTitle || job.title || 'Untitled Job'}</h5>
-                    <p style={{ fontSize: '13px', color: '#b1b1c0', margin: '4px 0' }}>Department: <span className="text-white">{job.department || 'N/A'}</span></p>
-                    <p style={{ fontSize: '13px', color: '#b1b1c0', margin: '4px 0' }}>Openings: <span className="text-white">{job.noOfOpenings || job.openings || 0}</span></p>
-                    <p style={{ fontSize: '13px', color: '#b1b1c0', margin: '4px 0' }}>Location: <span className="text-white">{job.location || 'N/A'}</span></p>
-                    <p style={{ fontSize: '13px', color: '#b1b1c0', margin: '4px 0' }}>Offered Package: <span className="text-white">₹{job.offeredCTC || job.package || 0}</span></p>
-                  </div>
-                ))
+                currentJobsSlice.map((job, idx) => {
+                  const jobId = job.id || job._id || idx;
+                  const rawClosingDate = job.closingDate || job.endDate || job.validTill;
+                  let formattedDate = 'N/A';
+                  if (rawClosingDate) {
+                    const parsedDate = new Date(rawClosingDate);
+                    if (!isNaN(parsedDate.getTime())) {
+                      formattedDate = parsedDate.toLocaleDateString('en-IN', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                      });
+                    } else {
+                      formattedDate = String(rawClosingDate).split('T')[0];
+                    }
+                  }
+
+                  const rawDesc = job.jobDescription || job.description || 'No description provided.';
+                  const shortDesc = rawDesc.length > 70 ? rawDesc.substring(0, 70) + '...' : rawDesc;
+
+                  return (
+                    <div key={jobId} style={{ backgroundColor: '#1e1e24', border: '1px solid #2d2d37', borderRadius: '8px', padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                      <div>
+                        <h5 style={{ color: '#198754', fontWeight: 'bold', fontSize: '15px', marginBottom: '8px', textTransform: 'uppercase' }}>{job.jobTitle || job.title || 'Untitled Job'}</h5>
+                        <p style={{ fontSize: '13px', color: '#b1b1c0', margin: '4px 0' }}>Department: <span className="text-white">{job.department || 'N/A'}</span></p>
+                        <p style={{ fontSize: '13px', color: '#b1b1c0', margin: '4px 0' }}>Openings: <span className="text-white">{job.noOfOpenings || job.openings || 0}</span></p>
+                        <p style={{ fontSize: '13px', color: '#b1b1c0', margin: '4px 0' }}>Location: <span className="text-white">{job.location || 'N/A'}</span></p>
+                        <p style={{ fontSize: '13px', color: '#b1b1c0', margin: '4px 0' }}>Offered Package: <span className="text-white">₹{job.offeredCTC || job.package || 'N/A'}</span></p>
+                        <p style={{ fontSize: '13px', color: '#b1b1c0', margin: '6px 0 4px 0' }}>Description: <span className="text-white" style={{ fontStyle: 'italic' }}>{shortDesc}</span></p>
+                        <p style={{ fontSize: '13px', color: '#b1b1c0', margin: '4px 0' }}>Closing Date: <span className="text-warning fw-bold">{formattedDate}</span></p>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '8px', marginTop: '16px', borderTop: '1px solid #2d2d37', paddingTop: '12px' }}>
+                        <button onClick={() => handleViewJobDetails(job)} className="btn btn-sm btn-outline-info flex-fill" title="View Details">
+                          <i className="fas fa-eye me-1"></i> Details
+                        </button>
+                        {/* <button onClick={() => handleOpenEditJob(job)} className="btn btn-sm btn-outline-warning flex-fill" title="Edit Job">
+                          <i className="fas fa-edit me-1"></i> Edit
+                        </button> */}
+                        <button onClick={() => handleDeleteJob(jobId)} className="btn btn-sm btn-outline-danger flex-fill" title="Delete Job">
+                          <i className="fas fa-trash me-1"></i> Delete
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
               )}
             </div>
+
+            {totalJobPages > 1 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', borderTop: '1px solid #232329', paddingTop: '12px' }}>
+                <span style={{ fontSize: '12px', color: '#8a8a98' }}>
+                  Showing page {currentJobPage} of {totalJobPages} ({filteredJobs.length} total jobs)
+                </span>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <button 
+                    onClick={() => setCurrentJobPage(prev => Math.max(prev - 1, 1))} 
+                    disabled={currentJobPage === 1}
+                    className="btn btn-sm btn-outline-secondary"
+                    style={{ fontSize: '12px', padding: '4px 10px' }}
+                  >
+                    Previous
+                  </button>
+                  
+                  {Array.from({ length: totalJobPages }, (_, i) => i + 1).map(pageNum => (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentJobPage(pageNum)}
+                      className={`btn btn-sm ${currentJobPage === pageNum ? 'btn-success' : 'btn-outline-secondary'}`}
+                      style={{ fontSize: '12px', padding: '4px 10px' }}
+                    >
+                      {pageNum}
+                    </button>
+                  ))}
+
+                  <button 
+                    onClick={() => setCurrentJobPage(prev => Math.min(prev + 1, totalJobPages))} 
+                    disabled={currentJobPage === totalJobPages}
+                    className="btn btn-sm btn-outline-secondary"
+                    style={{ fontSize: '12px', padding: '4px 10px' }}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </section>
 
-          {/* --- CANDIDATE APPLICATIONS SECTION --- */}
           <section style={{ backgroundColor: '#16161a', border: '1px solid #232329', borderRadius: '12px', padding: '20px 24px' }}>
             <h4 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '16px', borderBottom: '1px solid #232329', paddingBottom: '8px' }}>
-              Candidate Applied Details
+              Candidate Applications Registry ({applications.length})
             </h4>
-            
-            <div style={{ width: '100%', overflowX: 'auto' }}>
-              <table className="table table-dark table-hover align-middle mb-0" style={{ fontSize: '13.5px', width: '100%', whiteSpace: 'nowrap' }}>
+            <div className="table-responsive">
+              <table className="table table-dark table-striped align-middle mb-0" style={{ fontSize: '13px' }}>
                 <thead>
-                  <tr style={{ color: '#8a8a98', fontSize: '12px', textTransform: 'uppercase' }}>
+                  <tr style={{ color: '#8a8a98', borderBottom: '2px solid #2d2d37' }}>
                     <th>Candidate Name</th>
-                    <th>Applied For</th>
-                    <th>Contact Information</th>
-                    <th>Current CTC</th>
-                    <th>Expected CTC</th>
-                    <th>Notice Period</th>
+                    <th>Job Title</th>
+                    <th>Email</th>
+                    <th>Phone</th>
                     <th>Status</th>
-                    <th className="text-center">Actions</th>
+                    <th className="text-end">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {applications.length === 0 ? (
                     <tr>
-                      <td colSpan="8" className="text-center py-4" style={{ color: '#8a8a98' }}>No candidate applications found.</td>
+                      <td colSpan="6" className="text-center text-muted py-4">No candidate applications found.</td>
                     </tr>
                   ) : (
                     applications.map((app, idx) => {
-                      const candidateName = app.fullName || app.name || app.candidateName || 'N/A';
-                      const appliedFor = app.jobTitle || app.jobName || app.title || (app.jobId ? `Job ID: ${app.jobId}` : 'N/A');
+                      const appId = app.id || app._id || idx;
+                      const cName = app.fullName || app.name || app.candidateName || 'N/A';
+                      const jTitle = app.jobTitle || app.jobName || app.title || 'N/A';
                       const email = app.email || app.candidateEmail || 'N/A';
-                      const phoneNo = app.phoneNo || app.phone || app.mobile || '';
-                      const currentCTC = app.currentCTC || app.ctc || 'N/A';
-                      const expectedCTC = app.expectedCTC || 'N/A';
-                      const noticePeriod = app.noticePeriod || 'N/A';
+                      const phone = app.phoneNo || app.phone || app.mobile || 'N/A';
                       const status = app.status || app.applicationStatus || 'Applied';
 
                       return (
-                        <tr key={app.id || app._id || idx}>
-                          <td className="fw-bold text-white">{candidateName}</td>
-                          <td>{appliedFor}</td>
+                        <tr key={appId}>
+                          <td className="fw-bold">{cName}</td>
+                          <td>{jTitle}</td>
+                          <td>{email}</td>
+                          <td>{phone}</td>
                           <td>
-                            <div>{email}</div>
-                            {phoneNo && <div style={{ fontSize: '11px', color: '#8a8a98' }}>{phoneNo}</div>}
-                          </td>
-                          <td>{currentCTC}</td>
-                          <td>{expectedCTC}</td>
-                          <td>{noticePeriod}</td>
-                          <td>
-                            <span className={`badge ${
-                              status === 'Selected' ? 'bg-success' : 
-                              status === 'Rejected' ? 'bg-danger' : 
-                              status === 'Shortlisted' ? 'bg-primary' : 'bg-warning text-dark'
-                            }`}>
+                            <span className="badge bg-secondary" style={{ backgroundColor: '#2d2d37', color: '#ffc107', padding: '6px 10px' }}>
                               {status}
                             </span>
                           </td>
-                          <td className="text-center">
-                            <div style={{ display: 'flex', gap: '6px', justifyContent: 'center' }}>
-                              <button
-                                onClick={() => handleViewDetails(app)}
-                                className="btn btn-outline-info btn-sm"
-                                style={{ fontSize: '11px', padding: '4px 8px' }}
-                                title="View Details"
-                              >
-                                <i className="fas fa-eye"></i>
-                              </button>
-                              <button
-                                onClick={() => handleUpdateStatus(app.id || app._id, status)}
-                                className="btn btn-outline-success btn-sm"
-                                style={{ fontSize: '11px', padding: '4px 8px' }}
-                                title="Update Status"
-                              >
-                                <i className="fas fa-edit"></i>
-                              </button>
-                              <button
-                                onClick={() => handleDeleteApplication(app.id || app._id)}
-                                className="btn btn-outline-danger btn-sm"
-                                style={{ fontSize: '11px', padding: '4px 8px' }}
-                                title="Delete Application"
-                              >
-                                <i className="fas fa-trash"></i>
-                              </button>
-                            </div>
+                          <td className="text-end">
+                            <button onClick={() => handleViewDetails(app)} className="btn btn-sm btn-outline-info me-1" title="View Details">
+                              <i className="fas fa-eye"></i>
+                            </button>
+                            <button onClick={() => handleUpdateStatus(appId, status)} className="btn btn-sm btn-outline-warning me-1" title="Update Status">
+                              <i className="fas fa-edit"></i>
+                            </button>
+                            <button onClick={() => handleDeleteApplication(appId)} className="btn btn-sm btn-outline-danger" title="Delete">
+                              <i className="fas fa-trash"></i>
+                            </button>
                           </td>
                         </tr>
                       );

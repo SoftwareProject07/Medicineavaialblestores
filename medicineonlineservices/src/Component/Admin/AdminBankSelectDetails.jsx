@@ -192,6 +192,15 @@ export default function AdminBankSelectDetails() {
                   Language Master
                 </Link>
 
+
+         <Link to="/statenamemasters" className={getSubLinkClass("/statenamemasters")}>
+                                <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/statenamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
+                                         StateName Master  
+                              </Link>
+<Link to="/citynamemasters" className={getSubLinkClass("/citynamemasters")}>
+                                <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/citynamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
+                                CityName Master           
+                              </Link> 
                  
                             </div>
                         )}

@@ -313,6 +313,16 @@ export default function AddMasterAssignedTo() {
                                 <i className="fas fa-language"></i> Language Master
                             </Link>
 
+  <Link to="/statenamemasters" className="btn btn-warning w-100 text-start d-flex align-items-center gap-2 fw-bold mb-1" style={{ fontSize: '12px' }}>
+                                <i className="fas fa-language"></i>   StateName Master
+                            </Link>
+
+  <Link to="/citynamemasters" className="btn btn-warning w-100 text-start d-flex align-items-center gap-2 fw-bold mb-1" style={{ fontSize: '12px' }}>
+                                <i className="fas fa-language"></i>CityName Master
+                            </Link>
+
+
+
 
           
             </div>

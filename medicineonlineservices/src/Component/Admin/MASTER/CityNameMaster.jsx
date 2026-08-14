@@ -710,6 +710,45 @@ export default function CityNameMaster() {
            {masterDropdownOpen && (
              <div className="ps-1 mt-2">
                <Link to="/adminissuetype" className="btn btn-warning w-100 text-start d-flex align-items-center gap-2 fw-bold mb-1" style={{ fontSize: '12px' }}>Add Item Type</Link>
+
+
+  <Link 
+                to="/adminmasterassignedto" 
+                className="btn btn-warning w-100 text-start d-flex align-items-center gap-2 fw-bold mb-1" 
+                style={{ fontSize: '12px' }}
+              >
+                <i className="fas fa-plus-circle"></i> AddAssignedTO 
+              </Link>
+
+               <Link 
+                to="/doctorassignto" 
+                className="btn btn-warning w-100 text-start d-flex align-items-center gap-2 fw-bold mb-1" 
+                style={{ fontSize: '12px' }}
+              >
+                <i className="fas fa-plus-circle"></i> AddDoctorAssignTo 
+              </Link>
+                <Link 
+                to="/addadmintypes" 
+                className="btn btn-warning w-100 text-start d-flex align-items-center gap-2 fw-bold mb-1" 
+                style={{ fontSize: '12px' }}
+              >
+                <i className="fas fa-plus-circle"></i> AddAdminTypes 
+              </Link>
+  <Link to="/languagematerpanels" className="btn btn-warning w-100 text-start d-flex align-items-center gap-2 fw-bold mb-1" style={{ fontSize: '12px' }}>
+                                <i className="fas fa-language"></i> Language Master
+                            </Link>
+
+  <Link to="/statenamemasters" className="btn btn-warning w-100 text-start d-flex align-items-center gap-2 fw-bold mb-1" style={{ fontSize: '12px' }}>
+                                <i className="fas fa-language"></i>   StateName Master
+                            </Link>
+
+  <Link to="/citynamemasters" className="btn btn-warning w-100 text-start d-flex align-items-center gap-2 fw-bold mb-1" style={{ fontSize: '12px' }}>
+                                <i className="fas fa-language"></i>CityName Master
+                            </Link>
+
+
+
+    
              </div>
            )}
          </div>
