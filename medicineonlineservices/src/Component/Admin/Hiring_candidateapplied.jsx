@@ -382,7 +382,17 @@ export default function Hiring_candidateapplied() {
     const candidateName = app.fullName || app.name || app.candidateName || 'N/A';
     const emailVal = app.email || app.candidateEmail || 'N/A';
     const phoneVal = app.phoneNo || app.phone || app.mobile || 'N/A';
-    const jobTitleVal = app.jobTitle || app.jobName || app.title || 'N/A';
+    
+    // Resolving Job Title correctly by checking both direct properties and matching jobId against jobs list
+    let jobTitleVal = app.jobTitle || app.jobName || app.title;
+    if (!jobTitleVal && app.jobId) {
+      const matchedJob = jobs.find(j => (j.id === app.jobId || j._id === app.jobId));
+      if (matchedJob) {
+        jobTitleVal = matchedJob.jobTitle || matchedJob.title;
+      }
+    }
+    jobTitleVal = jobTitleVal || 'N/A';
+
     const currentCTCVal = app.currentCTC || app.ctc || 'N/A';
     const expectedCTCVal = app.expectedCTC || 'N/A';
     const noticePeriodVal = app.noticePeriod || 'N/A';
@@ -630,17 +640,17 @@ export default function Hiring_candidateapplied() {
 
                 <Link to="/languagematerpanels" className={getSubLinkClass("/languagematerpanels")}>
                   <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/languagematerpanels' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  Language Master          
+                  Language Master           
                 </Link>
 
-                         <Link to="/statenamemasters" className={getSubLinkClass("/statenamemasters")}>
-                                <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/statenamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                                         StateName Master  
-                              </Link>
-<Link to="/citynamemasters" className={getSubLinkClass("/citynamemasters")}>
-                                <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/citynamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                                CityName Master           
-                              </Link> 
+                <Link to="/statenamemasters" className={getSubLinkClass("/statenamemasters")}>
+                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/statenamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
+                  StateName Master  
+                </Link>
+                <Link to="/citynamemasters" className={getSubLinkClass("/citynamemasters")}>
+                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/citynamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
+                  CityName Master           
+                </Link> 
               </div>
             )}
           </div>
@@ -745,307 +755,381 @@ export default function Hiring_candidateapplied() {
             </div>
           </header>
 
-          {showCreateJobModal && isHiringActive && (
-            <div style={{ backgroundColor: '#16161a', border: '1px solid #198754', borderRadius: '12px', padding: '24px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #232329', paddingBottom: '10px' }}>
-                <h4 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: '#198754' }}>Post a New Job Opening</h4>
-                <button onClick={() => setShowCreateJobModal(false)} className="btn btn-sm btn-outline-secondary" style={{ color: '#fff' }}>✕</button>
-              </div>
+          {/* Master Controls & Hiring Toggle Bar */}
+          <div style={{ backgroundColor: '#16161a', border: '1px solid #232329', borderRadius: '12px', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+            {/* <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ fontSize: '14px', fontWeight: '600', color: '#b1b1c0' }}>Master Hiring Portal Switch:</span>
+              <button 
+                onClick={() => setIsHiringActive(!isHiringActive)} 
+                className={`btn btn-sm px-3 py-1.5 fw-bold ${isHiringActive ? 'btn-success' : 'btn-danger'}`}
+                style={{ fontSize: '13px' }}
+              >
+                {isHiringActive ? 'Hiring ON (Accepting Applications)' : 'Hiring OFF (Paused)'}
+              </button>
+            </div> */}
 
-              <form onSubmit={handleCreateJobSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
-                <div>
-                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Job Title</label>
-                  <input type="text" name="jobTitle" value={newJob.jobTitle} onChange={handleInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="e.g. React Developer" />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Department</label>
-                  <input type="text" name="department" value={newJob.department} onChange={handleInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="e.g. Engineering" />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Experience Required</label>
-                  <input type="text" name="experienceRequired" value={newJob.experienceRequired} onChange={handleInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="e.g. 2-4 Years" />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Offered CTC</label>
-                  <input type="number" name="offeredCTC" value={newJob.offeredCTC} onChange={handleInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="e.g. 600000" />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Location</label>
-                  <input type="text" name="location" value={newJob.location} onChange={handleInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="e.g. Remote / Noida" />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Number of Openings</label>
-                  <input type="number" name="noOfOpenings" value={newJob.noOfOpenings} onChange={handleInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Closing Date</label>
-                  <input type="date" name="closingDate" value={newJob.closingDate} onChange={handleInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" />
-                </div>
-
-                <div style={{ gridColumn: '1 / -1' }}>
-                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Job Description</label>
-                  <textarea name="jobDescription" value={newJob.jobDescription} onChange={handleInputChange} required rows="3" className="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Enter roles and responsibilities..."></textarea>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', gridColumn: '1 / -1' }}>
-                  <input type="checkbox" name="isActive" id="isActiveCheck" checked={newJob.isActive} onChange={handleInputChange} className="form-check-input" />
-                  <label htmlFor="isActiveCheck" style={{ fontSize: '13px', color: '#fff', cursor: 'pointer' }}>Active Listing</label>
-                </div>
-
-                <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '8px' }}>
-                  <button type="button" onClick={() => setShowCreateJobModal(false)} className="btn btn-sm btn-secondary">Cancel</button>
-                  <button type="submit" disabled={isSubmitting} className="btn btn-sm btn-success fw-bold px-4">
-                    {isSubmitting ? 'Saving...' : 'Save & Publish Job'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
-
-          {showEditJobModal && (
-            <div style={{ backgroundColor: '#16161a', border: '1px solid #ffc107', borderRadius: '12px', padding: '24px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #232329', paddingBottom: '10px' }}>
-                <h4 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: '#ffc107' }}>Edit Job Opening</h4>
-                <button onClick={() => setShowEditJobModal(false)} className="btn btn-sm btn-outline-secondary" style={{ color: '#fff' }}>✕</button>
-              </div>
-
-              <form onSubmit={handleUpdateJobSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
-                <div>
-                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Job Title</label>
-                  <input type="text" name="jobTitle" value={editJobData.jobTitle} onChange={handleEditInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Department</label>
-                  <input type="text" name="department" value={editJobData.department} onChange={handleEditInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Experience Required</label>
-                  <input type="text" name="experienceRequired" value={editJobData.experienceRequired} onChange={handleEditInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Offered CTC</label>
-                  <input type="number" name="offeredCTC" value={editJobData.offeredCTC} onChange={handleEditInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Location</label>
-                  <input type="text" name="location" value={editJobData.location} onChange={handleEditInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Number of Openings</label>
-                  <input type="number" name="noOfOpenings" value={editJobData.noOfOpenings} onChange={handleEditInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Closing Date</label>
-                  <input type="date" name="closingDate" value={editJobData.closingDate} onChange={handleEditInputChange} required className="form-control form-control-sm bg-dark text-white border-secondary" />
-                </div>
-
-                <div style={{ gridColumn: '1 / -1' }}>
-                  <label style={{ fontSize: '12px', color: '#8a8a98', display: 'block', marginBottom: '4px' }}>Job Description</label>
-                  <textarea name="jobDescription" value={editJobData.jobDescription} onChange={handleEditInputChange} required rows="3" className="form-control form-control-sm bg-dark text-white border-secondary"></textarea>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', gridColumn: '1 / -1' }}>
-                  <input type="checkbox" name="isActive" id="isEditActiveCheck" checked={editJobData.isActive} onChange={handleEditInputChange} className="form-check-input" />
-                  <label htmlFor="isEditActiveCheck" style={{ fontSize: '13px', color: '#fff', cursor: 'pointer' }}>Active Listing</label>
-                </div>
-
-                <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '8px' }}>
-                  <button type="button" onClick={() => setShowEditJobModal(false)} className="btn btn-sm btn-secondary">Cancel</button>
-                  <button type="submit" disabled={isSubmitting} className="btn btn-sm btn-warning fw-bold px-4">
-                    {isSubmitting ? 'Updating...' : 'Update Job Details'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
-
-          <section style={{ backgroundColor: '#16161a', border: '1px solid #232329', borderRadius: '12px', padding: '20px 24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #232329', paddingBottom: '12px', flexWrap: 'wrap', gap: '12px' }}>
-              <h4 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0 }}>
-                Active Job Openings ({jobs.length})
-              </h4>
-              
-              <div style={{ width: '280px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '320px', maxWidth: '100%' }}>
+              <div className="input-group input-group-sm">
+                <span className="input-group-text bg-dark border-secondary text-white-50"><i className="fas fa-search"></i></span>
                 <input 
                   type="text" 
-                  value={jobSearchQuery} 
-                  onChange={(e) => {
-                    setJobSearchQuery(e.target.value);
-                    setCurrentJobPage(1);
-                  }} 
-                  placeholder="Search jobs by title, dept, desc..." 
-                  className="form-control form-control-sm bg-dark text-white border-secondary"
+                  className="form-control bg-dark border-secondary text-white   float-end" 
+                  placeholder="Search jobs by title, department, location..."
+                  value={jobSearchQuery}
+                  onChange={(e) => setJobSearchQuery(e.target.value)}
                 />
+                {jobSearchQuery && (
+                  <button className="btn btn-outline-secondary text-white" onClick={() => setJobSearchQuery('')}>
+                    <i className="fas fa-times"></i>
+                  </button>
+                )}
               </div>
             </div>
+          </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-              {currentJobsSlice.length === 0 ? (
-                <p style={{ color: '#8a8a98', fontSize: '13px' }}>No job openings matched your search.</p>
-              ) : (
-                currentJobsSlice.map((job, idx) => {
-                  const jobId = job.id || job._id || idx;
-                  const rawClosingDate = job.closingDate || job.endDate || job.validTill;
-                  let formattedDate = 'N/A';
-                  if (rawClosingDate) {
-                    const parsedDate = new Date(rawClosingDate);
-                    if (!isNaN(parsedDate.getTime())) {
-                      formattedDate = parsedDate.toLocaleDateString('en-IN', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                      });
-                    } else {
-                      formattedDate = String(rawClosingDate).split('T')[0];
-                    }
-                  }
-
-                  const rawDesc = job.jobDescription || job.description || 'No description provided.';
-                  const shortDesc = rawDesc.length > 70 ? rawDesc.substring(0, 70) + '...' : rawDesc;
-
-                  return (
-                    <div key={jobId} style={{ backgroundColor: '#1e1e24', border: '1px solid #2d2d37', borderRadius: '8px', padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                      <div>
-                        <h5 style={{ color: '#198754', fontWeight: 'bold', fontSize: '15px', marginBottom: '8px', textTransform: 'uppercase' }}>{job.jobTitle || job.title || 'Untitled Job'}</h5>
-                        <p style={{ fontSize: '13px', color: '#b1b1c0', margin: '4px 0' }}>Department: <span className="text-white">{job.department || 'N/A'}</span></p>
-                        <p style={{ fontSize: '13px', color: '#b1b1c0', margin: '4px 0' }}>Openings: <span className="text-white">{job.noOfOpenings || job.openings || 0}</span></p>
-                        <p style={{ fontSize: '13px', color: '#b1b1c0', margin: '4px 0' }}>Location: <span className="text-white">{job.location || 'N/A'}</span></p>
-                        <p style={{ fontSize: '13px', color: '#b1b1c0', margin: '4px 0' }}>Offered Package: <span className="text-white">₹{job.offeredCTC || job.package || 'N/A'}</span></p>
-                        <p style={{ fontSize: '13px', color: '#b1b1c0', margin: '6px 0 4px 0' }}>Description: <span className="text-white" style={{ fontStyle: 'italic' }}>{shortDesc}</span></p>
-                        <p style={{ fontSize: '13px', color: '#b1b1c0', margin: '4px 0' }}>Closing Date: <span className="text-warning fw-bold">{formattedDate}</span></p>
-                      </div>
-
-                      <div style={{ display: 'flex', gap: '8px', marginTop: '16px', borderTop: '1px solid #2d2d37', paddingTop: '12px' }}>
-                        <button onClick={() => handleViewJobDetails(job)} className="btn btn-sm btn-outline-info flex-fill" title="View Details">
-                          <i className="fas fa-eye me-1"></i> Details
-                        </button>
-                        {/* <button onClick={() => handleOpenEditJob(job)} className="btn btn-sm btn-outline-warning flex-fill" title="Edit Job">
-                          <i className="fas fa-edit me-1"></i> Edit
-                        </button> */}
-                        <button onClick={() => handleDeleteJob(jobId)} className="btn btn-sm btn-outline-danger flex-fill" title="Delete Job">
-                          <i className="fas fa-trash me-1"></i> Delete
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
+          {/* Active Job Openings Section */}
+          <div style={{ backgroundColor: '#16161a', border: '1px solid #232329', borderRadius: '12px', padding: '20px 24px' }}>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold' }}>
+                Active Job Openings ({filteredJobs.length})
+              </h4>
+              <span style={{ fontSize: '12px', color: '#8a8a98' }}>Showing page {currentJobPage} of {totalJobPages}</span>
             </div>
 
-            {totalJobPages > 1 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', borderTop: '1px solid #232329', paddingTop: '12px' }}>
-                <span style={{ fontSize: '12px', color: '#8a8a98' }}>
-                  Showing page {currentJobPage} of {totalJobPages} ({filteredJobs.length} total jobs)
-                </span>
-                <div style={{ display: 'flex', gap: '6px' }}>
-                  <button 
-                    onClick={() => setCurrentJobPage(prev => Math.max(prev - 1, 1))} 
-                    disabled={currentJobPage === 1}
-                    className="btn btn-sm btn-outline-secondary"
-                    style={{ fontSize: '12px', padding: '4px 10px' }}
-                  >
-                    Previous
-                  </button>
-                  
-                  {Array.from({ length: totalJobPages }, (_, i) => i + 1).map(pageNum => (
-                    <button
-                      key={pageNum}
-                      onClick={() => setCurrentJobPage(pageNum)}
-                      className={`btn btn-sm ${currentJobPage === pageNum ? 'btn-success' : 'btn-outline-secondary'}`}
-                      style={{ fontSize: '12px', padding: '4px 10px' }}
-                    >
-                      {pageNum}
-                    </button>
-                  ))}
-
-                  <button 
-                    onClick={() => setCurrentJobPage(prev => Math.min(prev + 1, totalJobPages))} 
-                    disabled={currentJobPage === totalJobPages}
-                    className="btn btn-sm btn-outline-secondary"
-                    style={{ fontSize: '12px', padding: '4px 10px' }}
-                  >
-                    Next
-                  </button>
-                </div>
+            {currentJobsSlice.length === 0 ? (
+              <div className="text-center py-4 text-muted" style={{ fontSize: '14px' }}>
+                No job postings found matching your search.
               </div>
-            )}
-          </section>
-
-          <section style={{ backgroundColor: '#16161a', border: '1px solid #232329', borderRadius: '12px', padding: '20px 24px' }}>
-            <h4 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '16px', borderBottom: '1px solid #232329', paddingBottom: '8px' }}>
-              Candidate Applications Registry ({applications.length})
-            </h4>
-            <div className="table-responsive">
-              <table className="table table-dark table-striped align-middle mb-0" style={{ fontSize: '13px' }}>
-                <thead>
-                  <tr style={{ color: '#8a8a98', borderBottom: '2px solid #2d2d37' }}>
-                    <th>Candidate Name</th>
-                    <th>Job Title</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Status</th>
-                    <th className="text-end">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {applications.length === 0 ? (
-                    <tr>
-                      <td colSpan="6" className="text-center text-muted py-4">No candidate applications found.</td>
+            ) : (
+              <div className="table-responsive">
+                <table className="table table-dark table-hover align-middle mb-0" style={{ fontSize: '13.5px' }}>
+                  <thead>
+                    <tr style={{ color: '#8a8a98', borderBottom: '1px solid #232329' }}>
+                      <th style={{ padding: '12px' }}>Job Title</th>
+                      <th style={{ padding: '12px' }}>Department</th>
+                      <th style={{ padding: '12px' }}>Location</th>
+                      <th style={{ padding: '12px' }}>Openings</th>
+                      <th style={{ padding: '12px' }}>CTC Offered</th>
+                      <th style={{ padding: '12px' }}>Status</th>
+                      <th style={{ padding: '12px', textAlign: 'right' }}>Actions</th>
                     </tr>
-                  ) : (
-                    applications.map((app, idx) => {
-                      const appId = app.id || app._id || idx;
-                      const cName = app.fullName || app.name || app.candidateName || 'N/A';
-                      const jTitle = app.jobTitle || app.jobName || app.title || 'N/A';
-                      const email = app.email || app.candidateEmail || 'N/A';
-                      const phone = app.phoneNo || app.phone || app.mobile || 'N/A';
-                      const status = app.status || app.applicationStatus || 'Applied';
+                  </thead>
+                  <tbody>
+                    {currentJobsSlice.map((job) => {
+                      const jobId = job.id || job._id;
+                      const title = job.jobTitle || job.title || 'N/A';
+                      const dept = job.department || 'N/A';
+                      const loc = job.location || 'N/A';
+                      const openings = job.noOfOpenings || job.openings || 1;
+                      const ctc = job.offeredCTC || job.package || 'N/A';
+                      const active = job.isActive !== undefined ? job.isActive : true;
 
                       return (
-                        <tr key={appId}>
-                          <td className="fw-bold">{cName}</td>
-                          <td>{jTitle}</td>
-                          <td>{email}</td>
-                          <td>{phone}</td>
-                          <td>
-                            <span className="badge bg-secondary" style={{ backgroundColor: '#2d2d37', color: '#ffc107', padding: '6px 10px' }}>
-                              {status}
+                        <tr key={jobId} style={{ borderBottom: '1px solid #232329' }}>
+                          <td style={{ padding: '12px', fontWeight: '600', color: '#fff' }}>{title}</td>
+                          <td style={{ padding: '12px' }}>{dept}</td>
+                          <td style={{ padding: '12px' }}>{loc}</td>
+                          <td style={{ padding: '12px' }}>{openings}</td>
+                          <td style={{ padding: '12px', color: '#198754', fontWeight: '600' }}>₹{ctc}</td>
+                          <td style={{ padding: '12px' }}>
+                            <span className={`badge ${active ? 'bg-success' : 'bg-secondary'}`} style={{ fontSize: '11px' }}>
+                              {active ? 'Active' : 'Closed'}
                             </span>
                           </td>
-                          <td className="text-end">
-                            <button onClick={() => handleViewDetails(app)} className="btn btn-sm btn-outline-info me-1" title="View Details">
-                              <i className="fas fa-eye"></i>
-                            </button>
-                            <button onClick={() => handleUpdateStatus(appId, status)} className="btn btn-sm btn-outline-warning me-1" title="Update Status">
-                              <i className="fas fa-edit"></i>
-                            </button>
-                            <button onClick={() => handleDeleteApplication(appId)} className="btn btn-sm btn-outline-danger" title="Delete">
-                              <i className="fas fa-trash"></i>
-                            </button>
+                          <td style={{ padding: '12px', textAlign: 'right' }}>
+                            <div className="d-flex justify-content-end gap-2">
+                              <button 
+                                onClick={() => handleViewJobDetails(job)} 
+                                className="btn btn-sm btn-outline-info px-2 py-1" 
+                                title="View Details"
+                              >
+                                <i className="fas fa-eye"></i>
+                              </button>
+                              {/* <button 
+                                onClick={() => handleOpenEditJob(job)} 
+                                className="btn btn-sm btn-outline-warning px-2 py-1" 
+                                title="Edit Job"
+                              >
+                                <i className="fas fa-edit"></i>
+                              </button> */}
+                              <button 
+                                onClick={() => handleDeleteJob(jobId)} 
+                                className="btn btn-sm btn-outline-danger px-2 py-1" 
+                                title="Delete Job"
+                              >
+                                <i className="fas fa-trash"></i>
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );
-                    })
-                  )}
-                </tbody>
-              </table>
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {totalJobPages > 1 && (
+              <div className="d-flex justify-content-between align-items-center mt-3 pt-2" style={{ borderTop: '1px solid #232329' }}>
+                <button 
+                  className="btn btn-sm btn-outline-secondary text-white" 
+                  disabled={currentJobPage === 1}
+                  onClick={() => setCurrentJobPage(p => Math.max(p - 1, 1))}
+                >
+                  Previous
+                </button>
+                <span style={{ fontSize: '12px', color: '#8a8a98' }}>Page {currentJobPage} of {totalJobPages}</span>
+                <button 
+                  className="btn btn-sm btn-outline-secondary text-white" 
+                  disabled={currentJobPage === totalJobPages}
+                  onClick={() => setCurrentJobPage(p => Math.min(p + 1, totalJobPages))}
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Candidate Applications Registry */}
+          <div style={{ backgroundColor: '#16161a', border: '1px solid #232329', borderRadius: '12px', padding: '20px 24px' }}>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold' }}>
+                Candidate Applications Registry ({applications.length})
+              </h4>
             </div>
-          </section>
+
+            {applications.length === 0 ? (
+              <div className="text-center py-4 text-muted" style={{ fontSize: '14px' }}>
+                No candidate applications received yet.
+              </div>
+            ) : (
+              <div className="table-responsive">
+                <table className="table table-dark table-hover align-middle mb-0" style={{ fontSize: '13.5px' }}>
+                  <thead>
+                    <tr style={{ color: '#8a8a98', borderBottom: '1px solid #232329' }}>
+                      <th style={{ padding: '12px' }}>Candidate Name</th>
+                      <th style={{ padding: '12px' }}>Job Title</th>
+                      <th style={{ padding: '12px' }}>Email</th>
+                      <th style={{ padding: '12px' }}>Phone</th>
+                      <th style={{ padding: '12px' }}>Status</th>
+                      <th style={{ padding: '12px', textAlign: 'right' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {applications.map((app) => {
+                      const appId = app.id || app._id;
+                      const candidateName = app.fullName || app.name || app.candidateName || 'N/A';
+                      
+                      // Resolving Job Title correctly by checking both direct properties and matching jobId against jobs list
+                      let jobTitleVal = app.jobTitle || app.jobName || app.title;
+                      if (!jobTitleVal && app.jobId) {
+                        const matchedJob = jobs.find(j => (j.id === app.jobId || j._id === app.jobId));
+                        if (matchedJob) {
+                          jobTitleVal = matchedJob.jobTitle || matchedJob.title;
+                        }
+                      }
+                      jobTitleVal = jobTitleVal || 'N/A';
+
+                      const emailVal = app.email || app.candidateEmail || 'N/A';
+                      const phoneVal = app.phoneNo || app.phone || app.mobile || 'N/A';
+                      const statusVal = app.status || app.applicationStatus || 'Applied';
+
+                      let badgeColor = 'bg-secondary';
+                      if (statusVal === 'Shortlisted') badgeColor = 'bg-info text-dark';
+                      if (statusVal === 'Selected') badgeColor = 'bg-success';
+                      if (statusVal === 'Rejected') badgeColor = 'bg-danger';
+                      if (statusVal === 'Interview Scheduled') badgeColor = 'bg-warning text-dark';
+
+                      return (
+                        <tr key={appId} style={{ borderBottom: '1px solid #232329' }}>
+                          <td style={{ padding: '12px', fontWeight: '600', color: '#fff' }}>{candidateName}</td>
+                          <td style={{ padding: '12px' }}>{jobTitleVal}</td>
+                          <td style={{ padding: '12px', color: '#8a8a98' }}>{emailVal}</td>
+                          <td style={{ padding: '12px' }}>{phoneVal}</td>
+                          <td style={{ padding: '12px' }}>
+                            <span className={`badge ${badgeColor}`} style={{ fontSize: '11px', fontWeight: '600' }}>
+                              {statusVal}
+                            </span>
+                          </td>
+                          <td style={{ padding: '12px', textAlign: 'right' }}>
+                            <div className="d-flex justify-content-end gap-2">
+                              <button 
+                                onClick={() => handleViewDetails(app)} 
+                                className="btn btn-sm btn-outline-info px-2 py-1" 
+                                title="View Candidate Details"
+                              >
+                                <i className="fas fa-eye"></i>
+                              </button>
+                              <button 
+                                onClick={() => handleUpdateStatus(appId, statusVal)} 
+                                className="btn btn-sm btn-outline-warning px-2 py-1" 
+                                title="Update Status"
+                              >
+                                <i className="fas fa-edit"></i>
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteApplication(appId)} 
+                                className="btn btn-sm btn-outline-danger px-2 py-1" 
+                                title="Delete Application"
+                              >
+                                <i className="fas fa-trash"></i>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
 
         </div>
       </div>
+
+      {/* Create Job Modal */}
+      {showCreateJobModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '16px' }}>
+          <div style={{ backgroundColor: '#16161a', border: '1px solid #2d2d37', borderRadius: '12px', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', padding: '24px', color: '#fff' }}>
+            <div className="d-flex justify-content-between align-items-center mb-4 pb-2" style={{ borderBottom: '1px solid #232329' }}>
+              <h5 className="m-0 fw-bold"><i className="fas fa-plus-circle text-success me-2"></i> Create New Job Requisition</h5>
+              <button onClick={() => setShowCreateJobModal(false)} className="btn btn-sm btn-outline-secondary text-white">
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateJobSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '13.5px' }}>
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label text-white-50">Job Title *</label>
+                  <input type="text" name="jobTitle" className="form-control bg-dark border-secondary text-white" required value={newJob.jobTitle} onChange={handleInputChange} placeholder="e.g. Senior React Developer" />
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label text-white-50">Department *</label>
+                  <input type="text" name="department" className="form-control bg-dark border-secondary text-white" required value={newJob.department} onChange={handleInputChange} placeholder="e.g. Engineering" />
+                </div>
+              </div>
+
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label text-white-50">Experience Required *</label>
+                  <input type="text" name="experienceRequired" className="form-control bg-dark border-secondary text-white" required value={newJob.experienceRequired} onChange={handleInputChange} placeholder="e.g. 2-4 Years" />
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label text-white-50">Offered CTC (₹) *</label>
+                  <input type="number" name="offeredCTC" className="form-control bg-dark border-secondary text-white" required value={newJob.offeredCTC} onChange={handleInputChange} placeholder="e.g. 600000" />
+                </div>
+              </div>
+
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label text-white-50">Location *</label>
+                  <input type="text" name="location" className="form-control bg-dark border-secondary text-white" required value={newJob.location} onChange={handleInputChange} placeholder="e.g. Noida / Remote" />
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label text-white-50">Number of Openings *</label>
+                  <input type="number" name="noOfOpenings" min="1" className="form-control bg-dark border-secondary text-white" required value={newJob.noOfOpenings} onChange={handleInputChange} />
+                </div>
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label text-white-50">Closing Date *</label>
+                <input type="date" name="closingDate" className="form-control bg-dark border-secondary text-white" required value={newJob.closingDate} onChange={handleInputChange} />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label text-white-50">Job Description *</label>
+                <textarea name="jobDescription" rows="4" className="form-control bg-dark border-secondary text-white" required value={newJob.jobDescription} onChange={handleInputChange} placeholder="Enter comprehensive job roles and requirements..."></textarea>
+              </div>
+
+              <div className="form-check mb-3">
+                <input type="checkbox" name="isActive" id="createIsActive" className="form-check-input" checked={newJob.isActive} onChange={handleInputChange} />
+                <label className="form-check-label text-white-50" htmlFor="createIsActive">Active Listing immediately</label>
+              </div>
+
+              <div className="d-flex justify-content-end gap-2 pt-2" style={{ borderBottom: '1px solid #232329' }}>
+                <button type="button" onClick={() => setShowCreateJobModal(false)} className="btn btn-outline-secondary btn-sm text-white px-3">Cancel</button>
+                <button type="submit" className="btn btn-success btn-sm px-4 fw-bold" disabled={isSubmitting}>
+                  {isSubmitting ? 'Creating...' : 'Publish Job'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Job Modal */}
+      {showEditJobModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '16px' }}>
+          <div style={{ backgroundColor: '#16161a', border: '1px solid #2d2d37', borderRadius: '12px', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', padding: '24px', color: '#fff' }}>
+            <div className="d-flex justify-content-between align-items-center mb-4 pb-2" style={{ borderBottom: '1px solid #232329' }}>
+              <h5 className="m-0 fw-bold"><i className="fas fa-edit text-warning me-2"></i> Edit Job Requisition</h5>
+              <button onClick={() => setShowEditJobModal(false)} className="btn btn-sm btn-outline-secondary text-white">
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateJobSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '13.5px' }}>
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label text-white-50">Job Title *</label>
+                  <input type="text" name="jobTitle" className="form-control bg-dark border-secondary text-white" required value={editJobData.jobTitle} onChange={handleEditInputChange} />
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label text-white-50">Department *</label>
+                  <input type="text" name="department" className="form-control bg-dark border-secondary text-white" required value={editJobData.department} onChange={handleEditInputChange} />
+                </div>
+              </div>
+
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label text-white-50">Experience Required *</label>
+                  <input type="text" name="experienceRequired" className="form-control bg-dark border-secondary text-white" required value={editJobData.experienceRequired} onChange={handleEditInputChange} />
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label text-white-50">Offered CTC (₹) *</label>
+                  <input type="number" name="offeredCTC" className="form-control bg-dark border-secondary text-white" required value={editJobData.offeredCTC} onChange={handleEditInputChange} />
+                </div>
+              </div>
+
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label text-white-50">Location *</label>
+                  <input type="text" name="location" className="form-control bg-dark border-secondary text-white" required value={editJobData.location} onChange={handleEditInputChange} />
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label text-white-50">Number of Openings *</label>
+                  <input type="number" name="noOfOpenings" min="1" className="form-control bg-dark border-secondary text-white" required value={editJobData.noOfOpenings} onChange={handleEditInputChange} />
+                </div>
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label text-white-50">Closing Date *</label>
+                <input type="date" name="closingDate" className="form-control bg-dark border-secondary text-white" required value={editJobData.closingDate} onChange={handleEditInputChange} />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label text-white-50">Job Description *</label>
+                <textarea name="jobDescription" rows="4" className="form-control bg-dark border-secondary text-white" required value={editJobData.jobDescription} onChange={handleEditInputChange}></textarea>
+              </div>
+
+              <div className="form-check mb-3">
+                <input type="checkbox" name="isActive" id="editIsActive" className="form-check-input" checked={editJobData.isActive} onChange={handleEditInputChange} />
+                <label className="form-check-label text-white-50" htmlFor="editIsActive">Active Listing</label>
+              </div>
+
+              <div className="d-flex justify-content-end gap-2 pt-2" style={{ borderBottom: '1px solid #232329' }}>
+                <button type="button" onClick={() => setShowEditJobModal(false)} className="btn btn-outline-secondary btn-sm text-white px-3">Cancel</button>
+                <button type="submit" className="btn btn-warning btn-sm px-4 fw-bold text-dark" disabled={isSubmitting}>
+                  {isSubmitting ? 'Updating...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
