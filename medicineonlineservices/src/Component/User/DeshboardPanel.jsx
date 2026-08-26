@@ -19,7 +19,6 @@ export default function DeshboardPanel() {
   // --- UI Dropdown States ---
   const [masterDropdownOpen, setMasterDropdownOpen] = useState(false);
   const [listsDropdownOpen, setListsDropdownOpen] = useState(false);
-  const [supportDropdownOpen, setSupportDropdownOpen] = useState(false);
 
   // --- Pagination States (7 elements per page) ---
   const [currentPage, setCurrentPage] = useState(1);
@@ -93,10 +92,7 @@ export default function DeshboardPanel() {
     try {
       const res = await axios.get(
         "https://ecommerencesite.onrender.com/api/MEDICINE/AllListMedicineProduct"
-     // "http://localhost:5256/api/MEDICINE/AllListMedicineProduct"
       );
-
-      console.log("API Full Response:", res.data);
 
       const rawData = Array.isArray(res.data) 
         ? res.data 
@@ -164,8 +160,7 @@ export default function DeshboardPanel() {
 
     try {
       const response = await axios.post(
-      //  "http://localhost:5256/api/MEDICINE/UploadExcel",
-      'https://ecommerencesite.onrender.com/api/MEDICINE/UploadExcel',
+        'https://ecommerencesite.onrender.com/api/MEDICINE/UploadExcel',
         formData, 
         {
           headers: {
@@ -253,7 +248,6 @@ export default function DeshboardPanel() {
       UnitPrice: parseFloat(currentMed.unitPrice) || 0,
       Quantity: parseInt(currentMed.quantity) || 0,
       ExpiryDate: finalExpiryDate, 
-      // Fix: Agar currentMed.image khali ya undefined hai, toh purani image ya placeholder bhejein
       Image: currentMed.image ? String(currentMed.image) : "", 
       ItemMedicine: String(currentMed.itemMedicine || "N/A").trim(),
       Type: String(currentMed.type || "N/A").trim(),
@@ -356,35 +350,13 @@ export default function DeshboardPanel() {
               <div className="position-relative ms-3 mt-1 d-flex flex-column" style={{ paddingLeft: '8px', fontSize: '13px' }}>
                 <div className="position-absolute" style={{ left: '6px', top: '0', bottom: '14px', width: '1.5px', backgroundColor: '#2d2d37' }}></div>
                 
-                <Link to="/adminissuetype" className={getSubLinkClass("/adminissuetype")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminissuetype' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  Add Item Type
-                </Link>
-
-                <Link to="/adminmasterassignedto" className={getSubLinkClass("/adminmasterassignedto")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminmasterassignedto' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  AddAssignedTO
-                </Link>
-                <Link to="/addadmintypes" className={getSubLinkClass("/addadmintypes")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/addadmintypes' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  AddAdminTypes
-                </Link>
-                <Link to="/languagematerpanels" className={getSubLinkClass("/languagematerpanels")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/languagematerpanels' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  Language Master           
-                </Link>
-                <Link to="/statenamemasters" className={getSubLinkClass("/statenamemasters")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/statenamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  StateName Master           
-                </Link>
-                <Link to="/citynamemasters" className={getSubLinkClass("/citynamemasters")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/citynamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  CityName Master           
-                </Link> 
-                <Link to="/addaccountmastertypes" className={getSubLinkClass("/addaccountmastertypes")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/addaccountmastertypes' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  Accountant Master Types             
-                </Link> 
+                <Link to="/adminissuetype" className={getSubLinkClass("/adminissuetype")}>Add Item Type</Link>
+                <Link to="/adminmasterassignedto" className={getSubLinkClass("/adminmasterassignedto")}>AddAssignedTO</Link>
+                <Link to="/addadmintypes" className={getSubLinkClass("/addadmintypes")}>AddAdminTypes</Link>
+                <Link to="/languagematerpanels" className={getSubLinkClass("/languagematerpanels")}>Language Master</Link>
+                <Link to="/statenamemasters" className={getSubLinkClass("/statenamemasters")}>StateName Master</Link>
+                <Link to="/citynamemasters" className={getSubLinkClass("/citynamemasters")}>CityName Master</Link> 
+                <Link to="/addaccountmastertypes" className={getSubLinkClass("/addaccountmastertypes")}>Accountant Master Types</Link> 
               </div>
             )}
           </div>
@@ -522,10 +494,7 @@ export default function DeshboardPanel() {
                         imageUrl = imgValue;
                       } else {
                         const cleanName = imgValue.replace(/^uploads[\\/]/, '').replace(/^\/+/, '');
-                        // FIXED: Corrected string interpolation using proper backticks (``) instead of quotes ("")
-                        imageUrl = 
-                        'https://ecommerencesite.onrender.com/uploads/${encodeURIComponent(cleanName)}';
-                       // `http://localhost:5256/uploads/${encodeURIComponent(cleanName)}`;
+                        imageUrl = `https://ecommerencesite.onrender.com/uploads/${encodeURIComponent(cleanName)}`;
                       }
 
                       return (
