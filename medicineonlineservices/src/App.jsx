@@ -5,7 +5,7 @@ import { CartProvider } from "./Component/User/CartContext.jsx";
 import Login from "./Component/Login.jsx";
 import Registeration from "./Component/Registeration.jsx";
 import Header from "./Component/User/Header.jsx";
-import DeshboardPanel from "./Component/User/DeshboardPanel.jsx";
+ import DeshboardPanel from "./Component/User/DeshboardPanel.jsx";
 import Contact from "./Component/Contact.jsx";
 import Medicine from "./Component/Admin/Medicine.jsx";
 import Dashboard from "./Component/DeshboardsMedicine/Dashboard.jsx";
@@ -59,6 +59,16 @@ import DoctorsPanel from "./Component/Admin/DoctorsPanel.jsx";
 import LanguageMasterPanel from "./Component/Admin/MASTER/LanguageMasterPanel.jsx";
 import StateNameMaster from "./Component/Admin/MASTER/StateNameMaster.jsx";
 import CityNameMaster from "./Component/Admin/MASTER/CityNameMaster.jsx";
+import HiringDATALIst from "./Component/Admin/HiringDATALIst.jsx";
+import ACCOUNTANTMANAGERPANEL from "./Component/Admin/ACCOUNTANTMANAGERPANEL.jsx";
+import AccountantManagerPanelLists from "./Component/Admin/AccountantManagerPanelLists.jsx";
+import AddAccountMasterType from "./Component/Admin/MASTER/AddAccountMasterType.jsx";
+import DeliveryPersonAssignto from "./Component/Admin/MASTER/DeliveryPersonAssignto.jsx";
+import HrAdminLIst from "./Component/Admin/HrAdminLIst.jsx";
+// import OfficeExecutivePanel from "./Component/Admin/OfficeExecutivePanel.jsx";
+// import AdminMedicineList from "./ADMIN LIST/AdminMedicineList.jsx";
+// import BankMasterList from "./ADMIN LIST/BankMasterList.jsx";
+// import HRPANEL from "./Component/Admin/HRPANEL.jsx";
 
 
 function PrivateRoute({ children }) {
@@ -105,6 +115,9 @@ if (loading) {
         <Route path="/adminlogin" element={<AdminLogin />} />
         <Route path="/admindashboard" element={<AdminDashboard />} />
         <Route path="/deshboardpanel/medicines" element={<Medicine />} />
+        {/* <Route path="/officeexecutivepanels/medicines" element={<Medicine />} />
+                        <Route Path="/adminmedicinelists/medicines" element={<Medicine />} /> */}
+        
         <Route path="/deliveryaddress" element={<DeliveryAddress />} />
         <Route path="/medicinelist" element={<MedicineList />} /> 
  <Route path="/customerlists" element={<CustomerList />} />
@@ -169,6 +182,25 @@ if (loading) {
 <Route path="/doctorpanels" element={<DoctorsPanel />} />
 
 <Route path="/languagematerpanels" element={<LanguageMasterPanel />} /> 
+
+{/* <Route path="/hrpanels" element={<HRPANEL />} /> */}
+
+<Route path="/hrdatalists" element={<HiringDATALIst />} />
+<Route path="/accountantmanagerplanes" element={<ACCOUNTANTMANAGERPANEL />} />
+<Route path="/accountmanagerplanelists" element={<AccountantManagerPanelLists />} />
+<Route path="/addaccountmastertypes" element={<AddAccountMasterType />} />
+<Route path="/deliverypersonassigntos" element={<DeliveryPersonAssignto />} /> 
+{/* //hradminlist */}
+<Route path="/hradminlists" element={<HrAdminLIst />} />
+
+
+{/* <Route path="/officeexecutivepanels" element={<OfficeExecutivePanel />} /> */}
+
+
+
+{/* // only admin profile show the list ,edit, delete,searching ,export and import data  show  */}
+{/* <Route path="/adminmedicinelists" element={<AdminMedicineList/>} />
+<Route path="/adminbanklists" element={<BankMasterList />}/> */}
         </Routes>
 
     </CartProvider>

@@ -93,9 +93,14 @@ export default function DeshboardPanel() {
     try {
       const res = await axios.get(
         "https://ecommerencesite.onrender.com/api/MEDICINE/AllListMedicineProduct"
+     // "http://localhost:5256/api/MEDICINE/AllListMedicineProduct"
       );
 
-      const rawData = res.data?.lsTmedicines || res.data?.listMedicine || [];
+      console.log("API Full Response:", res.data);
+
+      const rawData = Array.isArray(res.data) 
+        ? res.data 
+        : (res.data?.lsTmedicines || res.data?.listMedicine || res.data?.data || res.data?.result || []);
 
       const normalized = rawData.map(m => ({
         id: m.id || m.Id || m._id || 0,
@@ -159,7 +164,8 @@ export default function DeshboardPanel() {
 
     try {
       const response = await axios.post(
-        "https://ecommerencesite.onrender.com/api/MEDICINE/UploadExcel",  
+      //  "http://localhost:5256/api/MEDICINE/UploadExcel",
+      'https://ecommerencesite.onrender.com/api/MEDICINE/UploadExcel',
         formData, 
         {
           headers: {
@@ -169,16 +175,16 @@ export default function DeshboardPanel() {
       );
 
       if (response.status === 200 || response.data?.success) {
-        alert("बधाई हो! एक्सेल फ़ाइल सफलतापूर्वक अपलोड हो गई है।");
+        alert("Congratulations! The Excel file has been successfully uploaded.");
         fetchData(); 
       } else {
-        alert("अपलोड फेल हुआ: " + (response.data?.message || "अज्ञान सर्वर रिस्पॉन्स"));
+        alert("The Excel file has failed to upload: " + (response.data?.message || "Unknown server response"));
       }
 
     } catch (err) {
       console.error("Excel Upload Controller Error:", err);
       const serverError = err.response?.data?.error || err.response?.data?.message || err.message;
-      alert("सर्वर एरर: " + serverError);
+      alert("ERROR SERVER: " + serverError);
     } finally {
       setUploading(false);
       e.target.value = ""; 
@@ -223,8 +229,8 @@ export default function DeshboardPanel() {
 
     if (!ddMmYyyyRegex.test(finalExpiryDate)) {
       if (finalExpiryDate.includes("-")) {
-        const datePart = finalExpiryDate.split("T")[0];
-        const parts = datePart.split("-");
+        const datePath = finalExpiryDate.split("T")[0];
+        const parts = datePath.split("-");
         if (parts.length === 3) {
           const year = parts[0];
           const month = parts[1].padStart(2, '0');
@@ -247,7 +253,8 @@ export default function DeshboardPanel() {
       UnitPrice: parseFloat(currentMed.unitPrice) || 0,
       Quantity: parseInt(currentMed.quantity) || 0,
       ExpiryDate: finalExpiryDate, 
-      Image: currentMed.image ? String(currentMed.image) : "https://via.placeholder.com/300x300.png?text=Medicine+Image", 
+      // Fix: Agar currentMed.image khali ya undefined hai, toh purani image ya placeholder bhejein
+      Image: currentMed.image ? String(currentMed.image) : "", 
       ItemMedicine: String(currentMed.itemMedicine || "N/A").trim(),
       Type: String(currentMed.type || "N/A").trim(),
       MedicinesType: String(currentMed.medicinesType || "N/A").trim(), 
@@ -291,7 +298,7 @@ export default function DeshboardPanel() {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#121212' }}>
 
-      {/* प्रीमियम ट्री-स्ट्रक्चर साइडबार */}
+      {/* SIDEBAR */}
       <div style={{ 
         width: '280px', 
         backgroundColor: '#16161a', 
@@ -302,7 +309,6 @@ export default function DeshboardPanel() {
         overflowY: 'auto',
         borderRight: '1px solid #232329'
       }}>
-        {/* ब्रांड लोगो */}
         <div className="brand mb-4 px-2 d-flex align-items-center">
           <img src="/AKMedizostore.png" alt="logo" width="36px" className="me-2" />
           <h5 className="m-0 text-white fw-bold tracking-wide" style={{ letterSpacing: '0.5px' }}>
@@ -310,7 +316,6 @@ export default function DeshboardPanel() {
           </h5>
         </div>
 
-        {/* ग्लोबल शॉप स्टेटस स्विच */}
         <div className="px-2 mb-4">
           <div 
             onClick={handleShopToggle} 
@@ -325,7 +330,6 @@ export default function DeshboardPanel() {
           </div>
         </div>
 
-        {/* नेविगेशन लिंक्स */}
         <div className="d-flex flex-column gap-1">
           <span className="px-3 text-uppercase fw-bold text-muted" style={{ fontSize: '10px', letterSpacing: '1px' }}>Core Navigation</span>
           
@@ -336,8 +340,7 @@ export default function DeshboardPanel() {
 
           <hr style={{ borderTop: '1px solid #232329', margin: '12px 0' }} />
           
-          {/* 1. OPERATIONS CENTER DROPDOWN */}
-             <div className="mt-2">
+          <div className="mt-2">
             <div 
               onClick={() => setMasterDropdownOpen(!masterDropdownOpen)}
               className="d-flex align-items-center justify-content-between px-3 py-2 text-white-50 rounded user-select-none hover-sidebar-menu"
@@ -362,38 +365,31 @@ export default function DeshboardPanel() {
                   <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminmasterassignedto' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
                   AddAssignedTO
                 </Link>
-   <Link to="/doctorassignto" className={getSubLinkClass("/doctorassignto")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminmasterassignedto' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  AddDoctorAssignTo
-                </Link>
- <Link to="/addadmintypes" className={getSubLinkClass("/addadmintypes")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminmasterassignedto' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
+                <Link to="/addadmintypes" className={getSubLinkClass("/addadmintypes")}>
+                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/addadmintypes' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
                   AddAdminTypes
                 </Link>
- <Link to="/languagematerpanels" className={getSubLinkClass("/languagematerpanels")}>
-                                <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/languagematerpanels' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                                Language Master           
-                              </Link>
-<Link to="/statenamemasters" className={getSubLinkClass("/statenamemasters")}>
-                                <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/statenamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                                StateName Master           
-                              </Link>
-<Link to="/citynamemasters" className={getSubLinkClass("/citynamemasters")}>
-                                <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/citynamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                                CityName Master           
-                              </Link> 
-
-                              
-          
-          
+                <Link to="/languagematerpanels" className={getSubLinkClass("/languagematerpanels")}>
+                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/languagematerpanels' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
+                  Language Master           
+                </Link>
+                <Link to="/statenamemasters" className={getSubLinkClass("/statenamemasters")}>
+                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/statenamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
+                  StateName Master           
+                </Link>
+                <Link to="/citynamemasters" className={getSubLinkClass("/citynamemasters")}>
+                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/citynamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
+                  CityName Master           
+                </Link> 
+                <Link to="/addaccountmastertypes" className={getSubLinkClass("/addaccountmastertypes")}>
+                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/addaccountmastertypes' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
+                  Accountant Master Types             
+                </Link> 
               </div>
             )}
           </div>
-        
 
-          {/* 2. MASTER CONFIGURATION DROPDOWN */}
-       
-            <div>
+          <div>
             <div 
               onClick={() => setListsDropdownOpen(!listsDropdownOpen)}
               className="d-flex align-items-center justify-content-between px-3 py-2 text-white-50 rounded user-select-none hover-sidebar-menu"
@@ -409,30 +405,26 @@ export default function DeshboardPanel() {
               <div className="position-relative ms-3 mt-1 d-flex flex-column" style={{ paddingLeft: '8px', fontSize: '13px' }}>
                 <div className="position-absolute" style={{ left: '6px', top: '0', bottom: '14px', width: '1.5px', backgroundColor: '#2d2d37' }}></div>
                 
-                 <li><Link to="/deshboardpanel" className="btn btn-outline-success w-100 mb-2 text-start">Dashboard</Link></li> 
-          <li><Link to="/customerlists" className="btn btn-outline-success w-100 mb-2 text-start">CustomerLIST</Link></li>
-          <li><Link to="/" className="btn btn-outline-success w-100 mb-2 text-start">OrderPaymentList</Link></li>
-          <li><Link to="/" className="btn btn-outline-success w-100 mb-2 text-start">OrderStatusLIST</Link></li>
-          <li><Link to="/adminFeedbackcustomerlists" className="btn btn-success w-100 mb-2 text-start">Feedback List</Link></li>
-          <li><Link to="/adminloginlists" className="btn btn-outline-success w-100 mb-2 text-start">Admin Login List</Link></li>
-          <li><Link to="/adminUnavailableMedicines" className="btn btn-outline-success w-100 mb-2 text-start">UnavailableMedicineList</Link></li>
-          <li><Link to="/adminbankselectdetailss" className="btn btn-outline-success w-100 mb-2 text-start">bankselectMaster </Link></li>
-          <li><Link to="/admincreditdetails" className="btn btn-outline-success w-100 mb-2 text-start">BankCreditAmountDetails </Link></li> 
-          <li><Link to="/adminregisterationform" className="btn btn-outline-success w-100 mb-2 text-start">Registeartion Form </Link></li>
-          {/* <li><Link to="/adminCustomerHelpIssueLists" className="btn btn-outline-success w-100 mb-2 text-start">AustomerHelpIssueList </Link></li> */}
-          <li><Link to="/adminLivenessimageLists" className="btn btn-outline-success w-100 mb-2 text-start">LivenessimageList </Link></li>
-          {/* <li><Link to="/adminsupportticketlist" className="btn btn-outline-success w-100 mb-2 text-start">AdminSupportTicketList </Link></li> */}
-          <li><Link to="/admincustomerticketraiselist" className="btn btn-outline-success w-100 mb-2 text-start">customerticketraiselist </Link></li>
-         <li><Link to="/customer-bankdetailsrefund" className="btn btn-outline-success w-100 mb-2 text-start text-decoration-none">Bank Details RefundList</Link></li>
-          <li><Link to="/customerdeliveryaddresslist" className="btn btn-outline-success w-100 mb-2 text-start">Customer_DeliveryAddressList</Link> </li>
-          <li><Link to="/adminlivetracker" className="btn btn-outline-success w-100 mb-2 text-start">Livetracker</Link> </li>
- 
-                 <li><Link to="/doctor_patientdetailslists" className="btn btn-outline-success w-100 mb-2 text-start">Doctor_PatientdetailsLists    </Link> </li>
- <li><Link to="/hiringcandidteapplieds" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATA</Link></li>
-          </div>
+                <Link to="/deshboardpanel" className="btn btn-outline-success w-100 mb-2 text-start">Dashboard</Link> 
+                <Link to="/customerlists" className="btn btn-outline-success w-100 mb-2 text-start">CustomerLIST</Link>
+                <Link to="/adminFeedbackcustomerlists" className="btn btn-success w-100 mb-2 text-start">Feedback List</Link>
+                <Link to="/adminloginlists" className="btn btn-outline-success w-100 mb-2 text-start">Admin Login List</Link>
+                <Link to="/adminUnavailableMedicines" className="btn btn-outline-success w-100 mb-2 text-start">UnavailableMedicineList</Link>
+                <Link to="/adminbankselectdetailss" className="btn btn-outline-success w-100 mb-2 text-start">bankselectMaster </Link>
+                <Link to="/admincreditdetails" className="btn btn-outline-success w-100 mb-2 text-start">BankCreditAmountDetails </Link> 
+                <Link to="/adminregisterationform" className="btn btn-outline-success w-100 mb-2 text-start">Registration Form </Link>
+                <Link to="/adminLivenessimageLists" className="btn btn-outline-success w-100 mb-2 text-start">LivenessimageList </Link>
+                <Link to="/admincustomerticketraiselist" className="btn btn-outline-success w-100 mb-2 text-start">customerticketraiselist </Link>
+                <Link to="/customer-bankdetailsrefund" className="btn btn-outline-success w-100 mb-2 text-start text-decoration-none">Bank Details RefundList</Link>
+                <Link to="/customerdeliveryaddresslist" className="btn btn-outline-success w-100 mb-2 text-start">Customer_DeliveryAddressList</Link> 
+                <Link to="/adminlivetracker" className="btn btn-outline-success w-100 mb-2 text-start">Livetracker</Link> 
+                <Link to="/doctor_patientdetailslists" className="btn btn-outline-success w-100 mb-2 text-start">Doctor_PatientdetailsLists</Link> 
+                <Link to="/hrdatalists" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATALIst</Link>
+                <Link to="/accountmanagerplanelists" className="btn btn-outline-success w-100 mb-2 text-start">AccountantManagerPanelLists</Link>
+              </div>
             )}
           </div>
-          {/* टर्मिनेट / लॉगआउट एक्शन */}
+
           <div className="mt-4 pt-3" style={{ borderTop: '1px solid #232329' }}>
             <button 
               type="button" 
@@ -452,7 +444,6 @@ export default function DeshboardPanel() {
           <h2>Medicines Management</h2>
           <div className="d-flex align-items-center gap-2">
             
-            {/* DYNAMIC FILE UPLOADER */}
             <label className={`btn btn-success btn-sm px-2 mb-0 d-flex align-items-center gap-2 ${uploading ? 'disabled' : ''}`} style={{ cursor: 'pointer' }}>
               {uploading ? "Uploading..." : "Upload All Medicine"} 
               {uploading ? <span className="spinner-border spinner-border-sm"></span> : <i className="fa-solid fa-upload"></i>}
@@ -519,7 +510,42 @@ export default function DeshboardPanel() {
                   <td>{med.itemMedicine}</td>
                   <td className="text-success">{med.medicinesType}</td>
                   <td>
-                    <img src={med.image || "https://placehold.co/40x40"} alt="img" width="40" height="40" style={{ objectFit: 'cover', borderRadius: '4px' }} />
+                    {(() => {
+                      const imgValue = med?.Image || med?.image;
+
+                      if (!imgValue || imgValue.includes('placeholder.com')) {
+                        return <span style={{ fontSize: '11px', color: '#888' }}>No Image</span>;
+                      }
+
+                      let imageUrl = imgValue;
+                      if (imgValue.startsWith('data:image') || imgValue.startsWith('http') || imgValue.startsWith('blob:')) {
+                        imageUrl = imgValue;
+                      } else {
+                        const cleanName = imgValue.replace(/^uploads[\\/]/, '').replace(/^\/+/, '');
+                        // FIXED: Corrected string interpolation using proper backticks (``) instead of quotes ("")
+                        imageUrl = 
+                        "https://ecommerencesite.onrender.com/uploads/${encodeURIComponent(cleanName)}";
+                       // `http://localhost:5256/uploads/${encodeURIComponent(cleanName)}`;
+                      }
+
+                      return (
+                        <img 
+                          src={imageUrl} 
+                          alt="medicine" 
+                          style={{ 
+                            width: '45px', 
+                            height: '45px', 
+                            objectFit: 'cover', 
+                            borderRadius: '4px',
+                            border: '1px solid #555'
+                          }}
+                          onError={(e) => {
+                            e.target.onerror = null; 
+                            e.target.src = "https://cdn-icons-png.flaticon.com/512/822/822148.png"; 
+                          }}
+                        />
+                      );
+                    })()}
                   </td>
                   <td className="text-center">
                     <button type="button" className="btn btn-sm btn-outline-primary me-1" onClick={() => openEditModal(med)}>Edit</button>

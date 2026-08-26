@@ -1,9 +1,10 @@
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 
-export default function AdminLoginList() {
+export default function HrAdminLIst() {
   const [users, setUsers] = useState([]);
   const [adminTypes, setAdminTypes] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -259,11 +260,11 @@ export default function AdminLoginList() {
         <div className="brand mb-4 px-2 d-flex align-items-center">
           <img src="/AKMedizostore.png" alt="logo" width="36px" className="me-2" />
           <h5 className="m-0 text-white fw-bold tracking-wide" style={{ letterSpacing: '0.5px' }}>
-            AKMedizo <span className="text-success" style={{ fontSize: '11px' }}>Admin</span>
+            AKMedizo <span className="text-success" style={{ fontSize: '11px' }}></span>
           </h5>
         </div>
 
-        <div className="px-2 mb-4">
+        {/* <div className="px-2 mb-4">
           <div 
             onClick={handleShopToggle} 
             className="p-2.5 rounded d-flex align-items-center justify-content-between transition-all" 
@@ -275,15 +276,15 @@ export default function AdminLoginList() {
             </div>
             <i className={`fas fa-2xl ${isShopOpen ? "fa-toggle-on text-success" : "fa-toggle-off text-danger"}`} style={{ fontSize: '24px' }}></i>
           </div>
-        </div>
+        </div> */}
 
         <div className="d-flex flex-column gap-1">
           <span className="px-3 text-uppercase fw-bold text-muted" style={{ fontSize: '10px', letterSpacing: '1px' }}>Core Navigation</span>
           
-          <Link to="/deshboardpanel" className={getNavLinkClass("/deshboardpanel")}>
+          {/* <Link to="/deshboardpanel" className={getNavLinkClass("/deshboardpanel")}>
             <i className="fas fa-chart-pie" style={{ fontSize: '13.5px' }}></i>
             <span style={{ fontSize: '13.5px' }}>Dashboard Matrix</span>
-          </Link>
+          </Link> */}
 
           <hr style={{ borderTop: '1px solid #232329', margin: '12px 0' }} />
           
@@ -302,30 +303,10 @@ export default function AdminLoginList() {
             {masterDropdownOpen && (
               <div className="position-relative ms-3 mt-1 d-flex flex-column" style={{ paddingLeft: '8px', fontSize: '13px' }}>
                 <div className="position-absolute" style={{ left: '6px', top: '0', bottom: '14px', width: '1.5px', backgroundColor: '#2d2d37' }}></div>
-                <Link to="/adminissuetype" className={getSubLinkClass("/adminissuetype")}>Add Item Type</Link>
-                <Link to="/adminmasterassignedto" className={getSubLinkClass("/adminmasterassignedto")}>AddAssignedTO</Link>
-                {/* <Link to="/doctorassignto" className={getSubLinkClass("/doctorassignto")}>AddDoctorAssignTo</Link> */}
-                <Link to="/addadmintypes" className={getSubLinkClass("/addadmintypes")}>AddAdminTypes</Link>
-
-                 <Link to="/languagemaster" className={getSubLinkClass("/languagemaster")}>
-                                {/* <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/languagemaster' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div> */}
-                                Language Master           
-                              </Link>
-
-
-                                       <Link to="/statenamemasters" className={getSubLinkClass("/statenamemasters")}>
-                                {/* <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/statenamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div> */}
-                                         StateName Master  
-                              </Link>
-<Link to="/citynamemasters" className={getSubLinkClass("/citynamemasters")}>
-                                {/* <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/citynamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div> */}
-                                CityName Master           
-                              </Link> 
-
-                                   <Link to="/addaccountmastertypes" className={getSubLinkClass("/addaccountmastertypes")}>
-                                <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/addaccountmastertypes' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                                Accountant Master Types             
-                              </Link> 
+                
+                <Link to="/doctorassignto" className={getSubLinkClass("/doctorassignto")}>AddDoctorAssignTo</Link>
+                                 <Link to="/deliverypersonassigntos" className={getSubLinkClass("/deliverypersonassigntos")}>AddDeliveryPersonAssignTo</Link>
+                
               </div>
             )}
           </div>
@@ -344,22 +325,12 @@ export default function AdminLoginList() {
 
             {listsDropdownOpen && (
               <div className="position-relative ms-3 mt-1 d-flex flex-column gap-1" style={{ paddingLeft: '8px', fontSize: '13px' }}>
-                <Link to="/deshboardpanel" className="btn btn-outline-success w-100 mb-2 text-start">Dashboard</Link>
-                <Link to="/customerlists" className="btn btn-outline-success w-100 mb-2 text-start">CustomerLIST</Link>
-                <Link to="/adminFeedbackcustomerlists" className="btn btn-success w-100 mb-2 text-start">Feedback List</Link>
-                <Link to="/adminloginlists" className="btn btn-outline-success w-100 mb-2 text-start">Admin Login List</Link>
-                <Link to="/adminUnavailableMedicines" className="btn btn-outline-success w-100 mb-2 text-start">UnavailableMedicineList</Link>
-                <Link to="/adminbankselectdetailss" className="btn btn-outline-success w-100 mb-2 text-start">bankselectMaster</Link>
-                <Link to="/admincreditdetails" className="btn btn-outline-success w-100 mb-2 text-start">BankCreditAmountDetails</Link> 
-                {/* <Link to="/adminregisterationform" className="btn btn-outline-success w-100 mb-2 text-start">Registeartion Form</Link> */}
-                <Link to="/adminLivenessimageLists" className="btn btn-outline-success w-100 mb-2 text-start">LivenessimageList</Link>
-                <Link to="/admincustomerticketraiselist" className="btn btn-outline-success w-100 mb-2 text-start">customerticketraiselist</Link>
-                <Link to="/customer-bankdetailsrefund" className="btn btn-outline-success w-100 mb-2 text-start text-decoration-none">Bank Details RefundList</Link>
-                <Link to="/customerdeliveryaddresslist" className="btn btn-outline-success w-100 mb-2 text-start">Customer_DeliveryAddressList</Link>
-                <Link to="/adminlivetracker" className="btn btn-outline-success w-100 mb-2 text-start">Livetracker</Link>
-                <Link to="/doctor_patientdetailslists" className="btn btn-outline-success w-100 mb-2 text-start">Doctor_PatientdetailsLists</Link>
-<li><Link to="/hrdatalists" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATALIst</Link></li>
- <li><Link to="/accountmanagerplanelists" className="btn btn-outline-success w-100 mb-2 text-start">AccountantManagerPanelLists</Link></li>              </div>
+
+                <Link to="/adminregisterationform" className="btn btn-outline-success w-100 mb-2 text-start">Registeartion Form</Link>
+                 <li><Link to="/hradminlists" className="btn btn-outline-success w-100 mb-2 text-start">HrAdminReg.List</Link></li>
+                              
+                              <li><Link to="/hiringcandidteapplieds" className="btn btn-success w-100 mb-1 text-start btn-sm fw-bold">HiringDATA</Link></li> 
+   </div>
             )}
           </div>
 

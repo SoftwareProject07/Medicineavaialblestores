@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./Component/Login.jsx";
 import Registeration from "./Component/Registeration.jsx";
 import Header from './User/Header.jsx';
-import DeshboardPanel from './User/DeshboardPanel.jsx';
+ import DeshboardPanel from './User/DeshboardPanel.jsx';
 import Contact from './Contact.jsx';
 import Medicine from "./Admin/Medicine.jsx";
 import Dashboard from './DeshboardsMedicine/Dashboard.jsx';
@@ -57,6 +57,20 @@ import DoctorsPanel from './Admin/DoctorsPanel.jsx';
 import LanguageMasterPanel from './Admin/MASTER/LanguageMasterPanel.jsx';
 import StateNameMaster from './Admin/MASTER/StateNameMaster.jsx';
 import CityNameMaster from './Admin/MASTER/CityNameMaster.jsx';
+import HiringDATALIst from './Admin/HiringDATALIst.jsx';
+import ACCOUNTANTMANAGERPANEL from './Admin/ACCOUNTANTMANAGERPANEL.jsx';
+import AccountantManagerPanelLists from './Admin/AccountantManagerPanelLists.jsx';
+import AddAccountMasterType from './Admin/MASTER/AddAccountMasterType.jsx';
+import DeliveryPersonAssignto from './Admin/MASTER/DeliveryPersonAssignto.jsx';
+import HrAdminLIst from './Admin/HrAdminLIst.jsx';
+// import OfficeExecutivePanel from './Admin/OfficeExecutivePanel.jsx';
+// import AdminMedicineList from '../ADMIN LIST/AdminMedicineList.jsx';
+// import BankMasterList from '../ADMIN LIST/BankMasterList.jsx';
+// import HRPANEL from './Admin/HRPANEL.jsx';
+
+
+
+
 
 
 export default function Routerpage() {
@@ -70,7 +84,10 @@ export default function Routerpage() {
         <Route Path="/header" element={<Header/>}/>
         <Route Path="/deshboardpanel" element={<DeshboardPanel />}/>
         <Route Path="/contact" element={<Contact />}/>
-        <Route Path="/deshboardpanel/medicines" element={<Medicine />} />
+           <Route Path="/deshboardpanel/medicines" element={<Medicine />} />
+        {/* <Route Path="/officeexecutivepanels/medicines" element={<Medicine />} />
+                <Route Path="/adminmedicinelists/medicines" element={<Medicine />} /> */}
+
         <Route Path="/dashboards" element={<Dashboard />} />
         <Route Path="/admindashboard" element={<AdminDashboard  />} />
         <Route path="/cartitems" element={<CartItem />} />
@@ -140,7 +157,24 @@ export default function Routerpage() {
 <Route path="/deliveryorderpersonpanel" element={<DeliveryOrderPersonPanel />} />
 {/* //DoctorPanels */}
 <Route path="/doctorpanels" element={<DoctorsPanel />} />
+{/* <Route path="/hrpanels" element={<HRPANEL/>} */}
 <Route path="/languagematerpanels" element={<LanguageMasterPanel />} />
+
+
+<Route path="/hrdatalists" element={<HiringDATALIst />} />
+<Route path="/accountantmanagerplane" element={<ACCOUNTANTMANAGERPANEL />} />
+<Route path="/accountmanagerplanelists" element={<AccountantManagerPanelLists />} />  
+<Route path="/addaccountmastertypes"  element={<AddAccountMasterType />} />
+<Route path="/deliverypersonassigntos" element ={<DeliveryPersonAssignto />} /> 
+{/* //hradminlist */}
+<Route path="/hradminlists" element={<HrAdminLIst />} />
+{/* <Route path="/officeexecutivepanels"  element={<OfficeExecutivePanel/> } /> */}
+
+
+
+{/* // only admin profile show the list ,edit, delete,searching ,export and import data  show  */}
+{/* <Route path="/adminmedicinelists"  element={<AdminMedicineList />} />
+<Route path="/adminbanklists" element={<BankMasterList />}/> */}
     </BrowserRouter>
   );
 }

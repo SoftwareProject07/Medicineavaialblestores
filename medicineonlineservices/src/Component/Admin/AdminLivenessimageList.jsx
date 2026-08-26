@@ -95,6 +95,11 @@ export default function AdminLivenessimageList() {
                                 <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/citynamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
                                 CityName Master           
                               </Link> 
+
+                                   <Link to="/addaccountmastertypes" className={getSubLinkClass("/addaccountmastertypes")}>
+                                <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/addaccountmastertypes' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
+                                Accountant Master Types             
+                              </Link> 
                             </div>
                           )}
                         </div>
@@ -126,8 +131,8 @@ export default function AdminLivenessimageList() {
             <li>       <Link to="/doctor_patientdetailslists" className="btn btn-outline-success w-100 mb-1 text-start btn-sm" style={{ fontSize: '12px' }}>Doctor_PatientdetailsLists         
         </Link></li>
 
-         <li><Link to="/hiringcandidteapplieds" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATA</Link></li>
-
+<li><Link to="/hrdatalists" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATALIst</Link></li>
+ <li><Link to="/accountmanagerplanelists" className="btn btn-outline-success w-100 mb-2 text-start">AccountantManagerPanelLists</Link></li>
                                <li className="mt-3">
                                    <button onClick={() => navigate('/header')} className="btn btn-link text-danger text-decoration-none p-0">
                                        <i className="fas fa-sign-out-alt"></i> LogOut

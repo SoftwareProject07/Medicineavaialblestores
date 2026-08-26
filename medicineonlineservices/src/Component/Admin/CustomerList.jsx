@@ -155,15 +155,15 @@ export default function CustomerList() {
                   AddAssignedTO
                 </Link>
 
-
+{/* 
                 <Link to="/doctorassignto" className={getSubLinkClass("/doctorassignto")}>
                                   <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminmasterassignedto' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
                                   AddDoctorAssignTo
-                                </Link>
-                <Link to="/doctor_patientdetailslists" className={getSubLinkClass("/doctor_patientdetailslists")}>
+                                </Link> */}
+                {/* <Link to="/doctor_patientdetailslists" className={getSubLinkClass("/doctor_patientdetailslists")}>
                   <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminmasterassignedto' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
                   AddDoctorAssignTo
-                </Link>
+                </Link> */}
                 
                <Link to="/addadmintypes" className={getSubLinkClass("/addadmintypes")}>
                   <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminmasterassignedto' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
@@ -181,6 +181,11 @@ export default function CustomerList() {
 <Link to="/citynamemasters" className={getSubLinkClass("/citynamemasters")}>
                                 <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/citynamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
                                 CityName Master           
+                              </Link> 
+
+                                   <Link to="/addaccountmastertypes" className={getSubLinkClass("/addaccountmastertypes")}>
+                                <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/addaccountmastertypes' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
+                                Accountant Master Types             
                               </Link> 
               </div>
             )}
@@ -212,7 +217,7 @@ export default function CustomerList() {
                 <li><Link to="/adminUnavailableMedicines" className="btn btn-outline-success w-100 mb-2 text-start">UnavailableMedicineList</Link></li>
                 <li><Link to="/adminbankselectdetailss" className="btn btn-outline-success w-100 mb-2 text-start">bankselectMaster </Link></li>
                 <li><Link to="/admincreditdetails" className="btn btn-outline-success w-100 mb-2 text-start">BankCreditAmountDetails </Link></li> 
-                <li><Link to="/adminregisterationform" className="btn btn-outline-success w-100 mb-2 text-start">Registeartion Form </Link></li>
+                {/* <li><Link to="/adminregisterationform" className="btn btn-outline-success w-100 mb-2 text-start">Registeartion Form </Link></li> */}
                 <li><Link to="/adminLivenessimageLists" className="btn btn-outline-success w-100 mb-2 text-start">LivenessimageList </Link></li>
                 <li><Link to="/admincustomerticketraiselist" className="btn btn-outline-success w-100 mb-2 text-start">customerticketraiselist </Link></li>
                                   <li><Link to="/customer-bankdetailsrefund" className="btn btn-outline-success w-100 mb-2 text-start text-decoration-none">Bank Details Refund</Link></li>
@@ -221,8 +226,8 @@ export default function CustomerList() {
                   <li>    <Link to="/doctor_patientdetailslists" className="btn btn-outline-success w-100 mb-1 text-start btn-sm" style={{ fontSize: '12px' }}>Doctor_PatientdetailsLists         
           </Link></li> 
 
-           <li><Link to="/hiringcandidteapplieds" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATA</Link></li>
-
+<li><Link to="/hrdatalists" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATALIst</Link></li>
+ <li><Link to="/accountmanagerplanelists" className="btn btn-outline-success w-100 mb-2 text-start">AccountantManagerPanelLists</Link></li>
               </div>
             )}
           </div>

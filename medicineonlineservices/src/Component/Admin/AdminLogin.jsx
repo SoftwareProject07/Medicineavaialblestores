@@ -25,6 +25,18 @@ export default function AdminLogin() {
   const [deliveryUsername, setDeliveryUsername] = useState("");
   const [deliveryPassword, setDeliveryPassword] = useState("");
   const [deliveryRemark, setDeliveryRemark] = useState(false); 
+  const [AccountantRemark, setAccountantRemark] = useState(false);
+
+  // States for HR Login Form (Right Side)
+  const [hrUsername, setHrUsername] = useState("");
+  const [hrPassword, setHrPassword] = useState("");
+
+  // States for Accountant Manager Login Form (Right Side)
+  const [accountantUsername, setAccountantUsername] = useState("");
+  const [accountantPassword, setAccountantPassword] = useState("");
+// OfficeExcutive Login Form (Right Side)
+   const [officeExecutiveUsername, setOfficeExecutiveUsername] = useState("");
+  const [officeExecutivePassword, setOfficeExecutivePassword] = useState("");
 
   useEffect(() => {
     fetchAdminTypes();
@@ -51,7 +63,6 @@ export default function AdminLogin() {
     setGeneratedCaptcha(captcha);
   };
 
-  // Forgot Password SweetAlert Function
   const handleForgotPassword = (e) => {
     e.preventDefault();
     Swal.fire({
@@ -97,6 +108,16 @@ export default function AdminLogin() {
       Swal.fire("Access Denied", "Please use the Delivery Order Person Login form on the right side.", "warning");
       return;
     }
+    if (lowerType.includes("hr")) {
+      Swal.fire("Access Denied", "Please use the HR Login form on the right side.", "warning");
+      return;
+    }
+    //accountant
+
+     if (lowerType.includes("accountant")) {
+      Swal.fire("Access Denied", "Please use the accountant Login form on the right side.", "warning");
+      return;
+    }
 
     if (!emailOrMobile.trim() || !password.trim() || !selectedType.trim()) {
       Swal.fire("Warning", "Please enter Email/Mobile, Password, and select Role Type", "warning");
@@ -123,36 +144,29 @@ export default function AdminLogin() {
         { headers: { "Content-Type": "application/json" } }
       );
 
-      if (
-        response.data?.isSuccess ||
-        response.data?.success ||
-        response.data?.status
-      ) {
+      if (response.data?.isSuccess || response.data?.success || response.data?.status) {
         if (response.data.token) {
           localStorage.setItem("token", response.data.token);
         }
-
         Swal.fire({
           icon: "success",
           title: "Admin Login Successful",
-          text: "Welcome to DashboardPanel",
+          text: "Welcome to AdminPanel",
         }).then(() => navigate("/deshboardpanel"));
       } else {
         Swal.fire(
           "Admin Login Failed",
-          response.data?.responseMessage ||
-            response.data?.message ||
-            "Invalid credentials or incorrect Role Type selected.",
+          response.data?.responseMessage || response.data?.message || "Invalid credentials.",
           "error"
         );
       }
     } catch (error) {
       console.error(error);
-      Swal.fire("Server Error", "Please check your credentials and selected Role Type.", "error");
+      Swal.fire("Server Error", "Please check your credentials.", "error");
     }
   };
 
-  // Secure Doctor Login Handler
+  // Doctor Login Handler
   const handleDoctorLogin = async (e) => {
     e.preventDefault();
     if (!docUsername || !docPassword) {
@@ -164,26 +178,20 @@ export default function AdminLogin() {
       Email: docUsername,
       Password: docPassword,
       ROLE: "Doctors Login",
-      Remark: docRemark
+      Remark: String(docRemark)
     };
 
     try {
       const response = await axios.post(
         "https://ecommerencesite.onrender.com/api/AdminApi/LOGINAdmin", 
-        /// "http://localhost:5256/api/AdminApi/LOGINAdmin",  
         doctorData,
         { headers: { "Content-Type": "application/json" } }
       );
 
-      if (
-        response.data?.isSuccess ||
-        response.data?.success ||
-        response.data?.status
-      ) {
+      if (response.data?.isSuccess || response.data?.success || response.data?.status) {
         if (response.data.token) {
           localStorage.setItem("token", response.data.token);
         }
-
         Swal.fire({
           icon: "success",
           title: "Doctor Login Successful",
@@ -192,9 +200,7 @@ export default function AdminLogin() {
       } else {
         Swal.fire(
           "Doctor Login Failed",
-          response.data?.responseMessage ||
-            response.data?.message ||
-            "Invalid Doctor credentials!",
+          response.data?.responseMessage || response.data?.message || "Invalid credentials!",
           "error"
         );
       }
@@ -204,7 +210,7 @@ export default function AdminLogin() {
     }
   };
 
-  // Secure Delivery Order Person Login Handler
+  // Delivery Login Handler
   const handleDeliveryLogin = async (e) => {
     e.preventDefault();
     if (!deliveryUsername || !deliveryPassword) {
@@ -216,26 +222,21 @@ export default function AdminLogin() {
       Email: deliveryUsername,
       Password: deliveryPassword,
       ROLE: "DeliveryOrderPerson Login",
-      Remark: deliveryRemark
+      Remark: String(deliveryRemark)
+
     };
 
     try {
       const response = await axios.post(
         "https://ecommerencesite.onrender.com/api/AdminApi/LOGINAdmin",  
-     // "http://localhost:5256/api/AdminApi/LOGINAdmin",  
         deliveryData,
         { headers: { "Content-Type": "application/json" } }
       );
 
-      if (
-        response.data?.isSuccess ||
-        response.data?.success ||
-        response.data?.status
-      ) {
+      if (response.data?.isSuccess || response.data?.success || response.data?.status) {
         if (response.data.token) {
           localStorage.setItem("token", response.data.token);
         }
-
         Swal.fire({
           icon: "success",
           title: "Delivery Login Successful",
@@ -244,9 +245,7 @@ export default function AdminLogin() {
       } else {
         Swal.fire(
           "Delivery Login Failed",
-          response.data?.responseMessage ||
-            response.data?.message ||
-            "Invalid Delivery credentials!",
+          response.data?.responseMessage || response.data?.message || "Invalid credentials!",
           "error"
         );
       }
@@ -256,10 +255,153 @@ export default function AdminLogin() {
     }
   };
 
+  // HR Login Handler (Using selectedType automatically from left dropdown)
+  const handleHrLogin = async (e) => {
+    e.preventDefault();
+    if (!hrUsername || !hrPassword) {
+      Swal.fire("Warning", "Please enter Email/Mobile and Password for HR Login", "warning");
+      return;
+    }
+
+    // Automatically pick whatever role was chosen from the left dropdown (e.g. HRLOGIN)
+    const currentHrRole = selectedType.trim() ? selectedType : "HRLOGIN";
+
+    const hrData = {
+      Email: hrUsername,
+      Password: hrPassword,
+      ROLE: currentHrRole, 
+      Remark: "true"
+    };
+
+    try {
+      const response = await axios.post(
+        "https://ecommerencesite.onrender.com/api/AdminApi/LOGINAdmin",  
+        hrData,
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      if (response.data?.isSuccess || response.data?.success || response.data?.status) {
+        if (response.data.token) {
+          localStorage.setItem("token", response.data.token);
+        }
+        Swal.fire({
+          icon: "success",
+          title: "HR Login Successful",
+          text: "Welcome HR Partner!",
+        }).then(() => navigate("/hiringcandidteapplieds"));
+      } else {
+        Swal.fire(
+          "HR Login Failed",
+          response.data?.responseMessage || response.data?.message || "Invalid HR credentials or Role Type!",
+          "error"
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Server Error", "Please check your HR credentials.", "error");
+    }
+  };
+
+  //Accountant Manager Login Handler (Using selectedType automatically from left dropdown)  
+  const handleAccountLogin = async (e) => {
+    e.preventDefault();
+    if (!accountantUsername || !accountantPassword) {
+      Swal.fire("Warning", "Please enter Email/Mobile and Password for AccountantManager Login", "warning");
+      return;
+    }
+
+    // Automatically pick whatever role was chosen from the left dropdown (e.g. HRLOGIN)
+    const currentAccountantRole = selectedType.trim() ? selectedType : "ACCOUNTANT MANAGER";
+
+    const accountantData = {
+      Email: accountantUsername,
+      Password: accountantPassword,
+      ROLE: currentAccountantRole, 
+      Remark: "true"
+    };
+
+    try {
+      const response = await axios.post(
+        "https://ecommerencesite.onrender.com/api/AdminApi/LOGINAdmin",  
+        accountantData,
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      if (response.data?.isSuccess || response.data?.success || response.data?.status) {
+        if (response.data.token) {
+          localStorage.setItem("token", response.data.token);
+        }
+        Swal.fire({
+          icon: "success",
+          title: "ACCOUNTANT MANAGER Login Successful",
+          text: "WELCOME ACCOUNTANT MANAGER PARTNER!",
+        }).then(() => navigate("/accountantmanagerplanes"));//Accountant Manager Panel Route
+      } else {
+        Swal.fire(
+          "ACCOUNTANT MANAGER LOGIN  FAILED",
+          response.data?.responseMessage || response.data?.message || "Invalid ACCOUNTANT MANAGER credentials or Role Type!",
+          "error"
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Server Error", "Please check your ACCOUNTANT MANAGER credentials.", "error");
+    }
+  };
+
+//Office Executive Login Handler (Using selectedType automatically from left dropdown)  
+  const handleOfficeExecutiveLogin = async (e) => {
+    e.preventDefault();
+    if (!officeExecutiveUsername || !officeExecutivePassword) {
+      Swal.fire("Warning", "Please enter Email/Mobile and Password for Office Executive   Login", "warning");
+      return;
+    }
+
+    // Automatically pick whatever role was chosen from the left dropdown (e.g. HRLOGIN)
+    const currentOfficeExecutiveRole = selectedType.trim() ? selectedType : "OfficeExecutive Login";
+
+    const officeExecutiveData = {
+      Email: officeExecutiveUsername,
+      Password: officeExecutivePassword,
+      ROLE: currentOfficeExecutiveRole  , 
+      Remark: "true"
+    };
+
+    try {
+      const response = await axios.post(
+        "https://ecommerencesite.onrender.com/api/AdminApi/LOGINAdmin",  
+        officeExecutiveData,
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      if (response.data?.isSuccess || response.data?.success || response.data?.status) {
+        if (response.data.token) {
+          localStorage.setItem("token", response.data.token);
+        }
+        Swal.fire({
+          icon: "success",
+          title: "OFFICE EXECUTIVE Login Successful",
+          text: "WELCOME OFFICE EXECUTIVE PARTNER!",
+        }).then(() => navigate("/officeexecutivepanels"));//Office Executive Panel Route
+      } else {
+        Swal.fire(
+          "OFFICE EXECUTIVE LOGIN  FAILED",
+          response.data?.responseMessage || response.data?.message || "Invalid OFFICE EXECUTIVE   credentials or Role Type!",
+          "error"
+        );
+      }   
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Server Error", "Please check your OFFICE EXECUTIVE credentials.", "error");
+    }
+  };
+
   const trimmedType = selectedType.trim().toLowerCase();
   const isDoctorSelected = trimmedType.includes("doctor");
   const isDeliverySelected = trimmedType.includes("delivery");
-
+  const isHRSelected = trimmedType.includes("hr");
+  const isAccountantSelected = trimmedType.includes("accountant");
+  const isOfficeExecutiveSelected = trimmedType.includes("officeexecutive");
   return (
     <section className="vh-100" style={{ height: "100vh", overflow: "hidden" }}>
       <div className="container-fluid h-100">
@@ -270,10 +412,7 @@ export default function AdminLogin() {
             
             <div className="px-5 ms-xl-4 d-flex justify-content-between align-items-center">
               <div className="d-flex align-items-center">
-                <i
-                  className="fas fa-crow fa-2x me-3 pt-3 mt-xl-2"
-                  style={{ color: "#709085" }}
-                ></i>
+                <i className="fas fa-crow fa-2x me-3 pt-3 mt-xl-2" style={{ color: "#709085" }}></i>
                 <span className="h1 fw-bold mb-0 pt-3">Admin Login</span>
               </div>
             </div>
@@ -281,7 +420,6 @@ export default function AdminLogin() {
             <div className="px-5 ms-xl-4 my-auto">
               <form style={{ width: "23rem" }} onSubmit={handleSave}>
 
-                {/* Email / Mobile Field */}
                 <div className="form-outline mb-4">
                   <input
                     type="text"
@@ -292,7 +430,6 @@ export default function AdminLogin() {
                   />
                 </div>
 
-                {/* Password Field */}
                 <div style={{ position: "relative", width: "100%", marginBottom: "1.5rem" }}>
                   <input
                     type={showPassword ? "text" : "password"}
@@ -304,20 +441,12 @@ export default function AdminLogin() {
                   />
                   <span
                     onClick={() => setShowPassword(!showPassword)}
-                    style={{
-                      position: "absolute",
-                      right: "10px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      cursor: "pointer",
-                      userSelect: "none",
-                    }}
+                    style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)", cursor: "pointer", userSelect: "none" }}
                   >
                     {showPassword ? "🙈" : "👁️"}
                   </span>
                 </div>
 
-                {/* ADMIN TYPE DROPDOWN */}
                 <div className="form-outline mb-4">
                   <select
                     className="form-control form-control-lg"
@@ -336,31 +465,12 @@ export default function AdminLogin() {
                   </select>
                 </div>
 
-                {/* CAPTCHA SECTION */}
                 <div className="mb-4">
                   <div className="d-flex align-items-center gap-2 mb-2">
-                    <div 
-                      style={{ 
-                        background: "#e9ecef", 
-                        padding: "8px 15px", 
-                        fontWeight: "bold", 
-                        letterSpacing: "3px", 
-                        fontSize: "18px",
-                        userSelect: "none",
-                        borderRadius: "4px",
-                        border: "1px solid #ced4da",
-                        textAlign: "center",
-                        flex: 1
-                      }}
-                    >
+                    <div style={{ background: "#e9ecef", padding: "8px 15px", fontWeight: "bold", letterSpacing: "3px", fontSize: "18px", userSelect: "none", borderRadius: "4px", border: "1px solid #ced4da", textAlign: "center", flex: 1 }}>
                       {generatedCaptcha}
                     </div>
-                    <button 
-                      type="button" 
-                      className="btn btn-secondary btn-sm"
-                      onClick={generateCaptchaCode}
-                      title="Refresh Captcha"
-                    >
+                    <button type="button" className="btn btn-secondary btn-sm" onClick={generateCaptchaCode} title="Refresh Captcha">
                       🔄
                     </button>
                   </div>
@@ -373,48 +483,23 @@ export default function AdminLogin() {
                   />
                 </div>
 
-                {/* Submit Button */}
                 <div className="pt-1 mb-4">
-                  <button
-                    className="btn btn-info btn-lg btn-block w-100 text-white"
-                    type="submit"
-                  >
+                  <button className="btn btn-info btn-lg btn-block w-100 text-white" type="submit">
                     Admin Login
                   </button>
                 </div>
 
               </form>
             </div>
-            
             <div></div>
           </div>
 
           {/* RIGHT SECTION */}
           <div className="col-sm-6 px-0 d-none d-sm-flex align-items-center justify-content-center" style={{ position: "relative", overflow: "hidden" }}>
             
-            {/* CLOSE BUTTON */}
             <div 
               onClick={() => navigate("/header")}
-              style={{
-                position: "absolute",
-                top: "20px",
-                right: "20px",
-                cursor: "pointer",
-                fontSize: "20px",
-                fontWeight: "bold",
-                color: "#333",
-                padding: "5px 10px",
-                borderRadius: "50%",
-                background: "#ffffff",
-                boxShadow: "0px 2px 5px rgba(0,0,0,0.2)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "38px",
-                height: "38px",
-                zIndex: 99,
-                transition: "0.2s"
-              }}
+              style={{ position: "absolute", top: "20px", right: "20px", cursor: "pointer", fontSize: "20px", fontWeight: "bold", color: "#333", padding: "5px 10px", borderRadius: "50%", background: "#ffffff", boxShadow: "0px 2px 5px rgba(0,0,0,0.2)", display: "flex", alignItems: "center", justifyContent: "center", width: "38px", height: "38px", zIndex: 99 }}
               title="Close / Go to Header"
             >
               ✕
@@ -422,177 +507,153 @@ export default function AdminLogin() {
 
             {isDoctorSelected ? (
               <div className="w-100 h-100 position-relative d-flex align-items-center justify-content-center">
-                <img
-                  src="/uploadimage/Doctorimagelogins.jpg"
-                  alt="Doctor Login Visual"
-                  className="w-100 h-100"
-                  style={{ position: "fixed", right: 0 }}
-                />
+                <img src="/uploadimage/Doctorimagelogins.jpg" alt="Doctor Login Visual" className="w-100 h-100" style={{ position: "fixed", right: 0 }} />
                 <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(255, 255, 255, 0.65)", zIndex: 2 }}></div>
-
                 <div style={{ position: "relative", zIndex: 3, width: "80%", maxWidth: "400px", padding: "30px", background: "#ffffff", boxShadow: "0px 0px 20px rgba(0,0,0,0.2)", borderRadius: "8px" }}>
                   <form onSubmit={handleDoctorLogin}>
                     <h4 className="fw-bold mb-1 text-center">Doctors Login</h4>
                     <p className="text-muted small mb-4 text-center">Please enter Email or Mobile & Password</p>
-
                     <div className="mb-3">
                       <label className="form-label text-muted small">Email or Mobile</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Email or Mobile Number"
-                        value={docUsername}
-                        onChange={(e) => setDocUsername(e.target.value)}
-                      />
+                      <input type="text" className="form-control" placeholder="Email or Mobile Number" value={docUsername} onChange={(e) => setDocUsername(e.target.value)} />
                     </div>
-
-                  
-
-                    <div className="mb-3">
+                    <div className="mb-3 position-relative">
                       <label className="form-label text-muted small">Password</label>
-                      <input
-                      //  type="password"
-                                             type={showPassword ? "text" : "password"}
-
-                        className="form-control"
-                        placeholder="Your Password"
-                        value={docPassword}
-                        onChange={(e) => setDocPassword(e.target.value)}
-                                            style={{ width: "100%", paddingRight: "40px" }}
-
-                      />
-
-                       <span
-                    onClick={() => setShowPassword(!showPassword)}
-                    style={{
-                      position: "absolute",
-                      right: "10px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      cursor: "pointer",
-                      userSelect: "none",
-                    }}
-                  >
-                    {showPassword ? "🙈" : "👁️"}
-                  </span>
+                      <input type={showPassword ? "text" : "password"} className="form-control" placeholder="Your Password" value={docPassword} onChange={(e) => setDocPassword(e.target.value)} style={{ width: "100%", paddingRight: "40px" }} />
+                      <span onClick={() => setShowPassword(!showPassword)} style={{ position: "absolute", right: "10px", top: "65%", transform: "translateY(-50%)", cursor: "pointer", userSelect: "none" }}>{showPassword ? "🙈" : "👁️"}</span>
                     </div>
-
                     <div className="mb-3 form-check">
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id="docRemarkCheck"
-                        checked={docRemark}
-                        onChange={(e) => setDocRemark(e.target.checked)}
-                      />
-                      <label className="form-check-label text-muted small" htmlFor="docRemarkCheck">
-                        Agree / Verify Remark
-                      </label>
+                      <input type="checkbox" className="form-check-input" id="docRemarkCheck" checked={docRemark} onChange={(e) => setDocRemark(e.target.checked)} />
+                      <label className="form-check-label text-muted small" htmlFor="docRemarkCheck">Agree / Verify Remark</label>
                     </div>
-
-                    <div className="mb-3 text-end">
-                      <a href="#/forgot-password" onClick={handleForgotPassword} className="small text-muted">
-                        Forgot password?
-                      </a>
-                    </div>
-
-                    <button type="submit" className="btn w-100 text-white" style={{ backgroundColor: "#e67e22", border: "none", padding: "10px" }}>
-                      Doctor LogIn
-                    </button>
+                    <div className="mb-3 text-end"><a href="#/forgot-password" onClick={handleForgotPassword} className="small text-muted">Forgot password?</a></div>
+                    <button type="submit" className="btn w-100 text-white" style={{ backgroundColor: "#e67e22", border: "none", padding: "10px" }}>Doctor LogIn</button>
                   </form>
                 </div>
               </div>
             ) : isDeliverySelected ? (
               <div className="w-100 h-100 position-relative d-flex align-items-center justify-content-center">
-                <img
-                  src="/uploadimage/MEDICINEDELIVERY.png"
-                  alt="Delivery Login Visual"
-                  className="w-100 h-100"
-                  style={{ position: "fixed", right: 0 }}
-                />
+                <img src="/uploadimage/MEDICINEDELIVERY.png" alt="Delivery Login Visual" className="w-100 h-100" style={{ position: "fixed", right: 0 }} />
                 <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(255, 255, 255, 0.65)", zIndex: 2 }}></div>
-
                 <div style={{ position: "relative", zIndex: 3, width: "80%", maxWidth: "400px", padding: "30px", background: "#ffffff", boxShadow: "0px 0px 20px rgba(0,0,0,0.2)", borderRadius: "8px" }}>
                   <form onSubmit={handleDeliveryLogin}>
                     <h4 className="fw-bold mb-1 text-center">Delivery Login</h4>
                     <p className="text-muted small mb-4 text-center">Please enter Email or Mobile & Password</p>
-
                     <div className="mb-3">
                       <label className="form-label text-muted small">Email or Mobile</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Email or Mobile Number"
-                        value={deliveryUsername}
-                        onChange={(e) => setDeliveryUsername(e.target.value)}
-                      />
+                      <input type="text" className="form-control" placeholder="Email or Mobile Number" value={deliveryUsername} onChange={(e) => setDeliveryUsername(e.target.value)} />
                     </div>
-
-
-                    <div className="mb-3">
+                    <div className="mb-3 position-relative">
                       <label className="form-label text-muted small">Password</label>
-                      <input
-                      //  type="password"
-                        type={showPassword ? "text" : "password"}
-
-                        className="form-control"
-                        placeholder="Your Password"
-                        value={deliveryPassword}
-                        onChange={(e) => setDeliveryPassword(e.target.value)}
-                                            style={{ width: "100%", paddingRight: "40px" }}
-
-                                            
-
-                      />
-                      
-                       <span
-                    onClick={() => setShowPassword(!showPassword)}
-                    style={{
-                      position: "absolute",
-                      right: "10px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      cursor: "pointer",
-                      userSelect: "none",
-                    }}
-                  >
-                    {showPassword ? "🙈" : "👁️"}
-                  </span>
+                      <input type={showPassword ? "text" : "password"} className="form-control" placeholder="Your Password" value={deliveryPassword} onChange={(e) => setDeliveryPassword(e.target.value)} style={{ width: "100%", paddingRight: "40px" }} />
+                      <span onClick={() => setShowPassword(!showPassword)} style={{ position: "absolute", right: "10px", top: "65%", transform: "translateY(-50%)", cursor: "pointer", userSelect: "none" }}>{showPassword ? "🙈" : "👁️"}</span>
                     </div>
-
                     <div className="mb-3 form-check">
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id="deliveryRemarkCheck"
-                        checked={deliveryRemark}
-                        onChange={(e) => setDeliveryRemark(e.target.checked)}
-                      />
-                      <label className="form-check-label text-muted small" htmlFor="deliveryRemarkCheck">
-                        Agree / Verify Remark
-                      </label>
+                      <input type="checkbox" className="form-check-input" id="deliveryRemarkCheck" checked={deliveryRemark} onChange={(e) => setDeliveryRemark(e.target.checked)} />
+                      <label className="form-check-label text-muted small" htmlFor="deliveryRemarkCheck">Agree / Verify Remark</label>
                     </div>
-
-                    <div className="mb-3 text-end">
-                      <a href="#/forgot-password" onClick={handleForgotPassword} className="small text-muted">
-                        Forgot password?
-                      </a>
-                    </div>
-
-                    <button type="submit" className="btn w-100 text-white" style={{ backgroundColor: "#27ae60", border: "none", padding: "10px" }}>
-                      Delivery LogIn
-                    </button>
+                    <div className="mb-3 text-end"><a href="#/forgot-password" onClick={handleForgotPassword} className="small text-muted">Forgot password?</a></div>
+                    <button type="submit" className="btn w-100 text-white" style={{ backgroundColor: "#27ae60", border: "none", padding: "10px" }}>Delivery LogIn</button>
                   </form>
                 </div>
               </div>
-            ) : (
+            ) : isHRSelected ? (
+              <div className="w-100 h-100 position-relative d-flex align-items-center justify-content-center">
+                <img src="/uploadimage/HrLoginfrom.jpg" alt="HR Login Visual" className="w-100 h-100" style={{ position: "fixed", right: 0 }} />
+                <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(255, 255, 255, 0.65)", zIndex: 2 }}></div>
+                <div style={{ position: "relative", zIndex: "3", width: "80%", maxWidth: "400px", padding: "30px", background: "#ffffff", boxShadow: "0px 0px 20px rgba(0,0,0,0.2)", borderRadius: "8px" }}>
+                  <form onSubmit={handleHrLogin}>
+                    <h4 className="fw-bold mb-1 text-center">HR Login</h4>
+                    <p className="text-muted small mb-4 text-center">Please enter Email or Mobile & Password</p>
+                    
+                    <div className="mb-3">
+                      <label className="form-label text-muted small">Email or Mobile</label>
+                      <input type="text" className="form-control" placeholder="Email or Mobile Number" value={hrUsername} onChange={(e) => setHrUsername(e.target.value)} />
+                    </div>
+
+                    <div className="mb-3 position-relative">
+                      <label className="form-label text-muted small">Password</label>
+                      <input type={showPassword ? "text" : "password"} className="form-control" placeholder="Your Password" value={hrPassword} onChange={(e) => setHrPassword(e.target.value)} style={{ width: "100%", paddingRight: "40px" }} />
+                      <span onClick={() => setShowPassword(!showPassword)} style={{ position: "absolute", right: "10px", top: "65%", transform: "translateY(-50%)", cursor: "pointer", userSelect: "none" }}>{showPassword ? "🙈" : "👁️"}</span>
+                    </div>
+
+                    <div className="mb-3 form-check">
+                      <input type="checkbox" className="form-check-input" id="hrRemarkCheck" checked={true} readOnly />
+                      <label className="form-check-label text-muted small" htmlFor="hrRemarkCheck">Agree / Verify Remark</label>
+                    </div>
+
+                    <div className="mb-3 text-end"><a href="#/forgot-password" onClick={handleForgotPassword} className="small text-muted">Forgot password?</a></div>
+                    <button type="submit" className="btn w-100 text-white" style={{ backgroundColor: "#2980b9", border: "none", padding: "10px" }}>HR LogIn</button>
+                  </form>
+                </div>
+              </div>
+            ) : isAccountantSelected ? (
+              <div className="w-100 h-100 position-relative d-flex align-items-center justify-content-center">
+                <img src="/uploadimage/AccountantManagerLogin.jpg" alt="AccountantManager Login  Visual" className="w-100 h-100" style={{ position: "fixed", right: 0 }} />
+                <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(255, 255, 255, 0.65)", zIndex: 2 }}></div>
+                <div style={{ position: "relative", zIndex: "3", width: "80%", maxWidth: "400px", padding: "30px", background: "#ffffff", boxShadow: "0px 0px 20px rgba(0,0,0,0.2)", borderRadius: "8px" }}>
+                  <form onSubmit={handleAccountLogin}>
+                    <h4 className="fw-bold mb-1 text-center">Accountant Manager  Login</h4>
+                    <p className="text-muted small mb-4 text-center">Please enter Email or Mobile & Password</p>
+                    
+                    <div className="mb-3">
+                      <label className="form-label text-muted small">Email or Mobile</label>
+                      <input type="text" className="form-control" placeholder="Email or Mobile Number" value={accountantUsername} onChange={(e) => setAccountantUsername  (e.target.value)} />
+                    </div>
+
+                    <div className="mb-3 position-relative">
+                      <label className="form-label text-muted small">Password</label>
+                      <input type={showPassword ? "text" : "password"} className="form-control" placeholder="Your Password" value={accountantPassword} onChange={(e) => setAccountantPassword(e.target.value)} style={{ width: "100%", paddingRight: "40px" }} />
+                      <span onClick={() => setShowPassword(!showPassword)} style={{ position: "absolute", right: "10px", top: "65%", transform: "translateY(-50%)", cursor: "pointer", userSelect: "none" }}>{showPassword ? "🙈" : "👁️"}</span>
+                    </div>
+
+                    <div className="mb-3 form-check">
+                      <input type="checkbox" className="form-check-input" id="accountantRemarkCheck" checked={true} readOnly />
+                      <label className="form-check-label text-muted small" htmlFor="accountantRemarkCheck">Agree / Verify Remark</label>
+                    </div>
+
+                    <div className="mb-3 text-end"><a href="#/forgot-password" onClick={handleForgotPassword} className="small text-muted">Forgot password?</a></div>
+                    <button type="submit" className="btn w-100 text-white" style={{ backgroundColor: "#2980b9", border: "none", padding: "10px" }}>Accountant Manager  Login  </button>
+                  </form>
+                </div>
+              </div>
+            ) : isOfficeExecutiveSelected ? (
+              <div className="w-100 h-100 position-relative d-flex align-items-center justify-content-center">
+                <img src="/uploadimage/officeExecutive.jpg" alt="Office Executive Login  Visual" className="w-100 h-100" style={{ position: "fixed", right: 0 }} />
+                <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(255, 255, 255, 0.65)", zIndex: 2 }}></div>
+                <div style={{ position: "relative", zIndex: "3", width: "80%", maxWidth: "400px", padding: "30px", background: "#ffffff", boxShadow: "0px 0px 20px rgba(0,0,0,0.2)", borderRadius: "8px" }}>
+                  <form onSubmit={handleOfficeExecutiveLogin  }>  
+                    <h4 className="fw-bold mb-1 text-center">Office Executive  Login</h4>
+                    <p className="text-muted small mb-4 text-center">Please enter Email or Mobile & Password</p>
+                    
+                    <div className="mb-3">
+                      <label className="form-label text-muted small">Email or Mobile</label>
+                      <input type="text" className="form-control" placeholder="Email or Mobile Number" value={officeExecutiveUsername} onChange={(e) => setOfficeExecutiveUsername  (e.target.value)} />
+                    </div>
+
+                    <div className="mb-3 position-relative">
+                      <label className="form-label text-muted small">Password</label>
+                      <input type={showPassword ? "text" : "password"} className="form-control" placeholder="Your Password" value={officeExecutivePassword} onChange={(e) => setOfficeExecutivePassword (e.target.value)} style={{ width: "100%", paddingRight: "40px" }} />
+                      <span onClick={() => setShowPassword(!showPassword)} style={{ position: "absolute", right: "10px", top: "65%", transform: "translateY(-50%)", cursor: "pointer", userSelect: "none" }}>{showPassword ? "🙈" : "👁️"}</span>
+                    </div>
+
+                    <div className="mb-3 form-check">
+                      <input type="checkbox" className="form-check-input" id="officeExecutiveRemarkCheck " checked={true} readOnly />
+                      <label className="form-check-label text-muted small" htmlFor="officeExecutiveRemarkCheck">Agree / Verify Remark</label>
+                    </div>    
+
+                    <div className="mb-3 text-end"><a href="#/forgot-password" onClick={handleForgotPassword} className="small text-muted">Forgot password?</a></div>
+                    <button type="submit" className="btn w-100 text-white" style={{ backgroundColor: "#2980b9", border: "none", padding: "10px" }}>Office Executive Login  </button>
+                  </form>
+                </div>
+              </div>
+            ) 
+            
+            
+            //boostrapdesign 
+            : (
               <div className="w-100 h-100 position-relative">
-                <img
-                  src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img3.webp"
-                  alt="Login Visual"
-                  className="w-100 h-100"
-                  style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, objectFit: "cover" }}
-                />
+                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img3.webp" alt="Login Visual" className="w-100 h-100" style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, objectFit: "cover" }} />
               </div>
             )}
           </div>

@@ -1,39 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const API_BASE = "https://ecommerencesite.onrender.com/api/PatientDetailsAPI";
 
 export default function DoctorAssignto() {
   const [assignments, setAssignments] = useState([]);
   const [doctorName, setDoctorName] = useState('');
-  const [doctorType, setDoctorType] = useState('');
+  const [doctorType] = useState('Doctors Login');
+  const [searchQuery, setSearchQuery] = useState('');
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
   // Sidebar specific states
-  const [isShopOpen, setIsShopOpen] = useState(true);
   const [masterDropdownOpen, setMasterDropdownOpen] = useState(true);
   const [listsDropdownOpen, setListsDropdownOpen] = useState(false);
   
   const navigate = useNavigate();
   const location = useLocation();
-
-  const handleShopToggle = () => {
-    setIsShopOpen(!isShopOpen);
-  };
-
-  const getNavLinkClass = (path) => {
-    const isActive = location.pathname === path;
-    return `d-flex align-items-center gap-3 px-3 py-2 rounded text-decoration-none transition-all ${
-      isActive ? 'bg-success text-white' : 'text-white-50 hover-sidebar-menu'
-    }`;
-  };
 
   const getSubLinkClass = (path) => {
     const isActive = location.pathname === path;
@@ -48,7 +36,6 @@ export default function DoctorAssignto() {
 
   const fetchAssignments = async () => {
     setLoading(true);
-    setError('');
     try {
       const response = await fetch(`${API_BASE}/AllDoctorAssigntoPatient`); 
       const data = await response.json();
@@ -65,7 +52,13 @@ export default function DoctorAssignto() {
         setAssignments([]);
       }
     } catch (err) {
-      setError('Failed to fetch doctor assignments.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed',
+        text: 'Failed to fetch doctor assignments.',
+        background: '#1e1e24',
+        color: '#fff'
+      });
     } finally {
       setLoading(false);
     }
@@ -73,12 +66,10 @@ export default function DoctorAssignto() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccessMsg('');
 
     const payload = {
       doctorName,
-      doctorType,
+      doctorType: 'Doctors Login',
     };
 
     try {
@@ -101,50 +92,114 @@ export default function DoctorAssignto() {
 
       if (!response.ok) throw new Error('Operation failed');
 
-      setSuccessMsg(editId ? 'Assignment updated successfully!' : 'Doctor assigned successfully!');
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: editId ? 'Assignment updated successfully!' : 'Doctor assigned successfully!',
+        background: '#1e1e24',
+        color: '#fff',
+        confirmButtonColor: '#198754'
+      });
+
       setDoctorName('');
-      setDoctorType('');
       setEditId(null);
       fetchAssignments();
     } catch (err) {
-      setError('An error occurred while saving data.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An error occurred while saving data.',
+        background: '#1e1e24',
+        color: '#fff'
+      });
     }
   };
 
   const handleEdit = (item) => {
     setEditId(item.doctorAssigntoPatientod || item.DoctorAssigntoPatientod);
     setDoctorName(item.doctorName || item.DoctorName);
-    setDoctorType(item.doctorType || item.DoctorType);
   };
 
- const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this assignment?')) return;
-    
-    try {
-      // FIX: Changed from path parameter to query parameter ?id=
-      const response = await fetch(`${API_BASE}/DeleteDoctorAssigntoPatient?id=${id}`, {
-        method: 'DELETE',
-      });
+  // Details view popup function
+  const handleViewDetails = (item) => {
+    const id = item.doctorAssigntoPatientod || item.DoctorAssigntoPatientod;
+    const name = item.doctorName || item.DoctorName;
+    const type = item.doctorType || item.DoctorType;
 
-      if (!response.ok) throw new Error('Delete failed');
+    Swal.fire({
+      title: `<span style="color: #2ecc71;">Doctor Assignment Details</span>`,
+      html: `
+        <div style="text-align: left; background: #121212; padding: 15px; border-radius: 8px; color: #fff; border: 1px solid #2d2d37;">
+          <p style="margin: 8px 0;"><strong>Record ID:</strong> #${id}</p>
+          <p style="margin: 8px 0;"><strong>Doctor Name:</strong> ${name}</p>
+          <p style="margin: 8px 0;"><strong>Doctor Type:</strong> <span style="background: rgba(25, 135, 84, 0.2); color: #2ecc71; padding: 2px 6px; border-radius: 4px;">${type}</span></p>
+        </div>
+      `,
+      background: '#1e1e24',
+      confirmButtonColor: '#198754',
+    });
+  };
 
-      setSuccessMsg('Assignment deleted successfully!');
-      fetchAssignments();
-    } catch (err) {
-      setError('Failed to delete the assignment.');
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, delete it!',
+      background: '#1e1e24',
+      color: '#fff'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(`${API_BASE}/DeleteDoctorAssigntoPatient?id=${id}`, {
+          method: 'DELETE',
+        });
+
+        if (!response.ok) throw new Error('Delete failed');
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Deleted!',
+          text: 'Assignment deleted successfully!',
+          background: '#1e1e24',
+          color: '#fff',
+          confirmButtonColor: '#198754'
+        });
+        fetchAssignments();
+      } catch (err) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed',
+          text: 'Failed to delete the assignment.',
+          background: '#1e1e24',
+          color: '#fff'
+        });
+      }
     }
   };
+
+  // Searching filter logic
+  const filteredAssignments = assignments.filter((item) => {
+    const name = (item.doctorName || item.DoctorName || '').toLowerCase();
+    const id = String(item.doctorAssigntoPatientod || item.DoctorAssigntoPatientod || '');
+    const query = searchQuery.toLowerCase();
+    return name.includes(query) || id.includes(query);
+  });
 
   // Pagination Logic (5 items per page)
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentAssignments = assignments.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(assignments.length / itemsPerPage) || 1;
+  const currentAssignments = filteredAssignments.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredAssignments.length / itemsPerPage) || 1;
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#121212' }}>
 
-      {/* प्रीमियम ट्री-स्ट्रक्चर साइडबार */}
+      {/* Sidebar */}
       <div style={{ 
         width: '280px', 
         backgroundColor: '#16161a', 
@@ -155,41 +210,18 @@ export default function DoctorAssignto() {
         overflowY: 'auto',
         borderRight: '1px solid #232329'
       }}>
-        {/* ब्रांड लोगो */}
         <div className="brand mb-4 px-2 d-flex align-items-center">
           <img src="/AKMedizostore.png" alt="logo" width="36px" className="me-2" />
           <h5 className="m-0 text-white fw-bold tracking-wide" style={{ letterSpacing: '0.5px' }}>
-            AKMedizo <span className="text-success" style={{ fontSize: '11px' }}>Admin</span>
+            AKMedizo
           </h5>
         </div>
 
-        {/* ग्लोबल शॉप स्टेटस स्विच */}
-        <div className="px-2 mb-4">
-          <div 
-            onClick={handleShopToggle} 
-            className="p-2.5 rounded d-flex align-items-center justify-content-between transition-all" 
-            style={{ cursor: 'pointer', backgroundColor: '#1e1e24', border: '1px solid #2d2d37', borderRadius: '6px' }}
-          >
-            <div className="d-flex flex-column">
-              <span style={{ fontSize: '10px', color: '#8a8a98', fontWeight: '600', textTransform: 'uppercase' }}>Store Status</span>
-              <span className="text-white fw-bold" style={{ fontSize: '13px' }}>{isShopOpen ? "Open for Orders" : "Closed / Offline"}</span>
-            </div>
-            <i className={`fas fa-2xl ${isShopOpen ? "fa-toggle-on text-success" : "fa-toggle-off text-danger"}`} style={{ fontSize: '24px' }}></i>
-          </div>
-        </div>
-
-        {/* नेविगेशन लिंक्स */}
         <div className="d-flex flex-column gap-1">
           <span className="px-3 text-uppercase fw-bold text-muted" style={{ fontSize: '10px', letterSpacing: '1px' }}>Core Navigation</span>
           
-          <Link to="/deshboardpanel" className={getNavLinkClass("/deshboardpanel")}>
-            <i className="fas fa-chart-pie" style={{ fontSize: '13.5px' }}></i>
-            <span style={{ fontSize: '13.5px' }}>Dashboard Matrix</span>
-          </Link>
-
           <hr style={{ borderTop: '1px solid #232329', margin: '12px 0' }} />
           
-          {/* 1. MASTER CONFIG DROPDOWN */}
           <div className="mt-2">
             <div 
               onClick={() => setMasterDropdownOpen(!masterDropdownOpen)}
@@ -205,46 +237,18 @@ export default function DoctorAssignto() {
             {masterDropdownOpen && (
               <div className="position-relative ms-3 mt-1 d-flex flex-column" style={{ paddingLeft: '8px', fontSize: '13px' }}>
                 <div className="position-absolute" style={{ left: '6px', top: '0', bottom: '14px', width: '1.5px', backgroundColor: '#2d2d37' }}></div>
-                
-                <Link to="/adminissuetype" className={getSubLinkClass("/adminissuetype")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminissuetype' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  Add Item Type
-                </Link>
-
-                <Link to="/adminmasterassignedto" className={getSubLinkClass("/adminmasterassignedto")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminmasterassignedto' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  AddAssignedTO
-                </Link>
 
                 <Link to="/doctorassignto" className={getSubLinkClass("/doctorassignto")}>
                   <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/doctorassignto' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
                   AddDoctorAssignTo
                 </Link>
-
-               <Link to="/addadmintypes" className={getSubLinkClass("/addadmintypes")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminmasterassignedto' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  AddAdminTypes
+                <Link to="/deliverypersonassigntos" className={getSubLinkClass("/deliverypersonassigntos")}>
+                  AddDeliveryPersonAssignTo
                 </Link>
-
-               <Link to="/languagematerpanels" className="btn btn-warning w-100 text-start d-flex align-items-center gap-2 fw-bold mb-1" style={{ fontSize: '12px' }}>
-                                             <i className="fas fa-language"></i> Language Master
-                                         </Link>
-  <Link to="/statenamemasters" className="btn btn-warning w-100 text-start d-flex align-items-center gap-2 fw-bold mb-1" style={{ fontSize: '12px' }}>
-                                             <i className="fas fa-language"></i> StateName Master  
-                                         </Link>
-  <Link to="/citynamemasters" className="btn btn-warning w-100 text-start d-flex align-items-center gap-2 fw-bold mb-1" style={{ fontSize: '12px' }}>
-                                             <i className="fas fa-language"></i>  CityName Master
-                                         </Link>
-
-
-                                          
-         
-          
               </div>
             )}
           </div>
 
-          {/* 2. OPERATIONS REGISTRY DROPDOWN */}
           <div>
             <div 
               onClick={() => setListsDropdownOpen(!listsDropdownOpen)}
@@ -261,31 +265,13 @@ export default function DoctorAssignto() {
               <div className="position-relative ms-3 mt-1 d-flex flex-column" style={{ paddingLeft: '8px', fontSize: '13px' }}>
                 <div className="position-absolute" style={{ left: '6px', top: '0', bottom: '14px', width: '1.5px', backgroundColor: '#2d2d37' }}></div>
                 
-                <li><Link to="/deshboardpanel" className="btn btn-outline-success w-100 mb-2 text-start">Dashboard</Link></li> 
-                <li><Link to="/customerlists" className="btn btn-outline-success w-100 mb-2 text-start">CustomerLIST</Link></li>
-                <li><Link to="/" className="btn btn-outline-success w-100 mb-2 text-start">OrderPaymentList</Link></li>
-                <li><Link to="/" className="btn btn-outline-success w-100 mb-2 text-start">OrderStatusLIST</Link></li>
-                <li><Link to="/adminFeedbackcustomerlists" className="btn btn-success w-100 mb-2 text-start">Feedback List</Link></li>
-                <li><Link to="/adminloginlists" className="btn btn-outline-success w-100 mb-2 text-start">Admin Login List</Link></li>
-                <li><Link to="/adminUnavailableMedicines" className="btn btn-outline-success w-100 mb-2 text-start">UnavailableMedicineList</Link></li>
-                <li><Link to="/adminbankselectdetailss" className="btn btn-outline-success w-100 mb-2 text-start">bankselectMaster</Link></li>
-                <li><Link to="/admincreditdetails" className="btn btn-outline-success w-100 mb-2 text-start">BankCreditAmountDetails</Link></li> 
-                <li><Link to="/adminregisterationform" className="btn btn-outline-success w-100 mb-2 text-start">Registeartion Form</Link></li>
-                <li><Link to="/adminLivenessimageLists" className="btn btn-outline-success w-100 mb-2 text-start">LivenessimageList</Link></li>
-                <li><Link to="/admincustomerticketraiselist" className="btn btn-outline-success w-100 mb-2 text-start">customerticketraiselist</Link></li>
-                <li><Link to="/customer-bankdetailsrefund" className="btn btn-outline-success w-100 mb-2 text-start text-decoration-none">Bank Details RefundList</Link></li>
-                <li><Link to="/customerdeliveryaddresslist" className="btn btn-outline-success w-100 mb-2 text-start">Customer_DeliveryAddressList</Link></li>
-                <li><Link to="/adminlivetracker" className="btn btn-outline-success w-100 mb-2 text-start">Livetracker</Link></li>
-                 <li>   <Link to="/doctor_patientdetailslists" className="btn btn-outline-success w-100 mb-1 text-start btn-sm" style={{ fontSize: '12px' }}>Doctor_PatientdetailsLists         
-                         </Link></li>
-
-                          <li><Link to="/hiringcandidteapplieds" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATA</Link></li>
-
+                <li><Link to="/adminregisterationform" className="btn btn-outline-success w-100 mb-2 text-start">Registration Form</Link></li>
+                <li><Link to="/hradminlists" className="btn btn-outline-success w-100 mb-2 text-start">HrAdminReg.List</Link></li>
+                <li><Link to="/hiringcandidteapplieds" className="btn btn-success w-100 mb-1 text-start btn-sm fw-bold">HiringDATA</Link></li>
               </div>
             )}
           </div>
 
-          {/* टर्मिनेट / लॉगआउट एक्शन */}
           <div className="mt-4 pt-3" style={{ borderTop: '1px solid #232329' }}>
             <button 
               type="button" 
@@ -303,15 +289,10 @@ export default function DoctorAssignto() {
       <div style={{ marginLeft: '280px', flex: 1, backgroundColor: '#121212', color: '#fff', padding: '30px' }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
           
-          {/* Header Section */}
           <div style={{ marginBottom: '25px' }}>
             <h2 style={{ fontWeight: '700', color: '#f8f9fa' }}>Doctor Assignment Management</h2>
             <p style={{ color: '#adb5bd', fontSize: '14px' }}>Configure doctor specializations and manage patient assignments.</p>
           </div>
-
-          {/* Feedback Alerts */}
-          {error && <div style={{ padding: '12px', backgroundColor: '#dc3545', color: '#fff', borderRadius: '6px', marginBottom: '20px' }}>{error}</div>}
-          {successMsg && <div style={{ padding: '12px', backgroundColor: '#198754', color: '#fff', borderRadius: '6px', marginBottom: '20px' }}>{successMsg}</div>}
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '25px' }}>
             
@@ -338,10 +319,8 @@ export default function DoctorAssignto() {
                   <input
                     type="text"
                     value={doctorType}
-                    onChange={(e) => setDoctorType(e.target.value)}
-                    required
-                    placeholder="e.g. Cardiologist"
-                    style={{ width: '100%', padding: '10px', backgroundColor: '#121212', border: '1px solid #3f3f46', borderRadius: '6px', color: '#fff' }}
+                    disabled
+                    style={{ width: '100%', padding: '10px', backgroundColor: '#1a1a20', border: '1px solid #3f3f46', borderRadius: '6px', color: '#777', cursor: 'not-allowed' }}
                   />
                 </div>
 
@@ -355,7 +334,7 @@ export default function DoctorAssignto() {
                   {editId && (
                     <button
                       type="button"
-                      onClick={() => { setEditId(null); setDoctorName(''); setDoctorType(''); }}
+                      onClick={() => { setEditId(null); setDoctorName(''); }}
                       style={{ backgroundColor: '#6c757d', color: '#fff', border: 'none', padding: '10px 15px', borderRadius: '6px', cursor: 'pointer' }}
                     >
                       Cancel
@@ -365,10 +344,21 @@ export default function DoctorAssignto() {
               </form>
             </div>
 
-            {/* Registry Table List with 1 to 5 Pagination */}
+            {/* Registry Table List with Search */}
             <div style={{ backgroundColor: '#1e1e24', padding: '20px', borderRadius: '8px', border: '1px solid #2d2d37', overflowX: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
-                <h4 style={{ fontSize: '16px', marginBottom: '15px', color: '#e9ecef' }}>Assigned Doctors Directory</h4>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', gap: '10px' }}>
+                  <h4 style={{ fontSize: '16px', margin: 0, color: '#e9ecef' }}>Assigned Doctors Directory</h4>
+                  
+                  {/* Search Input */}
+                  <input
+                    type="text"
+                    placeholder="Search doctor or ID..."
+                    value={searchQuery}
+                    onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                    style={{ padding: '6px 12px', backgroundColor: '#121212', border: '1px solid #3f3f46', borderRadius: '6px', color: '#fff', fontSize: '13px', width: '180px' }}
+                  />
+                </div>
                 
                 {loading ? (
                   <p style={{ textAlign: 'center', color: '#adb5bd', padding: '20px' }}>Loading registry data...</p>
@@ -392,7 +382,7 @@ export default function DoctorAssignto() {
                           return (
                             <tr key={id} style={{ borderBottom: '1px solid #2d2d37' }}>
                               <td style={{ padding: '10px', color: '#8a8a98' }}>#{id}</td>
-                              <td style={{ padding: '10px', fontWeight: '600',backgroundColor: 'rgba(25, 135, 84, 0.2)', color: '#2ecc71' }}>{name}</td>
+                              <td style={{ padding: '10px', fontWeight: '600', backgroundColor: 'rgba(25, 135, 84, 0.2)', color: '#2ecc71' }}>{name}</td>
                               <td style={{ padding: '10px' }}>
                                 <span style={{ backgroundColor: 'rgba(25, 135, 84, 0.2)', color: '#2ecc71', padding: '4px 8px', borderRadius: '4px', fontSize: '12px' }}>
                                   {type}
@@ -400,14 +390,22 @@ export default function DoctorAssignto() {
                               </td>
                               <td style={{ padding: '10px', textAlign: 'center' }}>
                                 <button
-                                  onClick={() => handleEdit(item)}
-                                  style={{ backgroundColor: 'transparent', border: '1px solid #0d6efd', color: '#0d6efd', padding: '4px 8px', borderRadius: '4px', marginRight: '6px', cursor: 'pointer' }}
+                                  onClick={() => handleViewDetails(item)}
+                                  title="View Details"
+                                  style={{ backgroundColor: 'transparent', border: '1px solid #17a2b8', color: '#17a2b8', padding: '4px 8px', borderRadius: '4px', marginRight: '4px', cursor: 'pointer' }}
                                 >
-                                                                <i className="fas fa-edit"></i> 
-
+                                  <i className="fas fa-eye"></i>
+                                </button>
+                                <button
+                                  onClick={() => handleEdit(item)}
+                                  title="Edit"
+                                  style={{ backgroundColor: 'transparent', border: '1px solid #0d6efd', color: '#0d6efd', padding: '4px 8px', borderRadius: '4px', marginRight: '4px', cursor: 'pointer' }}
+                                >
+                                  <i className="fas fa-edit"></i>
                                 </button>
                                 <button
                                   onClick={() => handleDelete(id)}
+                                  title="Delete"
                                   style={{ backgroundColor: 'transparent', border: '1px solid #dc3545', color: '#dc3545', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}
                                 >
                                   <i className="fas fa-trash-alt"></i>
@@ -428,11 +426,11 @@ export default function DoctorAssignto() {
                 )}
               </div>
 
-              {/* Pagination Controls (1 to 5) */}
-              {assignments.length > 0 && (
+              {/* Pagination Controls */}
+              {filteredAssignments.length > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', paddingTop: '15px', borderTop: '1px solid #2d2d37' }}>
                   <span style={{ fontSize: '13px', color: '#adb5bd' }}>
-                    Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, assignments.length)} of {assignments.length} entries
+                    Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredAssignments.length)} of {filteredAssignments.length} entries
                   </span>
                   
                   <div style={{ display: 'flex', gap: '5px' }}>

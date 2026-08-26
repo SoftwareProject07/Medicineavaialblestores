@@ -637,11 +637,11 @@ const handleDownloadResume = async (app) => {
         <div className="brand mb-4 px-2 d-flex align-items-center">
           <img src="/AKMedizostore.png" alt="logo" width="36px" className="me-2" />
           <h5 className="m-0 text-white fw-bold tracking-wide" style={{ letterSpacing: '0.5px' }}>
-            AKMedizo <span className="text-success" style={{ fontSize: '11px' }}>Admin</span>
+            AKMedizo <span className="text-success" style={{ fontSize: '11px' }}></span>
           </h5>
         </div>
-
-        <div className="px-2 mb-4">
+ {/* Global access  */}
+        {/* <div className="px-2 mb-4">
           <div 
             onClick={handleShopToggle} 
             className="p-2.5 rounded d-flex align-items-center justify-content-between transition-all" 
@@ -653,17 +653,17 @@ const handleDownloadResume = async (app) => {
             </div>
             <i className={`fas fa-2xl ${isShopOpen ? "fa-toggle-on text-success" : "fa-toggle-off text-danger"}`} style={{ fontSize: '24px' }}></i>
           </div>
-        </div>
+        </div> */}
 
         <div className="d-flex flex-column gap-1">
           <span className="px-3 text-uppercase fw-bold text-muted" style={{ fontSize: '10px', letterSpacing: '1px' }}>Core Navigation</span>
           
-          <Link to="/deshboardpanel" className={getNavLinkClass("/deshboardpanel")}>
+          {/* <Link to="/deshboardpanel" className={getNavLinkClass("/deshboardpanel")}>
             <i className="fas fa-chart-pie" style={{ fontSize: '13.5px' }}></i>
             <span style={{ fontSize: '13.5px' }}>Dashboard Matrix</span>
-          </Link>
+          </Link> */}
 
-          <hr style={{ borderTop: '1px solid #232329', margin: '12px 0' }} />
+          {/* <hr style={{ borderTop: '1px solid #232329', margin: '12px 0' }} /> */}
           
           <div className="mt-2">
             <div 
@@ -675,19 +675,16 @@ const handleDownloadResume = async (app) => {
                 <i className="fas fa-sliders-h"></i> Master Config
               </span>
               <i className={`fas fa-chevron-right transition-transform ${masterDropdownOpen ? 'rotate-90' : ''}`} style={{ fontSize: '10px' }}></i>
-            </div>
+            </div> 
 
             {masterDropdownOpen && (
               <div className="position-relative ms-3 mt-1 d-flex flex-column" style={{ paddingLeft: '8px', fontSize: '13px' }}>
                 <div className="position-absolute" style={{ left: '6px', top: '0', bottom: '14px', width: '1.5px', backgroundColor: '#2d2d37' }}></div>
-                
-                <Link to="/adminissuetype" className={getSubLinkClass("/adminissuetype")}>Add Item Type</Link>
-                <Link to="/adminmasterassignedto" className={getSubLinkClass("/adminmasterassignedto")}>AddAssignedTO</Link>
+              
                 <Link to="/doctorassignto" className={getSubLinkClass("/doctorassignto")}>AddDoctorAssignTo</Link>
-                <Link to="/addadmintypes" className={getSubLinkClass("/addadmintypes")}>AddAdminTypes</Link>
-                <Link to="/languagematerpanels" className={getSubLinkClass("/languagematerpanels")}>Language Master</Link>
-                <Link to="/statenamemasters" className={getSubLinkClass("/statenamemasters")}>StateName Master</Link>
-                <Link to="/citynamemasters" className={getSubLinkClass("/citynamemasters")}>CityName Master</Link> 
+                <Link to="/deliverypersonassigntos" className={getSubLinkClass("/deliverypersonassigntos")}>AddDeliveryPersonAssignTo</Link>
+              
+                
               </div>
             )}
           </div>
@@ -708,22 +705,10 @@ const handleDownloadResume = async (app) => {
               <div className="position-relative ms-3 mt-1 d-flex flex-column gap-1" style={{ paddingLeft: '8px', fontSize: '13px' }}>
                 <div className="position-absolute" style={{ left: '6px', top: '0', bottom: '14px', width: '1.5px', backgroundColor: '#2d2d37' }}></div>
                 
-                <Link to="/deshboardpanel" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">Dashboard</Link>
-                <Link to="/customerlists" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">CustomerLIST</Link>
-                <Link to="/" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">OrderPaymentList</Link>
-                <Link to="/" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">OrderStatusLIST</Link>
-                <Link to="/adminFeedbackcustomerlists" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">Feedback List</Link>
-                <Link to="/adminloginlists" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">Admin Login List</Link>
-                <Link to="/adminUnavailableMedicines" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">UnavailableMedicineList</Link>
-                <Link to="/adminbankselectdetailss" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">bankselectMaster</Link>
-                <Link to="/admincreditdetails" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">BankCreditAmountDetails</Link> 
-                <Link to="/adminregisterationform" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">Registeartion Form</Link>
-                <Link to="/adminLivenessimageLists" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">LivenessimageList</Link>
-                <Link to="/admincustomerticketraiselist" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">customerticketraiselist</Link>
-                <Link to="/customer-bankdetailsrefund" className="btn btn-outline-success w-100 mb-1 text-start btn-sm text-decoration-none">Bank Details RefundList</Link>
-                <Link to="/customerdeliveryaddresslist" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">Customer_DeliveryAddressList</Link>
-                <Link to="/adminlivetracker" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">Livetracker</Link>
-                <Link to="/doctor_patientdetailslists" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">Doctor_PatientdetailsLists</Link>
+               
+                <li><Link to="/adminregisterationform" className="btn btn-outline-success w-100 mb-2 text-start">Registeartion Form </Link></li>
+                <li><Link to="/hradminlists" className="btn btn-outline-success w-100 mb-2 text-start">HrAdminReg.List</Link></li>
+                
                 <Link to="/hiringcandidteapplieds" className="btn btn-success w-100 mb-1 text-start btn-sm fw-bold">HiringDATA</Link>
               </div>
             )}

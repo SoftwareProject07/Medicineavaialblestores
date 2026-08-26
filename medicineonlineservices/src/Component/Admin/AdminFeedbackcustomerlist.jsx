@@ -171,7 +171,10 @@ export default function AdminFeedbackcustomerlist() {
                                 <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/citynamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
                                 CityName Master           
                               </Link> 
-                
+                     <Link to="/addaccountmastertypes" className={getSubLinkClass("/addaccountmastertypes")}>
+                                <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/addaccountmastertypes' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
+                                Accountant Master Types             
+                              </Link> 
 
               
 
@@ -238,10 +241,10 @@ export default function AdminFeedbackcustomerlist() {
                                     Bank Credit Details
                                 </Link>
 
-                                <Link to="/adminregisterationform" className={getSubLinkClass("/adminregisterationform")}>
+                                {/* <Link to="/adminregisterationform" className={getSubLinkClass("/adminregisterationform")}>
                                     <div className="position-absolute" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminregisterationform' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
                                      Registration Form
-                                </Link>
+                                </Link> */}
 
                                 <Link to="/adminLivenessimageLists" className={getSubLinkClass("/adminLivenessimageLists")}>
                                     <div className="position-absolute" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminLivenessimageLists' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
@@ -260,8 +263,8 @@ export default function AdminFeedbackcustomerlist() {
                   <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminmasterassignedto' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
 Doctor_PatientdetailsLists         
        </Link>
-        <li><Link to="/hiringcandidteapplieds" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATA</Link></li>
-
+<li><Link to="/hrdatalists" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATALIst</Link></li>
+ <li><Link to="/accountmanagerplanelists" className="btn btn-outline-success w-100 mb-2 text-start">AccountantManagerPanelLists</Link></li>
                    
                             </div>
                         )}

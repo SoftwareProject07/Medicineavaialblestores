@@ -230,13 +230,13 @@ export default function AddIssueType() {
               >
                 <i className="fas fa-plus-circle"></i> AddAssignedTO 
               </Link>
-               <Link 
+               {/* <Link 
                 to="/doctorassignto" 
                 className="btn btn-warning w-100 text-start d-flex align-items-center gap-2 fw-bold mb-1" 
                 style={{ fontSize: '12px' }}
               >
                 <i className="fas fa-plus-circle"></i>  AddDoctorAssignTo 
-              </Link>
+              </Link> */}
                  <Link 
                 to="/addadmintypes" 
                 className="btn btn-warning w-100 text-start d-flex align-items-center gap-2 fw-bold mb-1" 
@@ -254,8 +254,13 @@ export default function AddIssueType() {
   <Link to="/citynamemasters " className="btn btn-warning w-100 text-start d-flex align-items-center gap-2 fw-bold mb-1" style={{ fontSize: '12px' }}>
                                               <i className="fas fa-language"></i>  CityName Master 
                                           </Link>
+ <Link to="/addaccountmastertypes " className="btn btn-warning w-100 text-start d-flex align-items-center gap-2 fw-bold mb-1" style={{ fontSize: '12px' }}>
+                                              <i className="fas fa-language"></i>                                 
+                                               Accountant Master Types             
 
+                                          </Link>
 
+     
                                  
        
             </div>
@@ -279,7 +284,7 @@ export default function AddIssueType() {
           <li><Link to="/adminUnavailableMedicines" className="btn btn-outline-success w-100 mb-2 text-start">AdminUnavailableMedicineList</Link></li>
           <li><Link to="/adminbankselectdetailss" className="btn btn-outline-success w-100 mb-2 text-start">AdminbankselectMaster </Link></li>
           <li><Link to="/admincreditdetails" className="btn btn-outline-success w-100 mb-2 text-start">AdminBankCreditAmountDetails </Link></li> 
-          <li><Link to="/adminregisterationform" className="btn btn-outline-success w-100 mb-2 text-start">Registeartion Form </Link></li>
+          {/* <li><Link to="/adminregisterationform" className="btn btn-outline-success w-100 mb-2 text-start">Registeartion Form </Link></li> */}
           <li><Link to="/adminCustomerHelpIssueLists" className="btn btn-outline-success w-100 mb-2 text-start">AdminCustomerHelpIssueList </Link></li>
           <li><Link to="/adminLivenessimageLists" className="btn btn-outline-success w-100 mb-2 text-start">AdminLivenessimageList </Link></li>
           {/* <li><Link to="/adminsupportticketlist" className="btn btn-outline-success w-100 mb-2 text-start">AdminSupportTicketList </Link></li> */}
@@ -287,9 +292,9 @@ export default function AddIssueType() {
                             <li><Link to="/customer-bankdetailsrefund" className="btn btn-outline-success w-100 mb-2 text-start text-decoration-none">Bank Details Refund</Link></li>
                     <li><Link to="/customerdeliveryaddresslist" className="btn btn-outline-success w-100 mb-2 text-start">Customer_DeliveryAddressList</Link> </li>
     <li><Link to="/customerdeliveryaddresslist" className="btn btn-outline-success w-100 mb-2 text-start">Customer_DeliveryAddressList</Link> </li>
- <li>   <Link to="/doctor_patientdetailslists" className="btn btn-outline-success w-100 mb-1 text-start btn-sm" style={{ fontSize: '12px' }}>Doctor_PatientdetailsLists       </Link></li>
-  <li><Link to="/hiringcandidteapplieds" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATA</Link></li>
-
+ <li>   <Link to="/doctor_patientdetailslists" className="btn btn-outline-success w-100 mb-2 text-start" >Doctor_PatientdetailsLists       </Link></li>
+<li><Link to="/hrdatalists" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATALIst</Link></li>
+ <li><Link to="/accountmanagerplanelists" className="btn btn-outline-success w-100 mb-2 text-start">AccountantManagerPanelLists</Link></li>
           <li className="mt-3">
             <button type="button" onClick={() => navigate('/header')} className="btn btn-link text-danger text-decoration-none p-0">
               <i className="fas fa-sign-out-alt"></i> LogOut

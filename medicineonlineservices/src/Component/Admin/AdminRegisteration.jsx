@@ -83,7 +83,7 @@ export default function AdminRegisteration() {
 
       if (response.status === 200 || response.status === 201 || response.data?.isSuccess) {
         Swal.fire("Success", "Admin Registration Successful", "success")
-          .then(() => navigate("/adminlogin"));
+          .then(() => navigate("/adminloginlists"));
       } else {
         Swal.fire("Error", response.data?.message || "Registration Failed", "error");
       }
@@ -127,12 +127,12 @@ export default function AdminRegisteration() {
         <div className="brand mb-4 px-2 d-flex align-items-center">
           <img src="/AKMedizostore.png" alt="logo" width="36px" className="me-2" />
           <h5 className="m-0 text-white fw-bold tracking-wide" style={{ letterSpacing: '0.5px' }}>
-            AKMedizo <span className="text-success" style={{ fontSize: '11px' }}>Admin</span>
+            AKMedizo <span className="text-success" style={{ fontSize: '11px' }}></span>
           </h5>
         </div>
 
         {/* ग्लोबल शॉप स्टेटस स्विच */}
-        <div className="px-2 mb-4">
+        {/* <div className="px-2 mb-4">
           <div 
             onClick={handleShopToggle} 
             className="p-2.5 rounded d-flex align-items-center justify-content-between transition-all" 
@@ -144,16 +144,16 @@ export default function AdminRegisteration() {
             </div>
             <i className={`fas fa-2xl ${isShopOpen ? "fa-toggle-on text-success" : "fa-toggle-off text-danger"}`} style={{ fontSize: '24px' }}></i>
           </div>
-        </div>
+        </div> */}
 
         {/* नेविगेशन लिंक्स */}
         <div className="d-flex flex-column gap-1">
           <span className="px-3 text-uppercase fw-bold text-muted" style={{ fontSize: '10px', letterSpacing: '1px' }}>Core Navigation</span>
           
-          <Link to="/deshboardpanel" className={getNavLinkClass("/deshboardpanel")}>
+          {/* <Link to="/deshboardpanel" className={getNavLinkClass("/deshboardpanel")}>
             <i className="fas fa-chart-pie" style={{ fontSize: '13.5px' }}></i>
             <span style={{ fontSize: '13.5px' }}>Dashboard Matrix</span>
-          </Link>
+          </Link> */}
 
           <hr style={{ borderTop: '1px solid #232329', margin: '12px 0' }} />
           
@@ -174,39 +174,13 @@ export default function AdminRegisteration() {
               <div className="position-relative ms-3 mt-1 d-flex flex-column" style={{ paddingLeft: '8px', fontSize: '13px' }}>
                 <div className="position-absolute" style={{ left: '6px', top: '0', bottom: '14px', width: '1.5px', backgroundColor: '#2d2d37' }}></div>
                 
-                <Link to="/adminissuetype" className={getSubLinkClass("/adminissuetype")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminissuetype' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  Add Item Type
-                </Link>
-
-                <Link to="/adminmasterassignedto" className={getSubLinkClass("/adminmasterassignedto")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminmasterassignedto' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  AddAssignedTO
-                </Link>
+              
    <Link to="/doctorassignto" className={getSubLinkClass("/doctorassignto")}>
                   <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminmasterassignedto' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
                   AddDoctorAssignTo
                 </Link>
- <Link to="/addadmintypes" className={getSubLinkClass("/addadmintypes")}>
-                  <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminmasterassignedto' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                  AddAdminTypes
-                </Link>
-
- <Link to="/languagematerpanels" className={getSubLinkClass("/languagematerpanels")}>
-                                <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/languagematerpanels ' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                                Language Master           
-                              </Link>
-
-                                       <Link to="/statenamemasters" className={getSubLinkClass("/statenamemasters")}>
-                                <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/statenamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                                         StateName Master  
-                              </Link>
-<Link to="/citynamemasters" className={getSubLinkClass("/citynamemasters")}>
-                                <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/citynamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
-                                CityName Master           
-                              </Link> 
-          
-          
+                  <Link to="/deliverypersonassigntos" className={getSubLinkClass("/deliverypersonassigntos")}>AddDeliveryPersonAssignTo</Link>
+ 
               </div>
             )}
           </div>
@@ -229,28 +203,12 @@ export default function AdminRegisteration() {
             {listsDropdownOpen && (
               <div className="position-relative ms-3 mt-1 d-flex flex-column" style={{ paddingLeft: '8px', fontSize: '13px' }}>
                 <div className="position-absolute" style={{ left: '6px', top: '0', bottom: '14px', width: '1.5px', backgroundColor: '#2d2d37' }}></div>
-                
-                 <li><Link to="/deshboardpanel" className="btn btn-outline-success w-100 mb-2 text-start">Dashboard</Link></li> 
-          <li><Link to="/customerlists" className="btn btn-outline-success w-100 mb-2 text-start">CustomerLIST</Link></li>
-          <li><Link to="/" className="btn btn-outline-success w-100 mb-2 text-start">OrderPaymentList</Link></li>
-          <li><Link to="/" className="btn btn-outline-success w-100 mb-2 text-start">OrderStatusLIST</Link></li>
-          <li><Link to="/adminFeedbackcustomerlists" className="btn btn-success w-100 mb-2 text-start">Feedback List</Link></li>
-          <li><Link to="/adminloginlists" className="btn btn-outline-success w-100 mb-2 text-start">Admin Login List</Link></li>
-          <li><Link to="/adminUnavailableMedicines" className="btn btn-outline-success w-100 mb-2 text-start">UnavailableMedicineList</Link></li>
-          <li><Link to="/adminbankselectdetailss" className="btn btn-outline-success w-100 mb-2 text-start">bankselectMaster </Link></li>
-          <li><Link to="/admincreditdetails" className="btn btn-outline-success w-100 mb-2 text-start">BankCreditAmountDetails </Link></li> 
-          <li><Link to="/adminregisterationform" className="btn btn-outline-success w-100 mb-2 text-start">RegisteartionForm </Link></li>
-          {/* <li><Link to="/adminCustomerHelpIssueLists" className="btn btn-outline-success w-100 mb-2 text-start">AustomerHelpIssueList </Link></li> */}
-          <li><Link to="/adminLivenessimageLists" className="btn btn-outline-success w-100 mb-2 text-start">LivenessimageList </Link></li>
-          {/* <li><Link to="/adminsupportticketlist" className="btn btn-outline-success w-100 mb-2 text-start">AdminSupportTicketList </Link></li> */}
-          <li><Link to="/admincustomerticketraiselist" className="btn btn-outline-success w-100 mb-2 text-start">customerticketraiselist </Link></li>
-         <li><Link to="/customer-bankdetailsrefund" className="btn btn-outline-success w-100 mb-2 text-start text-decoration-none">Bank Details RefundList</Link></li>
-          <li><Link to="/customerdeliveryaddresslist" className="btn btn-outline-success w-100 mb-2 text-start">Customer_DeliveryAddressList</Link> </li>
-          <li><Link to="/adminlivetracker" className="btn btn-outline-success w-100 mb-2 text-start">Livetracker</Link> </li>
-
-                 <li><Link to="/doctor_patientdetailslists" className="btn btn-outline-success w-100 mb-2 text-start">Doctor_PatientdetailsLists    </Link> </li>
- <li><Link to="/hiringcandidteapplieds" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATA</Link></li>
-
+                   <li><Link to="/adminregisterationform" className="btn btn-outline-success w-100 mb-2 text-start">Registeartion Form</Link></li>
+              
+                              <li><Link to="/hradminlists" className="btn btn-outline-success w-100 mb-2 text-start">HrAdmin Login List</Link></li>
+                             
+                             <li><Link to="/hiringcandidteapplieds" className="btn btn-success w-100 mb-1 text-start btn-sm fw-bold">HiringDATA</Link></li> 
+                            
           </div>
             )}
           </div>

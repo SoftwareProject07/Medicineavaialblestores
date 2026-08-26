@@ -1,46 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const PATIENT_CUSTOMER_API = "https://ecommerencesite.onrender.com/api/Patient_CustomerAPI/GetAllPatients_Customers"; 
-const PATIENT_ADD_API = "https://ecommerencesite.onrender.com/api/PatientDetailsAPI/AddPatientDetails"; 
 const PATIENT_UPDATE_API = "https://ecommerencesite.onrender.com/api/PatientDetailsAPI/UpdatePatientDetails";
-const DOCTOR_ASSIGN_API = "https://ecommerencesite.onrender.com/api/PatientDetailsAPI/AllDoctorAssigntoPatient";
 
 export default function DoctorsPanel() {
     const [patients, setPatients] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const [visibleColumns] = useState({
-        id: true,
-        name: true,
-        mobileNumber: true,
-        address: true,
-        assignedDoctor: true,
-        actions: true
-    });
-
-    // Add / Edit Modal States
+    // Edit Modal States
     const [showPatientModal, setShowPatientModal] = useState(false);
-    const [isEditMode, setIsEditMode] = useState(false);
     const [currentPatientId, setCurrentPatientId] = useState(null);
     const [formData, setFormData] = useState({ fullName: "", age: "", description: "" });
-
-    // Assign Modal States
-    const [showAssignModal, setShowAssignModal] = useState(false);
-    const [selectedPatientId, setSelectedPatientId] = useState(null);
-    const [doctorList, setDoctorList] = useState([]);
-    const [selectedDoctor, setSelectedDoctor] = useState("");
 
     // Details Modal State
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [selectedPatientDetails, setSelectedPatientDetails] = useState(null);
 
-    const navigate = useNavigate();
-    const location = useLocation();
+    // Assign Doctor Modal State
+    const [showAssignModal, setShowAssignModal] = useState(false);
+    const [selectedDoctor, setSelectedDoctor] = useState("");
+    const [assigningPatientId, setAssigningPatientId] = useState(null);
 
-    // 🚀 LOGGED IN DOCTOR INFO RETRIEVAL
+    const navigate = useNavigate();
+
+    // Flexible Logged-in Doctor Identification
     let loggedInUser = {};
     try {
         const rawUser = localStorage.getItem("loggedInUser") || localStorage.getItem("adminUser") || localStorage.getItem("doctorUser") || "{}";
@@ -56,9 +42,10 @@ export default function DoctorsPanel() {
         loggedInUser.userName || 
         localStorage.getItem("doctorName") || 
         localStorage.getItem("userName") || 
-        "Akhil";
+        localStorage.getItem("doctorUser") ||
+        "Akhil Khhatun";
 
-    const cleanDocName = rawDoctorIdentifier.replace(/dr\.\s*/i, "").trim().toLowerCase();
+    const cleanDocName = rawDoctorIdentifier.replace(/dr\.?/gi, "").trim();
     const docName = `Dr. ${cleanDocName.charAt(0).toUpperCase() + cleanDocName.slice(1)}`;
 
     const fetchPatients = async () => {
@@ -66,23 +53,33 @@ export default function DoctorsPanel() {
         try {
             const res = await axios.get(PATIENT_CUSTOMER_API);
             const rawItems = res.data?.data || res.data || [];
-
+            
             const patientData = rawItems.map((item, index) => {
                 const resolvedName = item.patientName || item.fullName || item.name;
-                const resolvedAddress = item.patientReason || item.address || item.description;
-                const resolvedMobile = item.age || item.mobileNumber || item.phoneNumber;
-                const resolvedDoc = item.assignedDoctor || item.doctorName || item.doctor || item.assigned_doctor || "";
+                const resolvedAddress = item.patientReason || item.address || item.description || item.deliveryAddress || "N/A";
+                const resolvedMobile = item.phoneNumber || item.mobileNumber || item.age;
+                
+                let resolvedDoc = 
+                    item.assignedDoctor || 
+                    item.doctorName || 
+                    item.doctor || 
+                    item.assigned_doctor || 
+                    item.doctorFullName || 
+                    item.doctorname || 
+                    item.assignedDoctorName || 
+                    item.assigneddoctor || "";
+                
+                const currentId = item.patientDetailsId || item.patient_CustomerId || item.id;
 
                 return {
-                    patientid: item.patientDetailsId || item.patient_CustomerId || item.id || index + 1,
+                    patientid: currentId || index + 1,
                     name: (resolvedName && resolvedName !== "string") ? resolvedName : "Unknown Patient",
                     mobileNumber: (resolvedMobile !== undefined && resolvedMobile !== null) ? resolvedMobile : "N/A",
                     address: (resolvedAddress && resolvedAddress !== "string") ? resolvedAddress : "N/A",
-                    assignedDoctor: resolvedDoc
+                    assignedDoctor: resolvedDoc ? resolvedDoc.trim() : "Unassigned"
                 };
             });
 
-            console.log("Fetched Patients from API:", patientData);
             setPatients(patientData);
         } catch (err) {
             console.error("Fetch error:", err);
@@ -92,18 +89,8 @@ export default function DoctorsPanel() {
         }
     };
 
-    const fetchDoctors = async () => {
-        try {
-            const res = await axios.get(DOCTOR_ASSIGN_API);
-            setDoctorList(res.data || []);
-        } catch (err) {
-            console.error("Error fetching doctors:", err);
-        }
-    };
-
     useEffect(() => { 
         fetchPatients(); 
-        fetchDoctors();
     }, []);
 
     const handleDelete = async (id) => {
@@ -112,42 +99,75 @@ export default function DoctorsPanel() {
         alert("🗑️ Record Deleted Successfully!");
     };
 
-    const handleOpenAssignModal = (id, currentAssignedDoc) => {
-        setSelectedPatientId(id);
-        setSelectedDoctor(currentAssignedDoc || "");
+    const handleEditOpen = (patient) => {
+        setCurrentPatientId(patient.patientid || patient.id);
+        setFormData({
+            fullName: patient.name,
+            age: patient.mobileNumber,
+            description: patient.address
+        });
+        setShowPatientModal(true);
+    };
+
+    const handleSavePatient = async (e) => {
+        e.preventDefault();
+        try {
+            const updatePayload = {
+                patientDetailsId: currentPatientId,
+                patientName: formData.fullName,
+                age: Number(formData.age) || 0,
+                patientReason: formData.description,
+            };
+
+            await axios.put(`${PATIENT_UPDATE_API}/${currentPatientId}`, updatePayload).catch(() => {
+                axios.post(PATIENT_UPDATE_API, updatePayload);
+            });
+
+            setPatients(prev => prev.map(p => {
+                if ((p.patientid || p.id) === currentPatientId) {
+                    return { ...p, name: formData.fullName, mobileNumber: formData.age, address: formData.description };
+                }
+                return p;
+            }));
+
+            setShowPatientModal(false);
+            alert("✅ Patient Record Updated Successfully!");
+        } catch (err) {
+            console.error("Update error:", err);
+            alert("❌ Failed to update patient.");
+        }
+    };
+
+    const handleAssignOpen = (patient) => {
+        setAssigningPatientId(patient.patientid || patient.id);
+        setSelectedDoctor(patient.assignedDoctor !== "Unassigned" ? patient.assignedDoctor : "");
         setShowAssignModal(true);
     };
 
-    const handleSaveAssignedDoctor = async () => {
+    const handleAssignSubmit = async (e) => {
+        e.preventDefault();
         try {
-            const targetPatient = patients.find(p => (p.patientid || p.id) === selectedPatientId);
-            if (targetPatient) {
-                const updatePayload = {
-                    patientDetailsId: selectedPatientId,
-                    patientName: targetPatient.name,
-                    age: Number(targetPatient.mobileNumber) || 0,
-                    patientReason: targetPatient.address,
-                    assignedDoctor: selectedDoctor 
-                };
-                try {
-                    await axios.put(`${PATIENT_UPDATE_API}/${selectedPatientId}`, updatePayload);
-                } catch (e) {
-                    await axios.post(PATIENT_UPDATE_API, updatePayload);
-                }
-            }
+            const assignPayload = {
+                patientDetailsId: assigningPatientId,
+                assignedDoctor: selectedDoctor
+            };
+
+            await axios.put(`${PATIENT_UPDATE_API}/${assigningPatientId}`, assignPayload).catch(() => {
+                axios.post(PATIENT_UPDATE_API, assignPayload);
+            });
 
             setPatients(prev => prev.map(p => {
-                if ((p.patientid || p.id) === selectedPatientId) {
+                if ((p.patientid || p.id) === assigningPatientId) {
                     return { ...p, assignedDoctor: selectedDoctor };
                 }
                 return p;
             }));
-            
+
             setShowAssignModal(false);
             alert("✅ Doctor Assigned Successfully!");
-            fetchPatients(); 
+            fetchPatients();
         } catch (err) {
-            console.error("Error assigning doctor:", err);
+            console.error("Assign error:", err);
             alert("❌ Failed to assign doctor.");
         }
     };
@@ -157,11 +177,16 @@ export default function DoctorsPanel() {
         setShowDetailsModal(true);
     };
 
-    // 🚀 FILTERING: Ab saare patients dikhenge taaki assign hone ke baad data UI par turant show ho
+    // --- FLEXIBLE FILTER LOGIC ---
     const accessiblePatients = patients.filter(patient => {
-        const assignedDocRaw = (patient.assignedDoctor || "").trim().toLowerCase();
-        if (!assignedDocRaw) return true; 
-        return assignedDocRaw.includes(cleanDocName) || cleanDocName.includes(assignedDocRaw) || true;
+        const assignedDocRaw = (patient.assignedDoctor || "").toLowerCase().trim();
+        
+        if (!assignedDocRaw || assignedDocRaw === "unassigned" || assignedDocRaw === "string") {
+            return false;
+        }
+
+        const targetClean = cleanDocName.toLowerCase();
+        return assignedDocRaw.includes(targetClean) || targetClean.includes(assignedDocRaw) || assignedDocRaw.includes("akhil");
     });
 
     const filteredPatients = accessiblePatients.filter(patient =>
@@ -214,12 +239,12 @@ export default function DoctorsPanel() {
                         <table className="table table-bordered table-hover m-0 align-middle" style={{ fontSize: '13px' }}>
                             <thead className="table-dark text-uppercase">
                                 <tr>
-                                    {visibleColumns.id && <th>ID</th>}
-                                    {visibleColumns.name && <th>Full Name</th>}
-                                    {visibleColumns.mobileNumber && <th>Mobile</th>}
-                                    {visibleColumns.address && <th>Patient Reason</th>}
-                                    {visibleColumns.assignedDoctor && <th>Assigned Doctor</th>}
-                                    {visibleColumns.actions && <th className="text-center">Actions</th>}
+                                    <th>ID</th>
+                                    <th>Full Name</th>
+                                    <th>Mobile</th>
+                                    <th>Patient Reason</th>
+                                    <th>Assigned Doctor</th>
+                                    <th className="text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -228,7 +253,7 @@ export default function DoctorsPanel() {
                                 ) : filteredPatients.length === 0 ? (
                                     <tr>
                                         <td colSpan="6" className="text-center py-4 text-muted">
-                                            <div>No patient records found.</div>
+                                            <div>No patient records found assigned to {docName}.</div>
                                         </td>
                                     </tr>
                                 ) : filteredPatients.map((patient) => {
@@ -236,60 +261,59 @@ export default function DoctorsPanel() {
 
                                     return (
                                         <tr key={currentId} className="table-active">
-                                            {visibleColumns.id && <td className="fw-bold">#{currentId}</td>}
-                                            {visibleColumns.name && (
-                                                <td>
-                                                    <span 
-                                                        className="text-primary fw-bold" 
-                                                        style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                                            <td className="fw-bold">#{currentId}</td>
+                                            <td>
+                                                <span 
+                                                    className="text-primary fw-bold" 
+                                                    style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                                                    onClick={() => handleRowClickOpenDetails(patient)}
+                                                >
+                                                    {patient.name}
+                                                </span>
+                                            </td>
+                                            <td>{patient.mobileNumber}</td>
+                                            <td>
+                                                <span style={{ cursor: 'pointer' }} onClick={() => handleRowClickOpenDetails(patient)}>
+                                                    {patient.address}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span className="badge bg-success text-white px-2 py-1">
+                                                    <i className="fas fa-user-md me-1"></i> {patient.assignedDoctor}
+                                                </span>
+                                            </td>
+                                            <td className="text-center">
+                                                <div className="d-flex flex-wrap gap-1 justify-content-center align-items-center">
+                                                    <button 
+                                                        className="btn btn-sm btn-success px-2 py-0" 
+                                                        style={{ fontSize: '11px' }} 
+                                                        onClick={() => handleAssignOpen(patient)}
+                                                    >
+                                                        Assign Doctor
+                                                    </button>
+                                                    <button 
+                                                        className="btn btn-sm btn-warning text-dark px-2 py-0" 
+                                                        style={{ fontSize: '11px' }} 
+                                                        onClick={() => handleEditOpen(patient)}
+                                                    >
+                                                        <i className="fas fa-edit"></i>
+                                                    </button>
+                                                    <button 
+                                                        className="btn btn-sm btn-info text-white px-2 py-0" 
+                                                        style={{ fontSize: '11px' }} 
                                                         onClick={() => handleRowClickOpenDetails(patient)}
                                                     >
-                                                        {patient.name}
-                                                    </span>
-                                                </td>
-                                            )}
-                                            {visibleColumns.mobileNumber && <td>{patient.mobileNumber}</td>}
-                                            {visibleColumns.address && (
-                                                <td>
-                                                    <span style={{ cursor: 'pointer' }} onClick={() => handleRowClickOpenDetails(patient)}>
-                                                        {patient.address}
-                                                    </span>
-                                                </td>
-                                            )}
-                                            {visibleColumns.assignedDoctor && (
-                                                <td>
-                                                    <span className="badge bg-success text-white px-2 py-1">
-                                                        <i className="fas fa-user-md me-1"></i> {patient.assignedDoctor || "Not Assigned"}
-                                                    </span>
-                                                </td>
-                                            )}
-                                            {visibleColumns.actions && (
-                                                <td className="text-center">
-                                                    <div className="d-flex flex-wrap gap-1 justify-content-center align-items-center">
-                                                        <button 
-                                                            className="btn btn-sm btn-success px-2 py-0" 
-                                                            style={{ fontSize: '11px' }} 
-                                                            onClick={() => handleOpenAssignModal(currentId, patient.assignedDoctor)}
-                                                        >
-                                                            Assign Doctor
-                                                        </button>
-                                                        <button 
-                                                            className="btn btn-sm btn-info text-white px-2 py-0" 
-                                                            style={{ fontSize: '11px' }} 
-                                                            onClick={() => handleRowClickOpenDetails(patient)}
-                                                        >
-                                                            <i className="fa-solid fa-circle-info"></i>
-                                                        </button>
-                                                        <button 
-                                                            className="btn btn-sm btn-danger px-2 py-0" 
-                                                            style={{ fontSize: '11px' }} 
-                                                            onClick={() => handleDelete(currentId)}
-                                                        >
-                                                            <i className="fas fa-trash-alt"></i>    
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            )}
+                                                        <i className="fa-solid fa-circle-info"></i>
+                                                    </button>
+                                                    <button 
+                                                        className="btn btn-sm btn-danger px-2 py-0" 
+                                                        style={{ fontSize: '11px' }} 
+                                                        onClick={() => handleDelete(currentId)}
+                                                    >
+                                                        <i className="fas fa-trash-alt"></i>    
+                                                    </button>
+                                                </div>
+                                            </td>
                                         </tr>
                                     );
                                 })}
@@ -299,37 +323,85 @@ export default function DoctorsPanel() {
                 </div>
             </div>
 
-            {/* ASSIGN MODAL */}
+            {/* ASSIGN DOCTOR MODAL */}
             {showAssignModal && (
                 <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}>
                     <div className="modal-dialog modal-dialog-centered">
-                        
-                        <div className="modal-content bg-dark text-white border-secondary">
+                        <form onSubmit={handleAssignSubmit} className="modal-content bg-dark text-white border-secondary">
                             <div className="modal-header border-secondary">
                                 <h5 className="modal-title text-success fw-bold">Assign Doctor</h5>
                                 <button type="button" className="btn-close btn-close-white" onClick={() => setShowAssignModal(false)}></button>
                             </div>
                             <div className="modal-body">
-                                <label className="form-label text-light mb-1 fw-bold">Select Doctor</label>
-                                <select 
-                                    className="form-control bg-light text-dark border-0 form-control-sm fw-bold"
-                                    value={selectedDoctor}
-                                    onChange={(e) => setSelectedDoctor(e.target.value)}
-                                >
-                                    <option value="">-- Choose Doctor --</option>
-                                    {doctorList.map((doc, idx) => {
-                                        const docNameVal = typeof doc === 'string' 
-                                            ? doc 
-                                            : (doc.firstName ? `Dr. ${doc.firstName} ${doc.lastName || ''}`.trim() : (doc.doctorName || doc.name || JSON.stringify(doc)));
-                                        return <option key={idx} value={docNameVal}>{docNameVal}</option>;
-                                    })}
-                                </select>
+                                <div className="mb-3">
+                                    <label className="form-label text-light fw-bold">Select Doctor</label>
+                                    <select 
+                                        className="form-select bg-light text-dark"
+                                        value={selectedDoctor}
+                                        onChange={(e) => setSelectedDoctor(e.target.value)}
+                                        required
+                                    >
+                                        <option value="">-- Choose Doctor --</option>
+                                        <option value="Dr. Akhil Khhatun">Dr. Akhil Khhatun</option>
+                                        <option value="Dr. Salman Khhatun">Dr. Salman Khhatun</option>
+                                    </select>
+                                </div>
                             </div>
                             <div className="modal-footer border-secondary">
                                 <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowAssignModal(false)}>Cancel</button>
-                                <button type="button" className="btn btn-success btn-sm" onClick={handleSaveAssignedDoctor}>Confirm Assign</button>
+                                <button type="submit" className="btn btn-success btn-sm fw-bold">Save Assignment</button>
                             </div>
-                        </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* EDIT PATIENT MODAL */}
+            {showPatientModal && (
+                <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <form onSubmit={handleSavePatient} className="modal-content bg-dark text-white border-secondary">
+                            <div className="modal-header border-secondary">
+                                <h5 className="modal-title text-warning fw-bold">Edit Patient Record</h5>
+                                <button type="button" className="btn-close btn-close-white" onClick={() => setShowPatientModal(false)}></button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="mb-2">
+                                    <label className="form-label text-light fw-bold">Full Name</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control form-control-sm bg-light text-dark"
+                                        value={formData.fullName}
+                                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div className="mb-2">
+                                    <label className="form-label text-light fw-bold">Mobile / Age</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control form-control-sm bg-light text-dark"
+                                        value={formData.age}
+                                        onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div className="mb-2">
+                                    <label className="form-label text-light fw-bold">Patient Reason</label>
+                                    <textarea 
+                                        className="form-control form-control-sm bg-light text-dark"
+                                        value={formData.description}
+                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                        rows="2"
+                                        required
+                                    ></textarea>
+                                </div>
+                            </div>
+                            <div className="modal-footer border-secondary">
+                                <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowPatientModal(false)}>Cancel</button>
+                                <button type="submit" className="btn btn-warning btn-sm text-dark fw-bold">Save Changes</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
@@ -346,9 +418,9 @@ export default function DoctorsPanel() {
                             <div className="modal-body" style={{ fontSize: '14px' }}>
                                 <p><strong>ID:</strong> #{selectedPatientDetails.patientid || selectedPatientDetails.id}</p>
                                 <p><strong>Full Name:</strong> {selectedPatientDetails.name}</p>
-                                <p><strong>Mobile/Age:</strong> {selectedPatientDetails.mobileNumber}</p>
+                                <p><strong>Mobile:</strong> {selectedPatientDetails.mobileNumber}</p>
                                 <p><strong>Patient Reason:</strong> {selectedPatientDetails.address}</p>
-                                <p><strong>Assigned Doctor:</strong> {selectedPatientDetails.assignedDoctor || "Not Assigned"}</p>
+                                <p><strong>Assigned Doctor:</strong> {selectedPatientDetails.assignedDoctor}</p>
                             </div>
                             <div className="modal-footer border-secondary">
                                 <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowDetailsModal(false)}>Close</button>

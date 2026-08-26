@@ -113,10 +113,10 @@ export default function AdminCustomerHelpIssueList() {
               >
                 <i className="fas fa-plus-circle"></i> AddAssignedTO 
               </Link>
-<Link to="/doctorassignto" className={getSubLinkClass("/doctorassignto")}>
+{/* <Link to="/doctorassignto" className={getSubLinkClass("/doctorassignto")}>
                   <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminmasterassignedto' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
                   AddDoctorAssignTo
-                </Link>
+                </Link> */}
 
                <Link to="/addadmintypes" className={getSubLinkClass("/addadmintypes")}>
                   <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/adminmasterassignedto' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
@@ -136,7 +136,10 @@ export default function AdminCustomerHelpIssueList() {
                                 <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/citynamemasters' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
                                 CityName Master           
                               </Link> 
-
+     <Link to="/addaccountmastertypes" className={getSubLinkClass("/addaccountmastertypes")}>
+                                <div className="position-absolute tracking-dot" style={{ left: '-5px', top: '50%', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: location.pathname === '/addaccountmastertypes' ? '#198754' : '#3e3e4a', transform: 'translateY(-50%)' }}></div>
+                                Accountant Master Types             
+                              </Link> 
                             </div>
                           )}
                         </div>
@@ -156,7 +159,7 @@ export default function AdminCustomerHelpIssueList() {
           <li><Link to="/adminUnavailableMedicines" className="btn btn-outline-success w-100 mb-2 text-start">AdminUnavailableMedicineList</Link></li>
           <li><Link to="/adminbankselectdetailss" className="btn btn-outline-success w-100 mb-2 text-start">AdminbankselectMaster</Link></li>
           <li><Link to="/admincreditdetails" className="btn btn-outline-success w-100 mb-2 text-start">AdminBankCreditAmountDetails</Link></li> 
-          <li><Link to="/adminregisterationform" className="btn btn-outline-success w-100 mb-2 text-start">Registration Form</Link></li>
+          {/* <li><Link to="/adminregisterationform" className="btn btn-outline-success w-100 mb-2 text-start">Registration Form</Link></li> */}
           <li><Link to="/adminCustomerHelpIssueLists" className="btn btn-outline-success w-100 mb-2 text-start">AdminCustomerHelpIssueList</Link></li>
           <li><Link to="/adminLivenessimageLists" className="btn btn-outline-success w-100 mb-2 text-start">AdminLivenessimageList</Link></li>
           {/* <li><Link to="/adminsupportticketlist" className="btn btn-outline-success w-100 mb-2 text-start">AdminSupportTicketList</Link></li> */}
@@ -168,8 +171,8 @@ export default function AdminCustomerHelpIssueList() {
  <li><Link to="/adminlivetracker" className="btn btn-outline-success w-100 mb-2 text-start">Livetracker</Link> </li>
           <li>      <Link to="/doctor_patientdetailslists" className="btn btn-outline-success w-100 mb-1 text-start btn-sm" style={{ fontSize: '12px' }}>Doctor_PatientdetailsLists         
      </Link></li>
-      <li><Link to="/hiringcandidteapplieds" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATA</Link></li>
-
+<li><Link to="/hrdatalists" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATALIst</Link></li>
+ <li><Link to="/accountmanagerplanelists" className="btn btn-outline-success w-100 mb-2 text-start">AccountantManagerPanelLists</Link></li>
           <li className="mt-3 mb-5">
             <button onClick={() => navigate('/header')} className="btn btn-link text-danger text-decoration-none p-0">
               <i className="fas fa-sign-out-alt"></i> LogOut
