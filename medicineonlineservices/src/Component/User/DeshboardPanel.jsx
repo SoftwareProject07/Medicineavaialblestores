@@ -524,7 +524,7 @@ export default function DeshboardPanel() {
                         const cleanName = imgValue.replace(/^uploads[\\/]/, '').replace(/^\/+/, '');
                         // FIXED: Corrected string interpolation using proper backticks (``) instead of quotes ("")
                         imageUrl = 
-                        "https://ecommerencesite.onrender.com/uploads/${encodeURIComponent(cleanName)}";
+                        'https://ecommerencesite.onrender.com/uploads/${encodeURIComponent(cleanName)}';
                        // `http://localhost:5256/uploads/${encodeURIComponent(cleanName)}`;
                       }
 
