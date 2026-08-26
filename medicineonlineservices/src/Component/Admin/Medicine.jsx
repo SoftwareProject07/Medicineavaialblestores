@@ -80,7 +80,7 @@ export default function Medicine() {
 
     try {
       const response = await axios.post(
-        "https://ecommerencesite.onrender.com/api/MEDICINE/CreateMedicine", 
+      "https://ecommerencesite.onrender.com/api/MEDICINE/CreateMedicine", 
        //"http://localhost:5256/api/MEDICINE/CreateMedicine",
         formData
         // ⚠️ Headers manually pass nahi karne hain, axios khud boundary set karega (415 error fix)

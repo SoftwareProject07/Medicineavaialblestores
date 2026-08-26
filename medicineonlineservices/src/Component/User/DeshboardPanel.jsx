@@ -92,6 +92,7 @@ export default function DeshboardPanel() {
     try {
       const res = await axios.get(
         "https://ecommerencesite.onrender.com/api/MEDICINE/AllListMedicineProduct"
+        //'http://localhost:5256/api/MEDICINE/AllListMedicineProduct'
       );
 
       const rawData = Array.isArray(res.data) 
