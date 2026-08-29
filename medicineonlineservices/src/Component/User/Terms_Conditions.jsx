@@ -1,13 +1,10 @@
-import '../styles/aboutuscss.css';
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import '../styles/term_conditions.css';
 
-export default function AboutUs() {
+export default function Terms_Conditions() {
   return (
-    <div 
-      className="about-us-page bg-light min-vh-100" 
-      style={{ paddingTop: "145px" }}
-    >
+    <div className="terms-conditions-page min-vh-100 bg-light" style={{ paddingTop: "145px" }}>
       
       {/* ----------------- COMPLETE FIXED HEADER & NAVIGATION BAR ----------------- */}
       <div className="bg-white border-bottom shadow-sm fixed-top" style={{ top: "0" }}>
@@ -40,7 +37,7 @@ export default function AboutUs() {
 
             {/* Right Action Links */}
             <div className="d-flex align-items-center gap-4 text-nowrap">
-              <Link to="/download-app" className="text-decoration-none text-dark fw-medium small d-none lg-block">Download App</Link>
+              <Link to="/download-app" className="text-decoration-none text-dark fw-medium small d-none d-lg-block">Download App</Link>
               <Link to="/login" className="text-decoration-none text-primary fw-semibold">Login / Signup</Link>
               <Link to="/cart" className="text-decoration-none text-dark d-flex align-items-center gap-1">
                 🛒 <span className="fw-medium">Cart</span>
@@ -68,142 +65,44 @@ export default function AboutUs() {
 
       </div>
 
-      {/* ----------------- PAGE CONTENT ----------------- */}
-      <div className="container">
-        
-        {/* Top Header Banner */}
-        <div className="text-center mb-5">
-          <h1 className="fw-bold text-dark display-5">About MedicineOneServices</h1>
-          <p className="text-muted fs-5 mt-2">
-            Making essential medicines affordable and accessible through technology & pan-India reach.
+      {/* ----------------- MAIN CONTENT AREA ----------------- */}
+      <div className="container mb-5" style={{ marginTop: "20px" }}>
+        <div className="card border-0 shadow-sm p-4 p-md-5 rounded-4 bg-white">
+          <h2 className="terms-title mb-4 fw-bold text-dark">Terms And Conditions</h2>
+          
+          <p className="terms-text text-secondary" style={{ lineHeight: "1.8" }}>
+            MedicineOneServices Private Limited is in the process of implementing certain business related changes and until the said changes are fully implemented, MedicineOneServices Private Limited’s products and services may be provided to you at the location chosen by you, either by MedicineOneServices Private Limited or by its wholly owned subsidiary i.e. ANKW Pharma Retail Private Limited.
           </p>
-        </div>
 
-        {/* Introduction Section */}
-        <div className="card border-0 shadow-sm p-4 p-md-5 mb-5 rounded-4 bg-white">
-          <div className="row align-items-center">
-            <div className="col-lg-12">
-              <h3 className="fw-bold text-primary mb-3">Redefining Healthcare Affordability</h3>
-              <p className="text-secondary" style={{ fontSize: "1.05rem", lineHeight: "1.8" }}>
-                MedicineOneServices is an e-pharmacy and telehealth platform that focuses on providing affordable substitute medicines. 
-                We focus on making essential medicines affordable and accessible through our proprietary algorithm & pan-India reach, 
-                reducing monthly medical bills for chronic patients by up to 51%. These affordable alternatives are sourced from top 1% 
-                pharmaceutical manufacturers in the country.
-              </p>
-              <p className="text-secondary mt-3" style={{ fontSize: "1.05rem", lineHeight: "1.8" }}>
-                Our platform also addresses patients' concerns around information about affordable medicines, the quality, and accessibility 
-                of these medicines, and empowers patients to make informed decisions before transitioning to such affordable 'substitute' medicines.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Vision & Mission Section */}
-        <div className="row g-4 mb-5">
-          <div className="col-md-6">
-            <div className="card border-0 shadow-sm p-4 h-100 rounded-4 text-white" style={{ backgroundColor: "#0d6efd" }}>
-              <h3 className="fw-bold mb-3">OUR VISION</h3>
-              <h4 className="fw-light mb-3">The vision is to make healthcare affordable and accessible to all</h4>
-              <p className="mb-0 text-white-50" style={{ lineHeight: "1.7" }}>
-                We are a technology-driven, telehealth platform that aims to reduce healthcare expenses and improve healthcare outcomes 
-                by democratising medicine purchase in India.
-              </p>
-            </div>
-          </div>
-
-          <div className="col-md-6">
-            <div className="card border-0 shadow-sm p-4 h-100 rounded-4 bg-white">
-              <h3 className="fw-bold text-dark mb-3">The Challenge We Solve</h3>
-              <p className="text-secondary" style={{ lineHeight: "1.7" }}>
-                India has over 25 crore chronic patients who require monthly medication. With soaring medical costs pushing many into poverty, 
-                it's crucial to offer accessible solutions.
-              </p>
-              <p className="text-secondary fw-medium mt-2">
-                MedicineOneServices bridges affordability and accessibility, making healthcare a right for every Indian.
-              </p>
-              <div className="mt-3 pt-3 border-top">
-                <span className="text-muted small">Founders:</span>
-                <h5 className="fw-bold text-dark mb-0">Gautam Dev</h5>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Statistics Grid */}
-        <div className="card border-0 shadow-sm p-4 p-md-5 mb-5 rounded-4 bg-white text-center">
-          <h3 className="fw-bold mb-4 text-dark">Our Impact in Numbers</h3>
-          <div className="row g-4">
-            <div className="col-6 col-md-3">
-              <div className="p-3 border rounded-3 bg-light h-100">
-                <h3 className="fw-bold text-primary mb-1">10+</h3>
-                <span className="text-muted small">Mobile App Installs</span>
-              </div>
-            </div>
-            <div className="col-6 col-md-3">
-              <div className="p-3 border rounded-3 bg-light h-100">
-                <h3 className="fw-bold text-success mb-1">10 ++</h3>
-                <span className="text-muted small">Unique Users</span>
-              </div>
-            </div>
-            <div className="col-6 col-md-3">
-              <div className="p-3 border rounded-3 bg-light h-100">
-                <h3 className="fw-bold text-warning mb-1">110Cr+</h3>
-                <span className="text-muted small">Savings</span>
-              </div>
-            </div>
-            <div className="col-6 col-md-3">
-              <div className="p-3 border rounded-3 bg-light h-100">
-                <h3 className="fw-bold text-info mb-1">1L+</h3>
-                <span className="text-muted small">Products</span>
-              </div>
-            </div>
-            <div className="col-6 col-md-3">
-              <div className="p-3 border rounded-3 bg-light h-100">
-                <h3 className="fw-bold text-danger mb-1">10 lakh+</h3>
-                <span className="text-muted small">Doctor Consultations</span>
-              </div>
-            </div>
-            <div className="col-6 col-md-3">
-              <div className="p-3 border rounded-3 bg-light h-100">
-                <h3 className="fw-bold text-primary mb-1">400+</h3>
-                <span className="text-muted small">Doctors</span>
-              </div>
-            </div>
-            <div className="col-6 col-md-3">
-              <div className="p-3 border rounded-3 bg-light h-100">
-                <h3 className="fw-bold text-success mb-1">1000+</h3>
-                <span className="text-muted small">Pharmacists</span>
-              </div>
-            </div>
-            <div className="col-6 col-md-3">
-              <div className="p-3 border rounded-3 bg-light h-100">
-                <h3 className="fw-bold text-dark mb-1">10K+</h3>
-                <span className="text-muted small">Pincodes</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Life at MedicineOneServices Section */}
-        <div className="card border-0 shadow-sm p-4 p-md-5 mb-5 rounded-4 bg-white">
-          <h3 className="fw-bold text-dark mb-3">LIFE AT MEDICINEONESERVICES</h3>
-          <p className="text-secondary" style={{ fontSize: "1.05rem", lineHeight: "1.8" }}>
-            We're a tight-knit team of process-oriented & agile professionals dedicated to 'Thinking Big'. Our corporate culture values pragmatism, 
-            integrity, flexibility, efficiency, innovation & collaboration ensuring every task is done Right-First-Time. Led by dynamic leaders 
-            who champion "intrapreneurship," we prioritize quick decision-making that is a well-brewed combination of data, experience, and high-impact deliverables.
+          <p className="terms-text mt-3 text-secondary" style={{ lineHeight: "1.8" }}>
+            By agreeing to the aforesaid, the Terms & Conditions of MedicineOneServices Private Limited and ANKW Pharma Retail Private Limited will apply accordingly.
           </p>
-        </div>
 
+          <div className="link-box mt-4 p-3 bg-light rounded-3 border">
+            <p className="mb-2">
+              <strong>ISPL:</strong>{" "}
+              <a href="#ispl" className="text-primary text-decoration-none ms-1">
+                https://www.medicineoneservices.in/legal/ispl/terms-and-conditions
+              </a>
+            </p>
+            <p className="mb-0">
+              <strong>ANKW:</strong>{" "}
+              <a href="#ankw" className="text-primary text-decoration-none ms-1">
+                https://www.medicineoneservices.in/legal/ankw/terms-and-conditions
+              </a>
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* ----------------- BOTTOM FOOTER SECTION ----------------- */}
-      <div className="bg-light pt-5 pb-3 border-top mt-5">
+      {/* ----------------- FOOTER SECTION AT THE BOTTOM ----------------- */}
+      <div className="terms-footer-section bg-white pt-5 pb-3 border-top mt-5">
         <div className="container">
           <div className="row g-4 mb-4">
             
             {/* Company Links */}
             <div className="col-6 col-md-3">
-              <h5 className="fw-bold text-dark mb-3">Company</h5>
+              <h5 className="fw-bold mb-3 text-dark">Company</h5>
               <ul className="list-unstyled">
                 <li className="mb-2"><Link to="/abouts" className="text-decoration-none text-muted">About Us</Link></li>
                 <li className="mb-2"><Link to="/health-article" className="text-decoration-none text-muted">Health Article</Link></li>
@@ -224,15 +123,15 @@ export default function AboutUs() {
 
             {/* Social & Legal Links */}
             <div className="col-6 col-md-3">
-              <h5 className="fw-bold text-dark mb-3">Social</h5>
+              <h5 className="fw-bold mb-3 text-dark">Social</h5>
               <div className="d-flex gap-3 mb-4 text-primary">
-                <span className="fs-4">📷</span>
-                <span className="fs-4">📘</span>
-                <span className="fs-4">▶️</span>
-                <span className="fs-4">🔗</span>
+                <span className="fs-4" style={{ cursor: "pointer" }}>📷</span>
+                <span className="fs-4" style={{ cursor: "pointer" }}>📘</span>
+                <span className="fs-4" style={{ cursor: "pointer" }}>▶️</span>
+                <span className="fs-4" style={{ cursor: "pointer" }}>🔗</span>
               </div>
 
-              <h5 className="fw-bold text-dark mb-3">Legal</h5>
+              <h5 className="fw-bold mb-3 text-dark">Legal</h5>
               <ul className="list-unstyled">
                 <li className="mb-2"><Link to="/termconditions" className="text-decoration-none text-muted">Terms & Conditions</Link></li>
                 <li className="mb-2"><Link to="/privacy" className="text-decoration-none text-muted">Privacy Policy</Link></li>
@@ -244,38 +143,38 @@ export default function AboutUs() {
 
             {/* Subscribe & Registered Office Address */}
             <div className="col-md-3">
-              <h5 className="fw-bold text-dark mb-3">Subscribe</h5>
+              <h5 className="fw-bold mb-3 text-dark">Subscribe</h5>
               <p className="text-muted small mb-3">Claim your complimentary health and fitness tips subscription and stay updated on our newest promotions.</p>
               <div className="input-group mb-4">
                 <input type="email" className="form-control" placeholder="Enter your email ID" />
                 <button className="btn btn-primary" type="button">Subscribe</button>
               </div>
 
-              <h5 className="fw-bold text-dark mb-2">Registered Office Address</h5>
+              <h5 className="fw-bold mb-2 text-dark">Registered Office Address</h5>
               <p className="text-muted small mb-1 fw-semibold">MedicineOneServices Private Limited</p>
               <p className="text-muted small mb-2" style={{ lineHeight: "1.5" }}>
-                 JS ROOP HOMES ,NEAR BY VIHAN HERITAGE SECTOR -1 GREATER NOIDA EXTENSION ,PINCODE- 201318
+                JS ROOP HOMES ,NEAR BY VIHAN HERITAGE SECTOR -1 GREATER NOIDA EXTENSION ,PINCODE- 201318
               </p>
               <p className="text-muted small mb-1"><strong>CIN:</strong> 0000000</p>
               <p className="text-muted small mb-3"><strong>Telephone:</strong> <span className="text-primary">8409844260</span></p>
 
-              <h5 className="fw-bold text-dark mb-2">Grievance Officer</h5>
-              <p className="text-muted small mb-1"><strong>Name:</strong> Gautam Dev</p>
+              <h5 className="fw-bold mb-2 text-dark">Grievance Officer</h5>
+                <p className="text-muted small mb-1"><strong>Name:</strong> Gautam Dev</p>
               <p className="text-muted small mb-0"><strong>Email:</strong> <a href="mailto:grievance-customersupports01@gmail.com" className="text-decoration-none">grievance-customersupports01@gmail.com</a></p>
             </div>
 
             {/* Download App & Contact Us */}
             <div className="col-md-3">
-              <h5 className="fw-bold text-dark mb-3">Download MedicineOneServices</h5>
+              <h5 className="fw-bold mb-3 text-dark">Download MedicineOneServices</h5>
               <p className="text-muted small mb-3">
                 Manage your health with ease Download MedicineOneServices today! Get easy access to medicine refills, health information, and more.
               </p>
               <div className="d-flex flex-column gap-2 mb-4">
-                <span className="badge bg-dark p-2 text-start" style={{ width: "140px" }}>Get it on Google Play</span>
-                <span className="badge bg-dark p-2 text-start" style={{ width: "140px" }}>Download on App Store</span>
+                <span className="badge bg-dark p-2 text-start" style={{ width: "140px", cursor: "pointer" }}>Get it on Google Play</span>
+                <span className="badge bg-dark p-2 text-start" style={{ width: "140px", cursor: "pointer" }}>Download on App Store</span>
               </div>
 
-              <h5 className="fw-bold text-dark mb-2">Contact Us</h5>
+              <h5 className="fw-bold mb-2 text-dark">Contact Us</h5>
               <p className="text-muted small mb-2">Our customer representative team is available 7 days a week from 8:00 am - 10:00 pm.</p>
               <p className="text-muted small mb-1"><strong>Email:</strong> customersupports01@gmail.com</p>
               <p className="text-muted small mb-1"><strong>Helpline:</strong> <span className="text-primary">8409844260</span></p>

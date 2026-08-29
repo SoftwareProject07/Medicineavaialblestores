@@ -63,6 +63,7 @@ import AccountantManagerPanelLists from './Admin/AccountantManagerPanelLists.jsx
 import AddAccountMasterType from './Admin/MASTER/AddAccountMasterType.jsx';
 import DeliveryPersonAssignto from './Admin/MASTER/DeliveryPersonAssignto.jsx';
 import HrAdminLIst from './Admin/HrAdminLIst.jsx';
+import Terms_Conditions from './User/Terms_Conditions.jsx';
 // import OfficeExecutivePanel from './Admin/OfficeExecutivePanel.jsx';
 // import AdminMedicineList from '../ADMIN LIST/AdminMedicineList.jsx';
 // import BankMasterList from '../ADMIN LIST/BankMasterList.jsx';
@@ -168,6 +169,9 @@ export default function Routerpage() {
 <Route path="/deliverypersonassigntos" element ={<DeliveryPersonAssignto />} /> 
 {/* //hradminlist */}
 <Route path="/hradminlists" element={<HrAdminLIst />} />
+
+<Route path="/termconditions" element={<Terms_Conditions/>} />
+
 {/* <Route path="/officeexecutivepanels"  element={<OfficeExecutivePanel/> } /> */}
 
 

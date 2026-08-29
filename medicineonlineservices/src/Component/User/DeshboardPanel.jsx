@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import * as XLSX from "xlsx"; // For dynamic excel export (Download configuration)
+import Swal from "sweetalert2"; // SweetAlert2 for modern popups
 
 export default function DeshboardPanel() {
   const navigate = useNavigate();
@@ -40,6 +41,10 @@ export default function DeshboardPanel() {
     medicinesType: "" 
   });
 
+  // --- Details Modal States ---
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedMedDetails, setSelectedMedDetails] = useState({});
+
   // --- Active Helper Classes for Sidebar ---
   const getNavLinkClass = (path) => {
     const isActive = location.pathname === path;
@@ -61,7 +66,15 @@ export default function DeshboardPanel() {
     setIsShopOpen(!isShopOpen);
     localStorage.setItem("shopStatus", newStatus);
     window.dispatchEvent(new Event("storage"));
-    alert(`Shop is now ${newStatus === "ON" ? "OPEN" : "CLOSED"}`);
+    
+    Swal.fire({
+      icon: 'success',
+      title: `Shop is now ${newStatus === "ON" ? "OPEN" : "CLOSED"}`,
+      timer: 1500,
+      showConfirmButton: false,
+      background: '#16161a',
+      color: '#fff'
+    });
   };
 
   // Helper Utility to parse raw API dates strictly to "DD/MM/YYYY"
@@ -86,13 +99,35 @@ export default function DeshboardPanel() {
     return cleanDate;
   };
 
+  // Convert DD/MM/YYYY to YYYY-MM-DD for HTML date input
+  const convertToInputDate = (dateStr) => {
+    if (!dateStr) return "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+    const parts = dateStr.split("/");
+    if (parts.length === 3) {
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+    return "";
+  };
+
+  // Convert YYYY-MM-DD from HTML date input back to DD/MM/YYYY
+  const convertFromInputDate = (dateStr) => {
+    if (!dateStr) return "";
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) return dateStr;
+    const parts = dateStr.split("-");
+    if (parts.length === 3) {
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    return dateStr;
+  };
+
   // --- Fetch Data from API & Normalize ---
   const fetchData = async () => {
     setLoading(true);
     try {
       const res = await axios.get(
+       // 'http://localhost:5256/api/MEDICINE/AllListMedicineProduct'
         "https://ecommerencesite.onrender.com/api/MEDICINE/AllListMedicineProduct"
-        //'http://localhost:5256/api/MEDICINE/AllListMedicineProduct'
       );
 
       const rawData = Array.isArray(res.data) 
@@ -128,7 +163,7 @@ export default function DeshboardPanel() {
   // --- Excel Download Logic ---
   const handleDownloadExcel = () => {
     if (medicines.length === 0) {
-      alert("No data available to download.");
+      Swal.fire({ icon: 'warning', title: 'No data available to download.', background: '#16161a', color: '#fff' });
       return;
     }
 
@@ -171,16 +206,16 @@ export default function DeshboardPanel() {
       );
 
       if (response.status === 200 || response.data?.success) {
-        alert("Congratulations! The Excel file has been successfully uploaded.");
+        Swal.fire({ icon: 'success', title: 'Success!', text: 'The Excel file has been successfully uploaded.', background: '#16161a', color: '#fff' });
         fetchData(); 
       } else {
-        alert("The Excel file has failed to upload: " + (response.data?.message || "Unknown server response"));
+        Swal.fire({ icon: 'error', title: 'Failed', text: response.data?.message || 'Unknown server response', background: '#16161a', color: '#fff' });
       }
 
     } catch (err) {
       console.error("Excel Upload Controller Error:", err);
       const serverError = err.response?.data?.error || err.response?.data?.message || err.message;
-      alert("ERROR SERVER: " + serverError);
+      Swal.fire({ icon: 'error', title: 'Server Error', text: serverError, background: '#16161a', color: '#fff' });
     } finally {
       setUploading(false);
       e.target.value = ""; 
@@ -199,15 +234,26 @@ export default function DeshboardPanel() {
   };
 
   const handleDelete = async (id, name) => {
-    if (window.confirm(`Kya aap "${name}" ko delete karna chahte hain?`)) {
-      try {
-        await axios.delete(`https://ecommerencesite.onrender.com/api/MEDICINE/DeleteMedicine/${id}`);
-        setMedicines(prev => prev.filter(m => m.id !== id));
-        alert("Deleted!");
-      } catch (err) {
-        alert("Delete failed.");
+    Swal.fire({
+      title: `Kya aap "${name}" ko delete karna chahte hain?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      background: '#16161a',
+      color: '#fff'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.delete(`https://ecommerencesite.onrender.com/api/MEDICINE/DeleteMedicine/${id}`);
+          setMedicines(prev => prev.filter(m => m.id !== id));
+          Swal.fire({ icon: 'success', title: 'Deleted!', background: '#16161a', color: '#fff' });
+        } catch (err) {
+          Swal.fire({ icon: 'error', title: 'Delete failed.', background: '#16161a', color: '#fff' });
+        }
       }
-    }
+    });
   };
 
   const openEditModal = (med) => {
@@ -218,47 +264,62 @@ export default function DeshboardPanel() {
     setShowEditModal(true);
   };
 
+  const openDetailsModal = (med) => {
+    setSelectedMedDetails(med);
+    setShowDetailsModal(true);
+  };
+
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     let finalExpiryDate = String(currentMed.expiryDate || "").trim();
-    const ddMmYyyyRegex = /^\d{2}\/\d{2}\/\d{4}$/;
-
-    if (!ddMmYyyyRegex.test(finalExpiryDate)) {
-      if (finalExpiryDate.includes("-")) {
-        const datePath = finalExpiryDate.split("T")[0];
-        const parts = datePath.split("-");
-        if (parts.length === 3) {
-          const year = parts[0];
-          const month = parts[1].padStart(2, '0');
-          const day = parts[2].padStart(2, '0');
-          finalExpiryDate = `${day}/${month}/${year}`;
-        }
-      } else {
-        const d = new Date();
-        const dd = String(d.getDate()).padStart(2, '0');
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const yyyy = d.getFullYear() + 2; 
-        finalExpiryDate = `${dd}/${mm}/${yyyy}`;
+    
+    if (finalExpiryDate.includes("-") && !finalExpiryDate.includes("/")) {
+      const parts = finalExpiryDate.split("-");
+      if (parts.length === 3 && parts[0].length === 4) {
+        finalExpiryDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
       }
     }
 
+    const ddMmYyyyRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+    if (!ddMmYyyyRegex.test(finalExpiryDate)) {
+      const d = new Date();
+      const dd = String(d.getDate()).padStart(2, '0');
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const yyyy = d.getFullYear() + 2; 
+      finalExpiryDate = `${dd}/${mm}/${yyyy}`;
+    }
+
     const updatePayload = {
+      id: parseInt(currentMed.id || 0),
       Id: parseInt(currentMed.id || 0),
+      name: String(currentMed.name || "").trim(),
       Name: String(currentMed.name || "").trim(),
+      manufacturer: String(currentMed.manufacturer || "N/A").trim(),
       Manufacturer: String(currentMed.manufacturer || "N/A").trim(),
+      unitPrice: parseFloat(currentMed.unitPrice) || 0,
       UnitPrice: parseFloat(currentMed.unitPrice) || 0,
+      quantity: parseInt(currentMed.quantity) || 0,
       Quantity: parseInt(currentMed.quantity) || 0,
+      expiryDate: finalExpiryDate,
       ExpiryDate: finalExpiryDate, 
+      image: currentMed.image ? String(currentMed.image) : "", 
       Image: currentMed.image ? String(currentMed.image) : "", 
+      itemMedicine: String(currentMed.itemMedicine || "N/A").trim(),
       ItemMedicine: String(currentMed.itemMedicine || "N/A").trim(),
+      type: String(currentMed.type || "N/A").trim(),
       Type: String(currentMed.type || "N/A").trim(),
+      medicinesType: String(currentMed.medicinesType || "N/A").trim(),
       MedicinesType: String(currentMed.medicinesType || "N/A").trim(), 
+      discount: parseFloat(currentMed.discount) || 0,
       Discount: parseFloat(currentMed.discount) || 0,
-      Status: 1 
+      status: 1,
+    Status: 1 
     };
 
     try {
-      const apiUrl = "https://ecommerencesite.onrender.com/api/MEDICINE/UpdateMedicine";
+      const apiUrl =
+      "https://ecommerencesite.onrender.com/api/MEDICINE/UpdateMedicine";
+     //  "http://localhost:5256/api/MEDICINE/UpdateMedicine";
       const response = await axios.put(apiUrl, updatePayload, {
         headers: {
           "Content-Type": "application/json"
@@ -268,16 +329,28 @@ export default function DeshboardPanel() {
       if (response.status === 200 || response.status === 204 || response.data) {
         await fetchData(); 
         setShowEditModal(false);
-        alert("Updated Successfully!");
+        Swal.fire({ 
+          icon: 'success', 
+          title: 'Updated Successfully!', 
+          background: '#16161a', 
+          color: '#fff' 
+        });
       }
     } catch (err) {
       console.error("Update error detail:", err);
+      let errorMsg = "Please review inputs.";
       if (err.response && err.response.data) {
-        const detailedErr = JSON.stringify(err.response.data.errors || err.response.data);
-        alert(`Update Failed: ${detailedErr}`);
-      } else {
-        alert("Update failed. Please review inputs.");
+        errorMsg = typeof err.response.data === 'string' 
+          ? err.response.data 
+          : JSON.stringify(err.response.data.errors || err.response.data);
       }
+      Swal.fire({ 
+        icon: 'error', 
+        title: 'Update Failed', 
+        text: errorMsg, 
+        background: '#16161a', 
+        color: '#fff' 
+      });
     }
   };
 
@@ -416,7 +489,6 @@ export default function DeshboardPanel() {
         <div className="d-flex justify-content-between align-items-center mb-4 text-white">
           <h2>Medicines Management</h2>
           <div className="d-flex align-items-center gap-2">
-            
             <label className={`btn btn-success btn-sm px-2 mb-0 d-flex align-items-center gap-2 ${uploading ? 'disabled' : ''}`} style={{ cursor: 'pointer' }}>
               {uploading ? "Uploading..." : "Upload All Medicine"} 
               {uploading ? <span className="spinner-border spinner-border-sm"></span> : <i className="fa-solid fa-upload"></i>}
@@ -518,6 +590,7 @@ export default function DeshboardPanel() {
                     })()}
                   </td>
                   <td className="text-center">
+                    <button type="button" className="btn btn-sm btn-outline-info me-1" onClick={() => openDetailsModal(med)}>Details</button>
                     <button type="button" className="btn btn-sm btn-outline-primary me-1" onClick={() => openEditModal(med)}>Edit</button>
                     <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(med.id, med.name)}>Del</button>
                   </td>
@@ -537,6 +610,29 @@ export default function DeshboardPanel() {
           </div>
         </div>
       </div>
+
+      {/* DETAILS MODAL */}
+      {showDetailsModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.9)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000 }}>
+          <div className="bg-dark p-4 rounded border border-secondary" style={{ width: '500px', maxHeight: '90vh', overflowY: 'auto', color: 'white' }}>
+            <h4 className="text-info mb-3 text-center">Medicine Complete Details</h4>
+            <div className="d-flex flex-column gap-2" style={{ fontSize: '14px' }}>
+              <div><strong>Name:</strong> {selectedMedDetails.name}</div>
+              <div><strong>Manufacturer:</strong> {selectedMedDetails.manufacturer}</div>
+              <div><strong>Unit Price:</strong> ₹{selectedMedDetails.unitPrice}</div>
+              <div><strong>Discount:</strong> {selectedMedDetails.discount}%</div>
+              <div><strong>Quantity:</strong> {selectedMedDetails.quantity}</div>
+              <div><strong>Expiry Date:</strong> {selectedMedDetails.expiryDate}</div>
+              <div><strong>Category (ItemMedicine):</strong> {selectedMedDetails.itemMedicine}</div>
+              <div><strong>Type:</strong> {selectedMedDetails.type}</div>
+              <div><strong>Medicines Type:</strong> {selectedMedDetails.medicinesType}</div>
+            </div>
+            <div className="d-flex justify-content-end mt-4">
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowDetailsModal(false)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* EDIT MODAL */}
       {showEditModal && (
@@ -566,8 +662,14 @@ export default function DeshboardPanel() {
                   <input type="number" className="form-control bg-dark text-white border-secondary" value={currentMed.quantity} onChange={(e) => setCurrentMed({ ...currentMed, quantity: e.target.value })} />
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label className="small text-white-50">Expiry (DD/MM/YYYY)</label>
-                  <input type="text" placeholder="DD/MM/YYYY" className="form-control bg-dark text-white border-secondary" value={currentMed.expiryDate} onChange={(e) => setCurrentMed({ ...currentMed, expiryDate: e.target.value })} required />
+                  <label className="small text-white-50">Expiry Date</label>
+                  <input 
+                    type="date" 
+                    className="form-control bg-dark text-white border-secondary" 
+                    value={convertToInputDate(currentMed.expiryDate)} 
+                    onChange={(e) => setCurrentMed({ ...currentMed, expiryDate: convertFromInputDate(e.target.value) })} 
+                    required 
+                  />
                 </div>
                 <div className="col-md-6 mb-3">
                   <label className="small text-white-50">Medicine Type</label>
@@ -600,3 +702,5 @@ export default function DeshboardPanel() {
     </div>
   );
 }
+
+

@@ -65,6 +65,7 @@ import AccountantManagerPanelLists from "./Component/Admin/AccountantManagerPane
 import AddAccountMasterType from "./Component/Admin/MASTER/AddAccountMasterType.jsx";
 import DeliveryPersonAssignto from "./Component/Admin/MASTER/DeliveryPersonAssignto.jsx";
 import HrAdminLIst from "./Component/Admin/HrAdminLIst.jsx";
+import Terms_Conditions from "./Component/User/Terms_Conditions.jsx";
 // import OfficeExecutivePanel from "./Component/Admin/OfficeExecutivePanel.jsx";
 // import AdminMedicineList from "./ADMIN LIST/AdminMedicineList.jsx";
 // import BankMasterList from "./ADMIN LIST/BankMasterList.jsx";
@@ -193,7 +194,7 @@ if (loading) {
 {/* //hradminlist */}
 <Route path="/hradminlists" element={<HrAdminLIst />} />
 
-
+<Route path="/termconditions" element={<Terms_Conditions/>}/>
 {/* <Route path="/officeexecutivepanels" element={<OfficeExecutivePanel />} /> */}
 
 
