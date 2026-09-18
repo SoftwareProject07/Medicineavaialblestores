@@ -859,7 +859,6 @@ export default function Dashboard() {
     setUnreadCount(0);
   };
 
-  // ---------- FETCH & OPEN SETTINGS MODAL ----------
   const fetchSettings = async () => {
     try {
       setLoadingSettings(true);
@@ -890,7 +889,6 @@ export default function Dashboard() {
     fetchSettings();
   };
 
-  // ---------- SAVE SETTINGS API ----------
   const handleSaveSettings = async () => {
     try {
       const response = await fetch("https://ecommerencesite.onrender.com/api/TestingDashBoardPanelAPI/UpdateSettings", {
@@ -911,7 +909,6 @@ export default function Dashboard() {
     }
   };
 
-  // ---------- FETCH: HELP & SUPPORT LIST ----------
   const fetchSupportList = async () => {
     try {
       setLoadingSupportList(true);
@@ -933,7 +930,6 @@ export default function Dashboard() {
     fetchSupportList();
   };
 
-  // ---------- FETCH: HELP & SUPPORT DETAILS BY ID ----------
   const fetchSupportDetails = async (id) => {
     try {
       setLoadingSupportDetail(true);
@@ -949,7 +945,6 @@ export default function Dashboard() {
     }
   };
 
-  // ---------- FETCH: ALL HISTORY LIST ----------
   const fetchHistoryList = async () => {
     try {
       setLoadingHistoryList(true);
@@ -971,7 +966,6 @@ export default function Dashboard() {
     fetchHistoryList();
   };
 
-  // ---------- FETCH: SINGLE HISTORY DETAILS BY ID ----------
   const fetchHistoryDetails = async (id) => {
     try {
       setLoadingHistoryDetail(true);
@@ -987,7 +981,6 @@ export default function Dashboard() {
     }
   };
 
-  // ---------- FETCH: ALL PRESCRIPTIONS LIST ----------
   const fetchPrescriptionsList = async () => {
     try {
       setLoadingPrescriptionsList(true);
@@ -1009,7 +1002,6 @@ export default function Dashboard() {
     fetchPrescriptionsList();
   };
 
-  // ---------- FETCH: SINGLE PRESCRIPTION DETAILS BY ID ----------
   const fetchPrescriptionDetails = async (id) => {
     try {
       setLoadingPrescriptionDetail(true);
@@ -1025,7 +1017,6 @@ export default function Dashboard() {
     }
   };
 
-  // ---------- FETCH: MONTHLY PROGRESS ----------
   const fetchMonthlyProgress = async () => {
     try {
       const response = await fetch("https://ecommerencesite.onrender.com/api/TestingDashBoardPanelAPI/AllMonthlyProgress");
@@ -1339,22 +1330,15 @@ export default function Dashboard() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <label style={{ fontWeight: '600', fontSize: '0.9rem', color: '#475569' }}>Theme Mode:</label>
                   <select value={settingsData.themeMode} onChange={(e) => setSettingsData({...settingsData, themeMode: e.target.value})} style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }}>
-                    <option value="Light">Light Mode</option>
-                    <option value="Dark">Dark Mode</option>
-                  </select>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontWeight: '600', fontSize: '0.9rem', color: '#475569' }}>Language:</label>
-                  <select value={settingsData.language} onChange={(e) => setSettingsData({...settingsData, language: e.target.value})} style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }}>
-                    <option value="English">English</option>
-                    <option value="Hindi">Hindi</option>
+                    <option value="Light">Light</option>
+                    <option value="Dark">Dark</option>
                   </select>
                 </div>
               </div>
             )}
             <div style={{ display: 'flex', gap: '10px' }}>
               <button className="swal-btn" onClick={handleSaveSettings}>Save Changes</button>
-              <button className="swal-btn" style={{ backgroundColor: '#64748b' }} onClick={() => setIsSettingsModalOpen(false)}>Cancel</button>
+              <button style={{ background: '#e2e8f0', color: '#1e293b', border: 'none', padding: '12px 24px', borderRadius: '10px', fontWeight: '600', cursor: 'pointer', width: '100%' }} onClick={() => setIsSettingsModalOpen(false)}>Cancel</button>
             </div>
           </div>
         </div>
@@ -1363,81 +1347,254 @@ export default function Dashboard() {
       {/* HELP & SUPPORT LIST MODAL */}
       {isSupportListModalOpen && (
         <div className="swal-overlay" onClick={() => setIsSupportListModalOpen(false)}>
-          <div className="swal-popup" style={{ maxWidth: '850px' }} onClick={(e) => e.stopPropagation()}>
+          <div className="swal-popup" style={{ maxWidth: '650px' }} onClick={(e) => e.stopPropagation()}>
             <div className="swal-title">Help & Support Tickets</div>
             <input 
               type="text" 
               className="search-box" 
-              placeholder="🔍 Search tickets by subject, description or status..." 
+              placeholder="Search by subject, description or status..." 
               value={supportSearchTerm}
               onChange={(e) => setSupportSearchTerm(e.target.value)}
             />
-
             {loadingSupportList ? (
-              <p style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>Loading tickets...</p>
+              <p style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>Loading tickets...</p>
             ) : (
-              <div style={{ overflowX: 'auto', maxHeight: '400px' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                  <thead>
-                    <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
-                      <th style={{ padding: '12px', fontSize: '0.85rem', color: '#475569' }}>ID</th>
-                      <th style={{ padding: '12px', fontSize: '0.85rem', color: '#475569' }}>Subject</th>
-                      <th style={{ padding: '12px', fontSize: '0.85rem', color: '#475569' }}>Status</th>
-                      <th style={{ padding: '12px', fontSize: '0.85rem', color: '#475569', textAlign: 'right' }}>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredSupportList.length > 0 ? (
-                      filteredSupportList.map((item, idx) => {
-                        const tId = item.ticketId || item.id || idx + 1;
-                        return (
-                          <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                            <td style={{ padding: '12px', fontWeight: 600 }}>{tId}</td>
-                            <td style={{ padding: '12px', color: '#1e293b' }}>{item.subject || "N/A"}</td>
-                            <td style={{ padding: '12px' }}>
-                              <span style={{ padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, background: item.status === "Resolved" ? "#dcfce7" : "#fef3c7", color: item.status === "Resolved" ? "#166534" : "#92400e" }}>
-                                {item.status || "Pending"}
-                              </span>
-                            </td>
-                            <td style={{ padding: '12px', textAlign: 'right' }}>
-                              <button className="btn-view" onClick={() => fetchSupportDetails(tId)}>View Details</button>
-                            </td>
-                          </tr>
-                        );
-                      })
-                    ) : (
-                      <tr><td colSpan="4" style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>No support tickets found.</td></tr>
-                    )}
-                  </tbody>
-                </table>
+              <div style={{ maxHeight: '350px', overflowY: 'auto', marginBottom: '20px' }}>
+                {filteredSupportList.length > 0 ? (
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                    <thead>
+                      <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
+                        <th style={{ padding: '10px' }}>ID</th>
+                        <th style={{ padding: '10px' }}>Subject</th>
+                        <th style={{ padding: '10px' }}>Status</th>
+                        <th style={{ padding: '10px' }}>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredSupportList.map((item, idx) => (
+                        <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '10px' }}>{item.id || idx + 1}</td>
+                          <td style={{ padding: '10px' }}>{item.subject || 'N/A'}</td>
+                          <td style={{ padding: '10px' }}>{item.status || 'OPEN'}</td>
+                          <td style={{ padding: '10px' }}>
+                            <button className="btn-view" onClick={() => fetchSupportDetails(item.id)}>View Details</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p style={{ textAlign: 'center', color: '#64748b', padding: '20px' }}>No tickets found.</p>
+                )}
               </div>
             )}
-            <div style={{ marginTop: '20px' }}>
-              <button className="swal-btn" style={{ backgroundColor: '#64748b' }} onClick={() => setIsSupportListModalOpen(false)}>Close</button>
-            </div>
+            <button className="swal-btn" onClick={() => setIsSupportListModalOpen(false)}>Close</button>
           </div>
         </div>
       )}
 
-      {/* HELP & SUPPORT DETAILS MODAL */}
+      {/* SUPPORT DETAIL MODAL */}
       {isSupportDetailModalOpen && (
         <div className="swal-overlay" onClick={() => setIsSupportDetailModalOpen(false)}>
           <div className="swal-popup" onClick={(e) => e.stopPropagation()}>
             <div className="swal-title">Ticket Details</div>
             {loadingSupportDetail ? (
-              <p style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>Loading details...</p>
+              <p style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>Loading details...</p>
             ) : supportDetails ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', background: '#f8fafc', padding: '18px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
-                <p style={{ margin: 0 }}><strong>Ticket ID:</strong> {supportDetails.ticketId || supportDetails.id || "N/A"}</p>
-                <p style={{ margin: 0 }}><strong>Subject:</strong> {supportDetails.subject || "N/A"}</p>
-                <p style={{ margin: 0 }}><strong>Description:</strong> {supportDetails.description || "N/A"}</p>
-                <p style={{ margin: 0 }}><strong>Status:</strong> {supportDetails.status || "N/A"}</p>
-                <p style={{ margin: 0 }}><strong>Priority:</strong> {supportDetails.priority || "N/A"}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px', fontSize: '0.95rem', color: '#334155' }}>
+                <div><strong>ID:</strong> {supportDetails.id || 'N/A'}</div>
+                <div><strong>Subject:</strong> {supportDetails.subject || 'N/A'}</div>
+                <div><strong>Description:</strong> {supportDetails.description || 'N/A'}</div>
+                <div><strong>Status:</strong> {supportDetails.status || 'OPEN'}</div>
+                <div><strong>Priority:</strong> {supportDetails.priority || 'N/A'}</div>
               </div>
             ) : (
-              <p style={{ textAlign: 'center', padding: '20px', color: '#ef4444' }}>Failed to load ticket details.</p>
+              <p style={{ textAlign: 'center', color: '#ef4444' }}>Failed to load ticket details.</p>
             )}
-            <button className="swal-btn" onClick={() => setIsSupportDetailModalOpen(false)}>Back to List</button>
+            <button className="swal-btn" onClick={() => setIsSupportDetailModalOpen(false)}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {/* PRESCRIPTIONS LIST MODAL */}
+      {isPrescriptionsListModalOpen && (
+        <div className="swal-overlay" onClick={() => setIsPrescriptionsListModalOpen(false)}>
+          <div className="swal-popup" style={{ maxWidth: '650px' }} onClick={(e) => e.stopPropagation()}>
+            <div className="swal-title">My Prescriptions</div>
+            <input 
+              type="text" 
+              className="search-box" 
+              placeholder="Search prescriptions..." 
+              value={prescriptionSearchTerm}
+              onChange={(e) => setPrescriptionSearchTerm(e.target.value)}
+            />
+            {loadingPrescriptionsList ? (
+              <p style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>Loading prescriptions...</p>
+            ) : (
+              <div style={{ maxHeight: '350px', overflowY: 'auto', marginBottom: '20px' }}>
+                {filteredPrescriptionsList.length > 0 ? (
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                    <thead>
+                      <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
+                        <th style={{ padding: '10px' }}>ID</th>
+                        <th style={{ padding: '10px' }}>Title / Doctor</th>
+                        <th style={{ padding: '10px' }}>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredPrescriptionsList.map((item, idx) => (
+                        <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '10px' }}>{item.id || idx + 1}</td>
+                          <td style={{ padding: '10px' }}>{item.title || item.doctorName || item.patientName || item.name || 'Prescription'}</td>
+                          <td style={{ padding: '10px' }}>
+                            <button className="btn-view" onClick={() => fetchPrescriptionDetails(item.id)}>View</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p style={{ textAlign: 'center', color: '#64748b', padding: '20px' }}>No prescriptions found.</p>
+                )}
+              </div>
+            )}
+            <button className="swal-btn" onClick={() => setIsPrescriptionsListModalOpen(false)}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {/* PRESCRIPTION DETAIL MODAL */}
+      {isPrescriptionDetailModalOpen && (
+        <div className="swal-overlay" onClick={() => setIsPrescriptionDetailModalOpen(false)}>
+          <div className="swal-popup" onClick={(e) => e.stopPropagation()}>
+            <div className="swal-title">Prescription Details</div>
+            {loadingPrescriptionDetail ? (
+              <p style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>Loading details...</p>
+            ) : prescriptionDetails ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px', fontSize: '0.95rem', color: '#334155' }}>
+                <div><strong>ID:</strong> {prescriptionDetails.id || 'N/A'}</div>
+                <div><strong>Doctor Name:</strong> {prescriptionDetails.doctorName || 'N/A'}</div>
+                <div><strong>Notes:</strong> {prescriptionDetails.notes || prescriptionDetails.description || 'N/A'}</div>
+                <div><strong>Date:</strong> {prescriptionDetails.date || 'N/A'}</div>
+              </div>
+            ) : (
+              <p style={{ textAlign: 'center', color: '#ef4444' }}>Failed to load prescription details.</p>
+            )}
+            <button className="swal-btn" onClick={() => setIsPrescriptionDetailModalOpen(false)}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {/* HISTORY LIST MODAL */}
+      {isHistoryListModalOpen && (
+        <div className="swal-overlay" onClick={() => setIsHistoryListModalOpen(false)}>
+          <div className="swal-popup" style={{ maxWidth: '650px' }} onClick={(e) => e.stopPropagation()}>
+            <div className="swal-title">Account History</div>
+            <input 
+              type="text" 
+              className="search-box" 
+              placeholder="Search history..." 
+              value={historySearchTerm}
+              onChange={(e) => setHistorySearchTerm(e.target.value)}
+            />
+            {loadingHistoryList ? (
+              <p style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>Loading history...</p>
+            ) : (
+              <div style={{ maxHeight: '350px', overflowY: 'auto', marginBottom: '20px' }}>
+                {filteredHistoryList.length > 0 ? (
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                    <thead>
+                      <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
+                        <th style={{ padding: '10px' }}>Action</th>
+                        <th style={{ padding: '10px' }}>Description</th>
+                        <th style={{ padding: '10px' }}>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredHistoryList.map((item, idx) => (
+                        <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '10px' }}>{item.actionType || 'Activity'}</td>
+                          <td style={{ padding: '10px' }}>{item.description || 'N/A'}</td>
+                          <td style={{ padding: '10px' }}>
+                            <button className="btn-view" onClick={() => fetchHistoryDetails(item.id)}>View</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p style={{ textAlign: 'center', color: '#64748b', padding: '20px' }}>No history records found.</p>
+                )}
+              </div>
+            )}
+            <button className="swal-btn" onClick={() => setIsHistoryListModalOpen(false)}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {/* HISTORY DETAIL MODAL */}
+      {isHistoryDetailModalOpen && (
+        <div className="swal-overlay" onClick={() => setIsHistoryDetailModalOpen(false)}>
+          <div className="swal-popup" onClick={(e) => e.stopPropagation()}>
+            <div className="swal-title">History Details</div>
+            {loadingHistoryDetail ? (
+              <p style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>Loading details...</p>
+            ) : historyDetails ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px', fontSize: '0.95rem', color: '#334155' }}>
+                <div><strong>ID:</strong> {historyDetails.id || 'N/A'}</div>
+                <div><strong>Action Type:</strong> {historyDetails.actionType || 'N/A'}</div>
+                <div><strong>Description:</strong> {historyDetails.description || 'N/A'}</div>
+                <div><strong>IP Address:</strong> {historyDetails.ipAddress || 'N/A'}</div>
+                <div><strong>Timestamp:</strong> {historyDetails.timestamp || historyDetails.createdAt || 'N/A'}</div>
+              </div>
+            ) : (
+              <p style={{ textAlign: 'center', color: '#ef4444' }}>Failed to load history details.</p>
+            )}
+            <button className="swal-btn" onClick={() => setIsHistoryDetailModalOpen(false)}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {/* BASIC MODAL: MEDICATION TRACKER */}
+      {isMedModalOpen && (
+        <div className="swal-overlay" onClick={() => setIsMedModalOpen(false)}>
+          <div className="swal-popup" onClick={(e) => e.stopPropagation()}>
+            <div className="swal-title">Medication Tracker</div>
+            <p style={{ color: '#475569', marginBottom: '20px' }}>Aapke active medications ki list yahan display hogi.</p>
+            <button className="swal-btn" onClick={() => setIsMedModalOpen(false)}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {/* BASIC MODAL: TEST REPORTS */}
+      {isTestReportModalOpen && (
+        <div className="swal-overlay" onClick={() => setIsTestReportModalOpen(false)}>
+          <div className="swal-popup" onClick={(e) => e.stopPropagation()}>
+            <div className="swal-title">Test Reports</div>
+            <p style={{ color: '#475569', marginBottom: '20px' }}>Aapke lab test reports yahan available hain.</p>
+            <button className="swal-btn" onClick={() => setIsTestReportModalOpen(false)}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {/* BASIC MODAL: HEALTH HISTORY */}
+      {isHealthModalOpen && (
+        <div className="swal-overlay" onClick={() => setIsHealthModalOpen(false)}>
+          <div className="swal-popup" onClick={(e) => e.stopPropagation()}>
+            <div className="swal-title">Health History</div>
+            <p style={{ color: '#475569', marginBottom: '20px' }}>Aapka medical background aur health history data.</p>
+            <button className="swal-btn" onClick={() => setIsHealthModalOpen(false)}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {/* BASIC MODAL: MONTHLY PROGRESS */}
+      {isMonthlyModalOpen && (
+        <div className="swal-overlay" onClick={() => setIsMonthlyModalOpen(false)}>
+          <div className="swal-popup" onClick={(e) => e.stopPropagation()}>
+            <div className="swal-title">Monthly Progress Overview</div>
+            <p style={{ color: '#475569', marginBottom: '20px' }}>Aapka mahine bhar ka health progress graph aur stats.</p>
+            <button className="swal-btn" onClick={() => setIsMonthlyModalOpen(false)}>Close</button>
           </div>
         </div>
       )}
