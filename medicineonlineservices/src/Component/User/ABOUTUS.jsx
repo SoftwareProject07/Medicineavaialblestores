@@ -245,7 +245,7 @@ export default function AboutUs() {
             {/* Subscribe & Registered Office Address */}
             <div className="col-md-3">
               <h5 className="fw-bold text-dark mb-3">Subscribe</h5>
-              <p className="text-muted small mb-3">Claim your complimentary health and fitness tips subscription and stay updated on our newest promotions.</p>
+              <p className="text-muted small mb-3">AKMedizostore Solutions Private Limited...</p>
               <div className="input-group mb-4">
                 <input type="email" className="form-control" placeholder="Enter your email ID" />
                 <button className="btn btn-primary" type="button">Subscribe</button>

@@ -172,6 +172,8 @@ export default function AdminCustomerHelpIssueList() {
           <li>      <Link to="/doctor_patientdetailslists" className="btn btn-outline-success w-100 mb-1 text-start btn-sm" style={{ fontSize: '12px' }}>Doctor_PatientdetailsLists         
      </Link></li>
 <li><Link to="/hrdatalists" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATALIst</Link></li>
+                           <li>    <Link to="/qrcodeupload" className="btn btn-outline-success w-100 mb-2 text-start">qrcodeupload</Link> </li>
+
  <li><Link to="/accountmanagerplanelists" className="btn btn-outline-success w-100 mb-2 text-start">AccountantManagerPanelLists</Link></li>
           <li className="mt-3 mb-5">
             <button onClick={() => navigate('/header')} className="btn btn-link text-danger text-decoration-none p-0">

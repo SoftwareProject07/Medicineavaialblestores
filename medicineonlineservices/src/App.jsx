@@ -66,6 +66,15 @@ import AddAccountMasterType from "./Component/Admin/MASTER/AddAccountMasterType.
 import DeliveryPersonAssignto from "./Component/Admin/MASTER/DeliveryPersonAssignto.jsx";
 import HrAdminLIst from "./Component/Admin/HrAdminLIst.jsx";
 import Terms_Conditions from "./Component/User/Terms_Conditions.jsx";
+import QRCODEUPLOAD_LIST from "./Component/Admin/QRCODEUPLOAD_LIST.jsx";
+// import MedicationTracker from "./Component/User/DASHBOARDPANEL/MedicationTracker.jsx";
+import AdminMedicationTracker from "./ADMINDASHBOARDPANEL/AdminMedicationTracker.jsx";
+import AdminTestReports from "./ADMINDASHBOARDPANEL/AdminTestReports.jsx";
+import AdminHealthHistory from "./ADMINDASHBOARDPANEL/AdminHealthHistory.jsx";
+import AdminMonthlyProgresses from "./ADMINDASHBOARDPANEL/AdminMonthlyProgresses.jsx";
+import AdminPrescriptions from "./ADMINDASHBOARDPANEL/AdminPrescriptions.jsx";
+import AdminHistoryManager from "./ADMINDASHBOARDPANEL/AdminHistoryManager.jsx";
+import AdminHelpSupport from "./ADMINDASHBOARDPANEL/AdminHelpSupport.jsx";
 // import OfficeExecutivePanel from "./Component/Admin/OfficeExecutivePanel.jsx";
 // import AdminMedicineList from "./ADMIN LIST/AdminMedicineList.jsx";
 // import BankMasterList from "./ADMIN LIST/BankMasterList.jsx";
@@ -137,7 +146,8 @@ if (loading) {
     <Route path="/viewexampleheader" element={<ViewExample_Header />} />
     {/* <Route path="/adminheaders" element={<AdminHeader />} />  */}
     <Route path="/abouts" element={<ABOUTUS />} />
-    <Route path="/orders" element={<Orderstatus />} />
+    <Route path="/orderstatus" element={<Orderstatus />} />
+    
 <Route path="/adminregisterationform" element={<AdminRegisteration />} />
 
 <Route path="/adminloginlists" element={<AdminLoginList />} />
@@ -195,6 +205,20 @@ if (loading) {
 <Route path="/hradminlists" element={<HrAdminLIst />} />
 
 <Route path="/termconditions" element={<Terms_Conditions/>}/>
+<Route path="/qrcodeupload" element={<QRCODEUPLOAD_LIST/>}/>
+
+
+{/* <Route path="/mediciationtrackers" element={<MedicationTracker />} /> */}
+<Route path="/adminmediciationtrackers" element={<AdminMedicationTracker />} />  
+<Route path="/admintestreportss" element={<AdminTestReports />} />  
+<Route path="/adminhealthhistorys"  element= {<AdminHealthHistory />}/>
+<Route path="/adminmonthlyprogresses" element={<AdminMonthlyProgresses />} />
+<Route path="/adminprescriptions" element={<AdminPrescriptions />} />
+<Route path="/adminhistorymanagers" element={<AdminHistoryManager />} />
+<Route path="/adminhelpsupports"  element= {<AdminHelpSupport />} />
+
+
+
 {/* <Route path="/officeexecutivepanels" element={<OfficeExecutivePanel />} /> */}
 
 

@@ -64,6 +64,15 @@ import AddAccountMasterType from './Admin/MASTER/AddAccountMasterType.jsx';
 import DeliveryPersonAssignto from './Admin/MASTER/DeliveryPersonAssignto.jsx';
 import HrAdminLIst from './Admin/HrAdminLIst.jsx';
 import Terms_Conditions from './User/Terms_Conditions.jsx';
+import QRCODEUPLOAD_LIST from './Admin/QRCODEUPLOAD_LIST.jsx';
+//  import MedicationTracker from './User/DASHBOARDPANEL/MedicationTracker.jsx';
+import AdminMedicationTracker from '../ADMINDASHBOARDPANEL/AdminMedicationTracker.jsx';
+import AdminTestReports from '../ADMINDASHBOARDPANEL/AdminTestReports.jsx';
+import AdminHealthHistory from '../ADMINDASHBOARDPANEL/AdminHealthHistory.jsx';
+import AdminMonthlyProgresses from '../ADMINDASHBOARDPANEL/AdminMonthlyProgresses.jsx';
+import AdminPrescriptions from '../ADMINDASHBOARDPANEL/AdminPrescriptions.jsx';
+import AdminHistoryManager from '../ADMINDASHBOARDPANEL/AdminHistoryManager.jsx';
+import AdminHelpSupport from '../ADMINDASHBOARDPANEL/AdminHelpSupport.jsx';
 // import OfficeExecutivePanel from './Admin/OfficeExecutivePanel.jsx';
 // import AdminMedicineList from '../ADMIN LIST/AdminMedicineList.jsx';
 // import BankMasterList from '../ADMIN LIST/BankMasterList.jsx';
@@ -103,7 +112,7 @@ export default function Routerpage() {
 <Route path="/customerlists" element={<CustomerList />} />
 <Route path="/CompletePayments" element={<CompletePayment/>} />
 <Route path="/medicinedata" element={<Medicine />} />
-<Route path="/orders" element={<Orderstatus />} />
+<Route path="/orderstatus" element={<Orderstatus />} />
 <Route path="/feedbackcustomers" element={<FeedbackCustomer />} />
 {/* <Route path="/adminsupportticketlist" element={<AdminSupportTicketList />} /> */}
 
@@ -171,6 +180,21 @@ export default function Routerpage() {
 <Route path="/hradminlists" element={<HrAdminLIst />} />
 
 <Route path="/termconditions" element={<Terms_Conditions/>} />
+<Route path ="/qrcodeupload" element={<QRCODEUPLOAD_LIST/>} />
+
+{/* <Route path="/mediciationtrackers" element={<MedicationTracker />} />  */}
+<Route path="/adminmediciationtrackers" element={<AdminMedicationTracker />} />
+
+
+<Route path="/admintestreportss" element={<AdminTestReports />} />  
+<Route path="/adminhealthhistorys" element={<AdminHealthHistory />} />  
+
+<Route path="/adminmonthlyprogresses" element={<AdminMonthlyProgresses />} />
+
+
+<Route path="/adminprescriptions" element={<AdminPrescriptions />} />
+<Route path="/adminhistorymanagers" element={<AdminHistoryManager />} /> 
+<Route path="/adminhelpsupports" element={<AdminHelpSupport /> }/>
 
 {/* <Route path="/officeexecutivepanels"  element={<OfficeExecutivePanel/> } /> */}
 

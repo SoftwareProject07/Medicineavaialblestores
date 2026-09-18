@@ -84,7 +84,6 @@ export default function DeliveryAddress() {
       const res = await axios.get(`${API}/GetAllPatients_Customers`);
       const raw = res.data?.data || res.data || [];
       
-      // Email case-insensitive filter taaki data miss na ho
       const filtered = raw.filter(
         item => item.email?.trim().toLowerCase() === user?.email?.trim().toLowerCase()
       );
@@ -119,12 +118,16 @@ export default function DeliveryAddress() {
     } catch (err) { alert("Action Failed. Please check connection."); }
   };
 
-  const handleDelete = async (id) => {
+ const handleDelete = async (id) => {
     if (window.confirm("Delete this address?")) {
       try {
-        await axios.delete(`${API}/DeletePatient_Customer?id=${id}`);
+        await axios.delete(`https://ecommerencesite.onrender.com/api/Patient_CustomerAPI/DeletePatient/${id}`);
         fetchAddresses();
-      } catch { alert("Failed to delete."); }
+        alert("✅ Address Deleted Successfully!");
+      } catch (err) { 
+        console.error("Delete Error:", err.response || err.message);
+        alert("Failed to delete. Please check network/API route setup.");
+      }
     }
   };
 
@@ -525,7 +528,6 @@ export default function DeliveryAddress() {
                   </select>
                 </div>
 
-                {/* Email field editable and active without readonly */}
                 <div className="col-md-6">
                   <label className="small text-light mb-1 fw-semibold">Email</label>
                   <input 

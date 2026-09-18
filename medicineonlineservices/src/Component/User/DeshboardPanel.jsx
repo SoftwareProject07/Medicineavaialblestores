@@ -38,7 +38,8 @@ export default function DeshboardPanel() {
     image: "", 
     itemMedicine: "",
     type: "",
-    medicinesType: "" 
+    medicinesType: "",
+    onlyMgMedicine: "" 
   });
 
   // --- Details Modal States ---
@@ -126,7 +127,6 @@ export default function DeshboardPanel() {
     setLoading(true);
     try {
       const res = await axios.get(
-       // 'http://localhost:5256/api/MEDICINE/AllListMedicineProduct'
         "https://ecommerencesite.onrender.com/api/MEDICINE/AllListMedicineProduct"
       );
 
@@ -145,7 +145,9 @@ export default function DeshboardPanel() {
         image: m.image || m.Image || "", 
         itemMedicine: m.itemMedicine || m.ItemMedicine || "",
         type: m.type || m.Type || "",
-        medicinesType: m.medicinesType || m.MedicinesType || ""
+        medicinesType: m.medicinesType || m.MedicinesType || "",
+        // Explicitly mapping all variations including exact casing from API responses
+        onlyMgMedicine: m.onlyMgMedicine || m.OnlyMgMedicine || m.ONlyMgMEDICINE || m.oNlyMgMEDICINE || m.ONLYMGMEDICINE || ""
       }));
 
       setMedicines(normalized);
@@ -176,7 +178,8 @@ export default function DeshboardPanel() {
       "Expiry Date": m.expiryDate,
       "Health Condition (Type)": m.type,
       "Category (ItemMedicine)": m.itemMedicine,
-      "MedicinesType (Form)": m.medicinesType
+      "MedicinesType (Form)": m.medicinesType,
+      "ONlyMgMEDICINE": m.onlyMgMedicine
     }));
 
     const ws = XLSX.utils.json_to_sheet(dataToExport);
@@ -258,8 +261,18 @@ export default function DeshboardPanel() {
 
   const openEditModal = (med) => {
     setCurrentMed({
-      ...med,
-      expiryDate: normalizeToDDMMYYYY(med.expiryDate)
+      id: med.id || "",
+      name: med.name || "",
+      manufacturer: med.manufacturer || "",
+      unitPrice: med.unitPrice || "",
+      discount: med.discount || "",
+      quantity: med.quantity || "",
+      expiryDate: normalizeToDDMMYYYY(med.expiryDate),
+      image: med.image || "",
+      itemMedicine: med.itemMedicine || "",
+      type: med.type || "",
+      medicinesType: med.medicinesType || "",
+      onlyMgMedicine: med.onlyMgMedicine || ""
     });
     setShowEditModal(true);
   };
@@ -310,16 +323,17 @@ export default function DeshboardPanel() {
       Type: String(currentMed.type || "N/A").trim(),
       medicinesType: String(currentMed.medicinesType || "N/A").trim(),
       MedicinesType: String(currentMed.medicinesType || "N/A").trim(), 
+      onlyMgMedicine: String(currentMed.onlyMgMedicine || "").trim(),
+      OnlyMgMedicine: String(currentMed.onlyMgMedicine || "").trim(),
+      ONlyMgMEDICINE: String(currentMed.onlyMgMedicine || "").trim(),
       discount: parseFloat(currentMed.discount) || 0,
       Discount: parseFloat(currentMed.discount) || 0,
       status: 1,
-    Status: 1 
+      Status: 1 
     };
 
     try {
-      const apiUrl =
-      "https://ecommerencesite.onrender.com/api/MEDICINE/UpdateMedicine";
-     //  "http://localhost:5256/api/MEDICINE/UpdateMedicine";
+      const apiUrl = "https://ecommerencesite.onrender.com/api/MEDICINE/UpdateMedicine";
       const response = await axios.put(apiUrl, updatePayload, {
         headers: {
           "Content-Type": "application/json"
@@ -451,6 +465,13 @@ export default function DeshboardPanel() {
               <div className="position-relative ms-3 mt-1 d-flex flex-column" style={{ paddingLeft: '8px', fontSize: '13px' }}>
                 <div className="position-absolute" style={{ left: '6px', top: '0', bottom: '14px', width: '1.5px', backgroundColor: '#2d2d37' }}></div>
                 
+           <Link to="/adminmediciationtrackers" className="btn btn-outline-success w-100 mb-2 text-start">Adminmediciationtrackers</Link> 
+            <Link to="/admintestreportss" className="btn btn-outline-success w-100 mb-2 text-start">AdminTestReports</Link>
+              <Link to="/adminhealthhistorys" className="btn btn-outline-success w-100 mb-2 text-start">AdminHelathHistory</Link>
+                <Link to="/adminmonthlyprogresses" className="btn btn-outline-success w-100 mb-2 text-start">AdminMonthlyProgress</Link>
+                <Link to="/adminprescriptions" className="btn btn-outline-success w-100 mb-2 text-start">AdminPrescriptions</Link>
+                  <Link to="/adminhistorymanagers" className="btn btn-outline-success w-100 mb-2 text-start">AdminHistoryManager</Link>
+                <Link to="/adminhelpsupports" className="btn btn-outline-success w-100 mb-2 text-start">AdminHelpSupport</Link>
                 <Link to="/deshboardpanel" className="btn btn-outline-success w-100 mb-2 text-start">Dashboard</Link> 
                 <Link to="/customerlists" className="btn btn-outline-success w-100 mb-2 text-start">CustomerLIST</Link>
                 <Link to="/adminFeedbackcustomerlists" className="btn btn-success w-100 mb-2 text-start">Feedback List</Link>
@@ -466,6 +487,8 @@ export default function DeshboardPanel() {
                 <Link to="/adminlivetracker" className="btn btn-outline-success w-100 mb-2 text-start">Livetracker</Link> 
                 <Link to="/doctor_patientdetailslists" className="btn btn-outline-success w-100 mb-2 text-start">Doctor_PatientdetailsLists</Link> 
                 <Link to="/hrdatalists" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATALIst</Link>
+                                <Link to="/qrcodeupload" className="btn btn-outline-success w-100 mb-2 text-start">qrcodeupload</Link>
+
                 <Link to="/accountmanagerplanelists" className="btn btn-outline-success w-100 mb-2 text-start">AccountantManagerPanelLists</Link>
               </div>
             )}
@@ -534,15 +557,16 @@ export default function DeshboardPanel() {
                 <th>Category</th>
                 <th>Type</th>
                 <th>MedType</th>
+                <th>Mg Info</th>
                 <th>Image</th>
                 <th className="text-center">Action</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan="11" className="text-center p-5">Loading...</td></tr>
+                <tr><td colSpan="12" className="text-center p-5">Loading...</td></tr>
               ) : paginatedMedicines.length === 0 ? (
-                <tr><td colSpan="11" className="text-center p-5 text-white-50">No Medicines Found. Upload excel or add some!</td></tr>
+                <tr><td colSpan="12" className="text-center p-5 text-white-50">No Medicines Found. Upload excel or add some!</td></tr>
               ) : paginatedMedicines.map((med) => (
                 <tr key={med.id}>
                   <td className="text-info fw-bold">{med.name}</td>
@@ -551,9 +575,11 @@ export default function DeshboardPanel() {
                   <td className="text-warning">{med.discount}%</td>
                   <td><span className={`badge ${med.quantity > 0 ? 'bg-primary' : 'bg-danger'}`}>{med.quantity}</span></td>
                   <td>{med.expiryDate}</td>
-                  <td>{med.type}</td>
                   <td>{med.itemMedicine}</td>
+
+                  <td>{med.type}</td>
                   <td className="text-success">{med.medicinesType}</td>
+                  <td>{med.onlyMgMedicine}</td>
                   <td>
                     {(() => {
                       const imgValue = med?.Image || med?.image;
@@ -626,6 +652,7 @@ export default function DeshboardPanel() {
               <div><strong>Category (ItemMedicine):</strong> {selectedMedDetails.itemMedicine}</div>
               <div><strong>Type:</strong> {selectedMedDetails.type}</div>
               <div><strong>Medicines Type:</strong> {selectedMedDetails.medicinesType}</div>
+              <div><strong>Only Mg Medicine:</strong> {selectedMedDetails.onlyMgMedicine}</div>
             </div>
             <div className="d-flex justify-content-end mt-4">
               <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowDetailsModal(false)}>Close</button>
@@ -637,63 +664,78 @@ export default function DeshboardPanel() {
       {/* EDIT MODAL */}
       {showEditModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.9)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000 }}>
-          <div className="bg-dark p-4 rounded border border-secondary" style={{ width: '600px', maxHeight: '90vh', overflowY: 'auto', color: 'white' }}>
+          <div className="bg-dark p-4 rounded border border-secondary" style={{ width: '700px', maxHeight: '90vh', overflowY: 'auto', color: 'white' }}>
             <h4 className="text-primary mb-4 text-center">Update Medicine Details</h4>
             <form onSubmit={handleUpdateSubmit}>
               <div className="row">
                 <div className="col-md-6 mb-3">
-                  <label className="small text-white-50">Medicine Name</label>
-                  <input type="text" className="form-control bg-dark text-white border-secondary" value={currentMed.name} onChange={(e) => setCurrentMed({ ...currentMed, name: e.target.value })} required />
+                  <label className="small text-white-50">Medicine Name*</label>
+                  <input placeholder="Medicine Name" type="text" className="form-control bg-dark text-white border-secondary" value={currentMed.name} onChange={(e) => setCurrentMed({ ...currentMed, name: e.target.value })} required />
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label className="small text-white-50">Manufacturer</label>
-                  <input type="text" className="form-control bg-dark text-white border-secondary" value={currentMed.manufacturer} onChange={(e) => setCurrentMed({ ...currentMed, manufacturer: e.target.value })} />
+                  <label className="small text-white-50">Manufacturer*</label>
+                  <input placeholder="Generic/Dublicate" type="text" className="form-control bg-dark text-white border-secondary" value={currentMed.manufacturer} onChange={(e) => setCurrentMed({ ...currentMed, manufacturer: e.target.value })} />
                 </div>
                 <div className="col-md-4 mb-3">
-                  <label className="small text-white-50">Unit Price</label>
-                  <input type="number" step="any" className="form-control bg-dark text-white border-secondary" value={currentMed.unitPrice} onChange={(e) => setCurrentMed({ ...currentMed, unitPrice: e.target.value })} />
+                  <label className="small text-white-50">Unit Price*</label>
+                  <input type="number" step="any" placeholder="price" className="form-control bg-dark text-white border-secondary" value={currentMed.unitPrice} onChange={(e) => setCurrentMed({ ...currentMed, unitPrice: e.target.value })} />
                 </div>
                 <div className="col-md-4 mb-3">
                   <label className="small text-white-50">Discount (%)</label>
-                  <input type="number" step="any" className="form-control bg-dark text-white border-secondary" value={currentMed.discount} onChange={(e) => setCurrentMed({ ...currentMed, discount: e.target.value })} />
+                  <input type="number" step="any" placeholder="0" className="form-control bg-dark text-white border-secondary" value={currentMed.discount} onChange={(e) => setCurrentMed({ ...currentMed, discount: e.target.value })} />
                 </div>
                 <div className="col-md-4 mb-3">
-                  <label className="small text-white-50">Quantity</label>
-                  <input type="number" className="form-control bg-dark text-white border-secondary" value={currentMed.quantity} onChange={(e) => setCurrentMed({ ...currentMed, quantity: e.target.value })} />
+                  <label className="small text-white-50">Quantity*</label>
+                  <input type="number" placeholder="MedicineQuantity" className="form-control bg-dark text-white border-secondary" value={currentMed.quantity} onChange={(e) => setCurrentMed({ ...currentMed, quantity: e.target.value })} />
                 </div>
-                <div className="col-md-6 mb-3">
-                  <label className="small text-white-50">Expiry Date</label>
+                <div className="col-md-4 mb-3">
+                  <label className="small text-white-50">Type*</label>
+                  <select className="form-select bg-dark text-white border-secondary" value={currentMed.type} onChange={e => setCurrentMed({ ...currentMed, type: e.target.value })}>
+                    <option value="">Select</option>
+                    <option value="Medicines">Medicines</option>
+                    <option value="Personal Care">Personal Care</option>
+                    <option value="Health Conditions">Health Conditions</option>
+                    <option value="Vitamins & Supplements">Vitamins & Supplements</option>
+                    <option value="Diabetes Care">Diabetes Care</option>
+                    <option value="HealthCare Devices">HealthCare Devices</option>
+                    <option value="Homeopathic Medicine">Homeopathic Medicine</option>
+                    <option value="Health Guide">Health Guide</option>
+                  </select>
+                </div>
+                <div className="col-md-4 mb-3">
+                  <label className="small text-white-50">Medicine Type*</label>
+                  <input placeholder="Tablet/Syrup/Capsule" type="text" className="form-control bg-dark text-white border-secondary" value={currentMed.medicinesType} onChange={(e) => setCurrentMed({ ...currentMed, medicinesType: e.target.value })} />
+                </div>
+                <div className="col-md-4 mb-3">
+                  <label className="small text-white-50">Category*</label>
+                  <input placeholder="fever/pain...etc..Medicine" type="text" className="form-control bg-dark text-white border-secondary" value={currentMed.itemMedicine} onChange={(e) => setCurrentMed({ ...currentMed, itemMedicine: e.target.value })} />
+                </div>
+                <div className="col-md-4 mb-3">
+                  <label className="small text-white-50">Only Mg Medicine</label>
+                  <input placeholder="Mg value (e.g. 500mg)" type="text" className="form-control bg-dark text-white border-secondary" value={currentMed.onlyMgMedicine} onChange={(e) => setCurrentMed({ ...currentMed, onlyMgMedicine: e.target.value })} />
+                </div>
+                <div className="col-md-4 mb-3">
+                  <label className="small text-white-50">Expiry Date*</label>
                   <input 
                     type="date" 
                     className="form-control bg-dark text-white border-secondary" 
                     value={convertToInputDate(currentMed.expiryDate)} 
                     onChange={(e) => setCurrentMed({ ...currentMed, expiryDate: convertFromInputDate(e.target.value) })} 
-                    required 
                   />
                 </div>
-                <div className="col-md-6 mb-3">
-                  <label className="small text-white-50">Medicine Type</label>
-                  <input type="text" className="form-control bg-dark text-white border-secondary" value={currentMed.medicinesType} onChange={(e) => setCurrentMed({ ...currentMed, medicinesType: e.target.value })} />
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label className="small text-white-50">Category (ItemMedicine)</label>
-                  <input type="text" className="form-control bg-dark text-white border-secondary" value={currentMed.itemMedicine} onChange={(e) => setCurrentMed({ ...currentMed, itemMedicine: e.target.value })} />
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label className="small text-white-50">Type</label>
-                  <input type="text" className="form-control bg-dark text-white border-secondary" value={currentMed.type} onChange={(e) => setCurrentMed({ ...currentMed, type: e.target.value })} />
+                <div className="col-md-4 mb-3">
+                  <label className="small text-white-50">Upload Image File*</label>
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    className="form-control bg-dark text-white border-secondary" 
+                    onChange={handleEditImageChange} 
+                  />
                 </div>
               </div>
-
-              <div className="mb-3">
-                <label className="small text-white-50">Image</label>
-                <input type="file" className="form-control bg-dark text-white border-secondary mb-2" onChange={handleEditImageChange} accept="image/*" />
-                {currentMed.image && <img src={currentMed.image} width="60" className="rounded border border-secondary" alt="preview" />}
-              </div>
-
-              <div className="d-flex justify-content-end gap-2">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowEditModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-success px-4">Save Changes</button>
+              <div className="d-flex justify-content-end gap-2 mt-3">
+                <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowEditModal(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary btn-sm">Save Changes</button>
               </div>
             </form>
           </div>
@@ -702,5 +744,3 @@ export default function DeshboardPanel() {
     </div>
   );
 }
-
-

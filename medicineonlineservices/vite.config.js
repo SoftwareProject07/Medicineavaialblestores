@@ -27,3 +27,19 @@ export default defineConfig({
     }
   },
 })
+
+
+
+
+
+// export default defineConfig({
+//   server: {
+//     proxy: {
+//       '/api': {
+//         target: 'https://ecommerencesite.onrender.com',
+//         changeOrigin: true,
+//         secure: false,
+//       }
+//     }
+//   }
+// })
