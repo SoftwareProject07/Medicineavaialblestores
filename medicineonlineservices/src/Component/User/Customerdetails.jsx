@@ -102,6 +102,8 @@ export default function Customerdetails() {
           </div>
 
           <ul>
+                                                  <Link to="/dashboards"   className="modern-brand" style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingBottom: '20px', borderBottom: '1px solid #edf2f7', marginBottom: '20px', textDecoration: 'none' }} >
+            
             <li className="menu-group">
               <button
                 className="menu-title btn btn-success mb-2 d-flex justify-content-between align-items-center"
@@ -123,6 +125,7 @@ export default function Customerdetails() {
                 </ul>
               )}
             </li>
+            </Link>
     {/* MASTER UPDATE DROPDOWN */}
       <li className="menu-group">
         <button className="sidebar-btn dropdown-toggle" onClick={() => setOpenMasterUpdate(!openMasterUpdate)}>

@@ -184,3 +184,9 @@ height: 100%;
 }
 
 /* ==============ai boOOTOS INCLUDE=========== */
+.login-right  .social .icons {
+ color:white;
+ font-size: 20px;
+ text-decoration:none;
+  justify-content: space-between;
+}

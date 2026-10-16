@@ -11,8 +11,12 @@ export default function CartItem({ item, handleQuantity, remove }) {
           <button 
             className="btn btn-sm btn-white rounded-circle shadow-sm border fw-bold" 
             style={{ width: "28px", height: "28px" }}
-            onClick={() => handleQuantity(item.cartId, item.quantity, -1)}
-            disabled={item.quantity <= 1}
+           onClick={() => handleQuantity(item.cartId, item.quantity, -1)}
+                       //onClick={() => handleQuantity(item.cartId, item.quantity, 0)}
+
+             disabled={item.quantity <= 1}
+                     //  disabled={item.quantity = 0}
+
           > - </button>
 
           <span className="mx-3 fw-bold">{item.quantity}</span>
@@ -21,7 +25,9 @@ export default function CartItem({ item, handleQuantity, remove }) {
           <button 
             className="btn btn-sm btn-white rounded-circle shadow-sm border fw-bold" 
             style={{ width: "28px", height: "28px" }}
-            onClick={() => handleQuantity(item.cartId, item.quantity, 1)}
+             onClick={() => handleQuantity(item.cartId, item.quantity, 1)}
+                  //      onClick={() => handleQuantity(item.cartId, item.quantity, 0)}
+
           > + </button>
         </div>
       </td>

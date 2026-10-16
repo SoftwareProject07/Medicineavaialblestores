@@ -346,7 +346,14 @@ export default function DoctorPatientDetailsLists() {
                         {listsDropdownOpen && (
                             <div className="position-relative ms-3 mt-1 d-flex flex-column gap-1" style={{ paddingLeft: '8px', fontSize: '13px' }}>
                                 <div className="position-absolute" style={{ left: '6px', top: '0', bottom: '14px', width: '1.5px', backgroundColor: '#2d2d37' }}></div>
-                                
+                                  <Link to="/adminmediciationtrackers" className="btn btn-outline-success w-100 mb-2 text-start">Adminmediciationtrackers</Link> 
+            <Link to="/admintestreportss" className="btn btn-outline-success w-100 mb-2 text-start">AdminTestReports</Link>
+              <Link to="/adminhealthhistorys" className="btn btn-outline-success w-100 mb-2 text-start">AdminHelathHistory</Link>
+                <Link to="/adminmonthlyprogresses" className="btn btn-outline-success w-100 mb-2 text-start">AdminMonthlyProgress</Link>
+                <Link to="/adminprescriptions" className="btn btn-outline-success w-100 mb-2 text-start">AdminPrescriptions</Link>
+                  <Link to="/adminhistorymanagers" className="btn btn-outline-success w-100 mb-2 text-start">AdminHistoryManager</Link>
+                <Link to="/adminhelpsupports" className="btn btn-outline-success w-100 mb-2 text-start">AdminHelpSupport</Link>
+                <Link to="/adminandcustomerofferapps" className="btn btn-outline-success w-100 mb-2 text-start">AdminLabTest</Link>
                                 <Link to="/deshboardpanel" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">Dashboard</Link>
                                 <Link to="/customerlists" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">CustomerLIST</Link>
                                 <Link to="/" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">OrderPaymentList</Link>
@@ -363,7 +370,7 @@ export default function DoctorPatientDetailsLists() {
                                 <Link to="/customerdeliveryaddresslist" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">Customer_DeliveryAddressList</Link> 
                                 <Link to="/adminlivetracker" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">Livetracker</Link> 
                                 <Link to="/doctor_patientdetailslists" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">Doctor_PatientdetailsLists</Link>
-                                <Link to="/hiringcandidteapplieds" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">HiringDATA</Link>
+                                {/* <Link to="/hiringcandidteapplieds" className="btn btn-outline-success w-100 mb-1 text-start btn-sm">HiringDATA</Link> */}
                             </div>
                         )}
                     </div>

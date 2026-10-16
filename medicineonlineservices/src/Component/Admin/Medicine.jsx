@@ -448,6 +448,14 @@ export default function Medicine() {
           </div>
           {listsDropdownOpen && (
             <div className="ms-3 d-flex flex-column gap-1">
+                <Link to="/adminmediciationtrackers" className="btn btn-outline-success w-100 mb-2 text-start">Adminmediciationtrackers</Link> 
+            <Link to="/admintestreportss" className="btn btn-outline-success w-100 mb-2 text-start">AdminTestReports</Link>
+              <Link to="/adminhealthhistorys" className="btn btn-outline-success w-100 mb-2 text-start">AdminHelathHistory</Link>
+                <Link to="/adminmonthlyprogresses" className="btn btn-outline-success w-100 mb-2 text-start">AdminMonthlyProgress</Link>
+                <Link to="/adminprescriptions" className="btn btn-outline-success w-100 mb-2 text-start">AdminPrescriptions</Link>
+                  <Link to="/adminhistorymanagers" className="btn btn-outline-success w-100 mb-2 text-start">AdminHistoryManager</Link>
+                <Link to="/adminhelpsupports" className="btn btn-outline-success w-100 mb-2 text-start">AdminHelpSupport</Link>
+                <Link to="/adminandcustomerofferapps" className="btn btn-outline-success w-100 mb-2 text-start">AdminLabTest</Link>
                 <Link to="/deshboardpanel" className="btn btn-outline-success w-100 mb-2 text-start">Dashboard</Link> 
                 <Link to="/customerlists" className="btn btn-outline-success w-100 mb-2 text-start">CustomerLIST</Link>
                 <Link to="/adminFeedbackcustomerlists" className="btn btn-success w-100 mb-2 text-start">Feedback List</Link>
@@ -463,7 +471,7 @@ export default function Medicine() {
                 <Link to="/adminlivetracker" className="btn btn-outline-success w-100 mb-2 text-start">Livetracker</Link> 
                 <Link to="/doctor_patientdetailslists" className="btn btn-outline-success w-100 mb-2 text-start">Doctor_PatientdetailsLists</Link> 
                 <Link to="/hrdatalists" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATALIst</Link>
-                                           <li>    <Link to="/qrcodeupload" className="btn btn-outline-success w-100 mb-2 text-start">qrcodeupload</Link> </li>
+                 <Link to="/qrcodeupload" className="btn btn-outline-success w-100 mb-2 text-start">qrcodeupload</Link> 
                 
                 <Link to="/accountmanagerplanelists" className="btn btn-outline-success w-100 mb-2 text-start">AccountantManagerPanelLists</Link>
             </div>

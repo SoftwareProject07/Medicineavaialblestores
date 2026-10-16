@@ -207,7 +207,14 @@ export default function CustomerList() {
             {listsDropdownOpen && (
               <div className="position-relative ms-3 mt-1 d-flex flex-column" style={{ paddingLeft: '8px', fontSize: '13px' }}>
                 <div className="position-absolute" style={{ left: '6px', top: '0', bottom: '14px', width: '1.5px', backgroundColor: '#2d2d37' }}></div>
-                
+         <li>         <Link to="/adminmediciationtrackers" className="btn btn-outline-success w-100 mb-2 text-start">Adminmediciationtrackers</Link> </li>
+        <li>     <Link to="/admintestreportss" className="btn btn-outline-success w-100 mb-2 text-start">AdminTestReports</Link></li>
+        <li>      <Link to="/adminhealthhistorys" className="btn btn-outline-success w-100 mb-2 text-start">AdminHelathHistory</Link></li>
+          <li>       <Link to="/adminmonthlyprogresses" className="btn btn-outline-success w-100 mb-2 text-start">AdminMonthlyProgress</Link></li>
+           <li>      <Link to="/adminprescriptions" className="btn btn-outline-success w-100 mb-2 text-start">AdminPrescriptions</Link></li>
+        <li>            <Link to="/adminhistorymanagers" className="btn btn-outline-success w-100 mb-2 text-start">AdminHistoryManager</Link></li>
+         <li>       <Link to="/adminhelpsupports" className="btn btn-outline-success w-100 mb-2 text-start">AdminHelpSupport</Link></li>
+          <li>      <Link to="/adminandcustomerofferapps" className="btn btn-outline-success w-100 mb-2 text-start">AdminLabTest</Link></li>
                 <li><Link to="/deshboardpanel" className="btn btn-outline-success w-100 mb-2 text-start">Dashboard</Link></li> 
                 <li><Link to="/customerlists" className="btn btn-outline-success w-100 mb-2 text-start">CustomerLIST</Link></li>
                 <li><Link to="/customerlists" className="btn btn-outline-success w-100 mb-2 text-start">OrderPaymentList</Link></li>

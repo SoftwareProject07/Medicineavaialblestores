@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { User, Phone, Circle, X, ArrowLeft, Package } from "lucide-react";
@@ -96,6 +97,17 @@ export default function Orderstatus() {
   
   const orderNumber = orderId.replace("#", "").trim();
 
+  // Check if this order was already cancelled previously and stored in localStorage
+  useEffect(() => {
+    const cancelledOrdersMap = JSON.parse(localStorage.getItem("cancelled_orders_map") || "{}");
+    if (cancelledOrdersMap[orderNumber]) {
+      setIsOrderCancelled(true);
+      setCurrentOrderStatus("Cancelled");
+      setCancelReason(cancelledOrdersMap[orderNumber].reason || "");
+      setCancelledDateTime(cancelledOrdersMap[orderNumber].cancelledAt || "");
+    }
+  }, [orderNumber]);
+
   const receiverName = selectedAddress?.fullName || selectedAddress?.name || "Gautam Dev";
   const [receiverPhone] = useState(selectedAddress?.mobileNumber || selectedAddress?.phone || "7033132629");
   
@@ -105,12 +117,14 @@ export default function Orderstatus() {
   const [currentOrderStatus, setCurrentOrderStatus] = useState("Pending"); 
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
+  const [isCancelledChecked, setIsCancelledChecked] = useState(false); 
+  const [isOrderCancelled, setIsOrderCancelled] = useState(false); 
+  const [cancelledDateTime, setCancelledDateTime] = useState("");
 
   const isActive = (path) => location.pathname === path;
   const getInitial = () => (user?.firstName ? user.firstName.charAt(0).toUpperCase() : "G");
 
   const [apiOrderItems, setApiOrderItems] = useState(null);
-  const [apiOrderTotal, setApiOrderTotal] = useState(null);
   const [apiPaymentMode, setApiPaymentMode] = useState(null);
 
   const getFallbackImage = (name) => {
@@ -143,21 +157,17 @@ export default function Orderstatus() {
   
   const paymentMode = apiPaymentMode || location.state?.paymentMode || "Cash on Delivery (COD)";
 
-  const totalMRP = location.state?.totalMRP ?? cartItems.reduce((acc, item) => {
-    const mrpVal = Number(item.mrp || item.price || item.unitPrice || 225);
+  const totalMRP = Number(location.state?.totalMRP ?? cartItems.reduce((acc, item) => {
+    const mrpVal = Number(item.mrp || item.totalMRP || item.price || item.unitPrice || 0);
     const qty = Number(item.quantity || item.qty || 1);
     return acc + (mrpVal * qty);
-  }, 450);
+  }, 0));
 
-  const discountAmount = location.state?.discountAmount ?? 0;
-  const platformFee = location.state?.platformFee ?? 0;
-  const couponDiscount = location.state?.couponDiscount ?? 0;
+  const platformFee = Number(location.state?.platformFee ?? 0);
+  const couponDiscount = Number(location.state?.couponDiscount ?? 0);
   
-  const finalPayableAmount = apiOrderTotal !== null 
-    ? apiOrderTotal 
-    : (location.state?.finalPayableAmount ?? location.state?.orderTotal ?? location.state?.ordertotal ?? 450);
+  const finalPayableAmount = Number(location.state?.finalPayableAmount ?? location.state?.orderTotal ?? location.state?.ordertotal ?? 0);
 
-  // Backend Order Sync Guard & Error Diagnostics
   const hasSyncedRef = useRef(false);
 
   useEffect(() => {
@@ -173,10 +183,10 @@ export default function Orderstatus() {
             storeId: 1,   
             orderNumber: orderNumber || "780649",
             ordertotal: Number(finalPayableAmount),
-            orderStatus: currentOrderStatus || "" ,//|| "Pending",
+            orderStatus: currentOrderStatus || "", 
             paymentMode: paymentMode || "", 
-            distanceInKm: 5.0,        // Fixed: Defined directly as number/string value
-            estimatedTime: "3-5 days", // Fixed: Defined directly as string value
+            distanceInKm: 5.0,        
+            estimatedTime: "3-5 days", 
             createdAt: new Date().toISOString(),
             orderItemss: cartItems.map(item => ({
               id: 0,
@@ -189,11 +199,8 @@ export default function Orderstatus() {
             }))
           };
 
-          console.log("Sending payload to backend:", payload);
-
           const response = await axios.post(
-           // "http://localhost:5256/api/OrderAPI/CreateOrder", 
-           "https://ecommerencesite.onrender.com/api/OrderAPI/CreateOrder",
+            "https://ecommerencesite.onrender.com/api/OrderAPI/CreateOrder",
             payload,
             {
               headers: {
@@ -202,40 +209,15 @@ export default function Orderstatus() {
             }
           );
 
-          console.log("Backend response received:", response.data);
-
           if (response.data) {
             const returnedOrderNum = response.data.orderNumber || response.data.ordernum || response.data.id || response.data.orderId;
             if (returnedOrderNum) {
               const cleanNum = String(returnedOrderNum).replace("#", "").trim();
               setOrderId(`#${cleanNum}`);
             }
-            Swal.fire({
-              icon: 'success',
-              title: 'Order Saved!',
-              text: 'Order successfully registered in database.',
-              background: '#121212',
-              color: '#fff',
-              confirmButtonColor: '#0fa462',
-              timer: 2000
-            });
           }
         } catch (err) {
           console.error("Backend order sync error:", err.response?.data || err.message);
-          
-          const errorMsg = typeof err.response?.data === 'string' 
-            ? err.response.data 
-            : JSON.stringify(err.response?.data || err.message);
-
-          Swal.fire({
-            icon: 'error',
-            title: 'Database Sync Failed',
-            text: `Backend Error: ${errorMsg}`,
-            background: '#121212',
-            color: '#fff',
-            confirmButtonColor: '#0fa462'
-          });
-
           hasSyncedRef.current = false; 
         }
       }
@@ -243,18 +225,59 @@ export default function Orderstatus() {
     registerOrderOnBackend();
   }, [cartItems, finalPayableAmount, paymentMode, selectedAddress, user, orderNumber, currentOrderStatus]);
 
-  const handleCancelOrder = () => {
-    if (!cancelReason.trim()) {
+  const handleCancelOrder = async () => {
+    if (!isCancelledChecked) {
       Swal.fire({
         icon: 'warning',
-        title: 'Reason Required',
-        text: 'Please enter a mandatory reason for cancellation.',
+        title: 'Checkbox Required',
+        text: 'Please tick the checkbox to confirm cancellation.',
         background: '#121212',
         color: '#fff',
         confirmButtonColor: '#0fa462'
       });
       return;
     }
+    if (!cancelReason.trim()) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Remarks Required',
+        text: 'Please enter mandatory remarks/reason for cancellation.',
+        background: '#121212',
+        color: '#fff',
+        confirmButtonColor: '#0fa462'
+      });
+      return;
+    }
+
+    const now = new Date();
+    const formattedDate = now.toLocaleDateString();
+    const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const dateTimeStr = `${formattedDate} at ${formattedTime}`;
+    
+    setCancelledDateTime(dateTimeStr);
+    setIsOrderCancelled(true);
+    setCurrentOrderStatus("Cancelled");
+
+    // Save cancellation state to localStorage so the Orders list page catches it immediately
+    const cleanOrderNum = orderNumber.replace("#", "").trim();
+    const cancelledOrdersMap = JSON.parse(localStorage.getItem("cancelled_orders_map") || "{}");
+    cancelledOrdersMap[cleanOrderNum] = {
+      reason: cancelReason,
+      cancelledAt: dateTimeStr
+    };
+    localStorage.setItem("cancelled_orders_map", JSON.stringify(cancelledOrdersMap));
+
+    // Optional: Call your backend to update order status if API is ready
+    try {
+      await axios.put("https://ecommerencesite.onrender.com/api/OrderAPI/UpdateOrderStatus", {
+        orderNumber: cleanOrderNum,
+        orderStatus: "Cancelled",
+        cancelReason: cancelReason
+      });
+    } catch (err) {
+      console.log("Backend status update skipped or failed, handled via local storage cache.");
+    }
+    
     Swal.fire({
       icon: 'success',
       title: 'Cancelled',
@@ -264,7 +287,6 @@ export default function Orderstatus() {
       confirmButtonColor: '#0fa462'
     });
     setCancelModalOpen(false);
-    navigate("/order");
   };
 
   return (
@@ -373,7 +395,8 @@ export default function Orderstatus() {
             </MapContainer>
           </div>
 
-          <div className="p-4 rounded-4 mb-4" style={{ background: '#1a1a1a', border: '1px solid #333', width: '100%' }}>
+          <div className="p-4 rounded-4 mb-4"  style={{ background: 'red', border: '1px solid #333', width: '100%' }}>
+          {/* style={{ background: '#1a1a1a', border: '1px solid #333', width: '100%' }}> */}
             <h5 className="text-white mb-4 fw-bold fs-6">LIVE DELIVERY PROGRESS STATUS</h5>
             <div className="tracking-timeline">
               <div className="timeline-step">
@@ -386,15 +409,29 @@ export default function Orderstatus() {
                 <div className="text-white fw-semibold">Shipped / Hub Reached</div>
                 <div className="text-muted small">Product has left the dispatch facility.</div>
               </div>
+
               <div className="timeline-step">
-                <div className="timeline-icon text-success"><Circle size={14} fill={currentOrderStatus === 'Delivered' ? '#0fa462' : '#444'} /></div>
-                <div className="text-white fw-semibold">Out For Delivery (Expected in 3-5 days)</div>
-                <div className="text-muted small">Delivery executive will be assigned shortly.</div>
+                <div className="timeline-icon text-success">
+                  <Circle size={14} fill={isOrderCancelled ? '#ff4d4d' : (currentOrderStatus === 'Delivered' ? '#0fa462' : '#444')} />
+                </div>
+                {isOrderCancelled ? (
+                  <div>
+                    <div className="text-danger fw-semibold">Order Cancelled</div>
+                    <div className="text-muted small">Reason: {cancelReason}</div>
+                    <div className="text-muted" style={{ fontSize: '0.75rem', marginTop: '2px' }}>Cancelled on: {cancelledDateTime}</div>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="text-white fw-semibold">Out For Delivery (Expected in 3-5 days)</div>
+                    <div className="text-muted small fw-semibold">Delivery executive will be assigned shortly.</div>
+                  </div>
+                )}
               </div>
+
               <div className="timeline-step">
                 <div className="timeline-icon text-secondary"><Circle size={14} fill={currentOrderStatus === 'Delivered' ? '#0fa462' : '#444'} /></div>
                 <div className="text-muted fw-semibold">Delivered</div>
-                <div className="text-muted small">Delivery expected soon at your address.</div>
+                <div className="text-muted   fw-semibold small">Delivery expected soon at your address.</div>
               </div>
             </div>
           </div>
@@ -404,11 +441,13 @@ export default function Orderstatus() {
               <h6 className="text-secondary small mb-0">Delivery Address</h6>
               <span className="badge bg-success text-white px-2 py-1" style={{ fontSize: '10px' }}>HOME</span>
             </div>
-            <div className="text-white fw-bold">{addressLine} - {addressPincode}</div>
+            <div className="text-white fw-bold">{addressLine} {addressPincode}</div>
             <div className="mt-3 p-3 rounded-3" style={{ background: '#252525', border: '1px solid #444' }}>
               <div className="text-success small fw-bold mb-1">RECEIVER DETAILS</div>
               <div className="text-white fw-semibold">{receiverName}</div>
-              <div className="text-muted small"><Phone size={12} className="me-1" />{receiverPhone}</div>
+              <div className="text-muted small" style={{ fontSize: '0.78rem', backgroundColor: 'red' }}>
+                <Phone size={12} className="me-1" />{receiverPhone}
+              </div>
             </div>
           </div>
 
@@ -465,10 +504,6 @@ export default function Orderstatus() {
                 <span>₹{Number(totalMRP).toFixed(0)}</span>
               </div>
               <div className="d-flex justify-content-between text-light small mb-1">
-                <span>Discount:</span>
-                <span className="text-danger">-₹{Number(discountAmount).toFixed(0)}</span>
-              </div>
-              <div className="d-flex justify-content-between text-light small mb-1">
                 <span>Platform Fee:</span>
                 <span>+₹{Number(platformFee).toFixed(0)}</span>
               </div>
@@ -488,13 +523,15 @@ export default function Orderstatus() {
           </div>
 
           <div className="mb-5" style={{ width: '100%' }}>
-            <button 
-              className="btn w-100 text-white py-2 fw-semibold mb-3" 
-              style={{ background: '#5a1212', border: '1px solid #ff4d4d' }}
-              onClick={() => setCancelModalOpen(true)}
-            >
-              🚫 Cancel Item (Reason Mandatory)
-            </button>
+            {!isOrderCancelled && (
+              <button 
+                className="btn w-100 text-white py-2 fw-semibold mb-3" 
+                style={{ background: '#5a1212', border: '1px solid #ff4d4d' }}
+                onClick={() => setCancelModalOpen(true)}
+              >
+                🚫 Cancel Item (Reason Mandatory)
+              </button>
+            )}
             <button 
               className="btn btn-success w-100 py-3 fw-bold shadow"
               style={{ backgroundColor: "#0fa462", border: 'none' }}
@@ -508,11 +545,25 @@ export default function Orderstatus() {
             <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <div className="p-4 rounded-4" style={{ background: '#1e1e1e', border: '1px solid #444', width: '90%', maxWidth: '400px' }}>
                 <h5 className="text-white mb-3">Cancel Order / Item ({orderId})</h5>
-                <p className="text-muted small mb-3">Please provide a mandatory reason for cancellation:</p>
+                
+                <div className="form-check mb-3">
+                  <input 
+                    className="form-check-input" 
+                    type="checkbox" 
+                    id="cancelCheckbox" 
+                    checked={isCancelledChecked}
+                    onChange={(e) => setIsCancelledChecked(e.target.checked)}
+                  />
+                  <label className="form-check-label text-light small" htmlFor="cancelCheckbox">
+                    I confirm that I want to cancel this order.
+                  </label>
+                </div>
+
+                <p className="text-muted small mb-2">Please provide mandatory remarks/reason for cancellation:</p>
                 <textarea 
                   className="form-control bg-dark text-white mb-3" 
                   rows="3" 
-                  placeholder="Enter reason here..." 
+                  placeholder="Enter remarks here..." 
                   value={cancelReason}
                   onChange={(e) => setCancelReason(e.target.value)}
                   style={{ borderColor: '#444' }}
@@ -530,3 +581,6 @@ export default function Orderstatus() {
     </div>
   );
 }
+
+
+

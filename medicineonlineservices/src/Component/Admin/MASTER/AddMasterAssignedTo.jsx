@@ -340,6 +340,14 @@ export default function AddMasterAssignedTo() {
               <i className={`fas ${isShopOpen ? "fa-toggle-on text-success" : "fa-toggle-off text-danger"}`}></i>
             </div>
           </li>
+            <Link to="/adminmediciationtrackers" className={getSubLinkClass("/adminmediciationtrackers")}>Adminmediciationtrackers</Link> 
+                <Link to="/admintestreportss" className={getSubLinkClass("/admintestreportss")}>AdminTestReports</Link>
+                <Link to="/adminhealthhistorys" className={getSubLinkClass("/adminhealthhistorys")}>AdminHelathHistory</Link>
+                <Link to="/adminmonthlyprogresses" className={getSubLinkClass("/adminmonthlyprogresses")}>AdminMonthlyProgress</Link>
+                <Link to="/adminprescriptions" className={getSubLinkClass("/adminprescriptions")}>AdminPrescriptions</Link>
+                <Link to="/adminhistorymanagers" className={getSubLinkClass("/adminhistorymanagers")}>AdminHistoryManager</Link>
+                <Link to="/adminhelpsupports" className={getSubLinkClass("/adminhelpsupports")}>AdminHelpSupport</Link>
+                <Link to="/adminandcustomerofferapps" className="btn btn-outline-success w-100 mb-2 text-start">AdminLabTest</Link>
           <li><Link to="/deshboardpanel" className="btn btn-outline-success w-100 mb-2 text-start">Dashboard</Link></li> 
           <li><Link to="/customerlists" className="btn btn-outline-success w-100 mb-2 text-start">Customer LIST</Link></li>
           <li><Link to="/customerlists" className="btn btn-outline-success w-100 mb-2 text-start">OrderPaymentList</Link></li>
@@ -358,6 +366,8 @@ export default function AddMasterAssignedTo() {
                     <li><Link to="/customerdeliveryaddresslist" className="btn btn-outline-success w-100 mb-2 text-start">Customer_DeliveryAddressList</Link> </li>
  <li>   <Link to="/doctor_patientdetailslists" className="btn btn-outline-success w-100 mb-1 text-start btn-sm" style={{ fontSize: '12px' }}>Doctor_PatientdetailsLists         
          </Link></li>
+                                    <li>    <Link to="/qrcodeupload" className="btn btn-outline-success w-100 mb-2 text-start">qrcodeupload</Link> </li>
+         
 <li><Link to="/hrdatalists" className="btn btn-outline-success w-100 mb-2 text-start">HiringDATALIst</Link></li>
  <li><Link to="/accountmanagerplanelists" className="btn btn-outline-success w-100 mb-2 text-start">AccountantManagerPanelLists</Link></li>
           <li className="mt-3">

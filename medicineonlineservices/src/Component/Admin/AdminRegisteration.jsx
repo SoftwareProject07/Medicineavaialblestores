@@ -17,6 +17,9 @@ export default function AdminRegisteration() {
   const [middlename, setMiddleName] = useState("");
   const [lastname, setLastName] = useState("");
   const [password, setPassword] = useState("");
+ // const [securitypassword, setSecuritypassword]=useState("");
+  //const [securityShowpassword, setShowSecuritypassword]=useState(false);
+
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [adminType, setAdminType] = useState(""); // <--- नया Admin Type स्टेट जोड़ा गया
@@ -67,6 +70,7 @@ export default function AdminRegisteration() {
       middleName: middlename || "",
       lastName: lastname,
       password: password,
+     // securitypassword :securitypassword,
       email: email,
       mobileNumber: mobile,
       fund: 0,
@@ -104,6 +108,7 @@ export default function AdminRegisteration() {
     setMiddleName("");
     setLastName("");
     setPassword("");
+    // setSecuritypassword("");
     setEmail("");
     setMobile("");
     setAdminType(""); // <--- सही स्टेट रीसेट फंक्शन
@@ -301,7 +306,7 @@ export default function AdminRegisteration() {
                           </button>
                         </div>
                       </div>
-
+                      
                       <div className="mb-4">
                         <label className="form-label fw-semibold text-secondary">Email</label>
                         <input type="email" className="form-control" placeholder="Email ID"

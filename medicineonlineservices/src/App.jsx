@@ -75,6 +75,8 @@ import AdminMonthlyProgresses from "./ADMINDASHBOARDPANEL/AdminMonthlyProgresses
 import AdminPrescriptions from "./ADMINDASHBOARDPANEL/AdminPrescriptions.jsx";
 import AdminHistoryManager from "./ADMINDASHBOARDPANEL/AdminHistoryManager.jsx";
 import AdminHelpSupport from "./ADMINDASHBOARDPANEL/AdminHelpSupport.jsx";
+import AdminAndCustomerOfferApp from "./ADMINDASHBOARDPANEL/AdminAndCustomerOfferApp.jsx";
+import HAPPYCLIENT from "./Component/Admin/HAPPYCLIENT.jsx";
 // import OfficeExecutivePanel from "./Component/Admin/OfficeExecutivePanel.jsx";
 // import AdminMedicineList from "./ADMIN LIST/AdminMedicineList.jsx";
 // import BankMasterList from "./ADMIN LIST/BankMasterList.jsx";
@@ -217,6 +219,12 @@ if (loading) {
 <Route path="/adminhistorymanagers" element={<AdminHistoryManager />} />
 <Route path="/adminhelpsupports"  element= {<AdminHelpSupport />} />
 
+<Route path="/adminandcustomerofferapps" element={<AdminAndCustomerOfferApp /> } />
+
+
+{/* HAPPY CLINET */}
+
+<Route path="/happyclients" element={<HAPPYCLIENT />} />
 
 
 {/* <Route path="/officeexecutivepanels" element={<OfficeExecutivePanel />} /> */}

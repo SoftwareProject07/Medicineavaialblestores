@@ -930,7 +930,11 @@ export default function CompletePayment() {
           </Link>
 
           <nav className="nav-menu" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+
             <div>
+                                      <Link to="/dashboards"   className="modern-brand" style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingBottom: '20px', borderBottom: '1px solid #edf2f7', marginBottom: '20px', textDecoration: 'none' }} >
+
+              
               <button 
                 className={`nav-item dropdown-toggle-btn ${openDashboard ? 'active' : ''}`} 
                 onClick={() => setOpenDashboard(!openDashboard)}
@@ -955,7 +959,9 @@ export default function CompletePayment() {
                   <Link to="/settings" className="submenu-item" style={{ textDecoration: 'none', color: '#4a5568', fontSize: '0.9rem' }}><i className="fa-solid fa-gear me-2"></i> Settings</Link>
                 </div>
               )}
+</Link>
             </div>
+                            
 
             <div>
               <button 

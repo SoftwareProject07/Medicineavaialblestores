@@ -178,10 +178,13 @@ export default function AddBankRefundableAmount() {
                     </Link>
 
                     {/* Nav List */}
+
                     <ul className="modern-nav-menu" style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                        
+
                         {/* Dashboard Accordion */}
                         <li>
+                                               <Link to="/dashboards"   className="modern-brand" style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingBottom: '20px', borderBottom: '1px solid #edf2f7', marginBottom: '20px', textDecoration: 'none' }} >
+
                             <button
                                 className={`modern-nav-item ${isActive("/dashboards") ? "active" : ""}`}
                                 onClick={() => setOpenDashboard(!openDashboard)}
@@ -193,6 +196,8 @@ export default function AddBankRefundableAmount() {
                                 </div>
                                 <i className={`fa-solid ${openDashboard ? "fa-chevron-down" : "fa-chevron-right"}`} style={{ fontSize: "0.75rem" }}></i>
                             </button>
+                            </Link>
+                            </li>
 
                             {openDashboard && (
                                 <ul className="modern-submenu" style={{ listStyle: 'none', paddingLeft: '34px', marginTop: '6px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -205,8 +210,9 @@ export default function AddBankRefundableAmount() {
                                     <li><Link to="/support" style={{ textDecoration: 'none', color: '#4a5568', fontSize: '0.9rem' }}>Help & Support</Link></li>
                                     <li><Link to="/settings" style={{ textDecoration: 'none', color: '#4a5568', fontSize: '0.9rem' }}>Settings</Link></li>
                                 </ul>
+                                
                             )}
-                        </li>
+                    
 
                         {/* Master Update Accordion */}
                         <li>

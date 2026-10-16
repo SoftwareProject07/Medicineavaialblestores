@@ -73,6 +73,8 @@ import AdminMonthlyProgresses from '../ADMINDASHBOARDPANEL/AdminMonthlyProgresse
 import AdminPrescriptions from '../ADMINDASHBOARDPANEL/AdminPrescriptions.jsx';
 import AdminHistoryManager from '../ADMINDASHBOARDPANEL/AdminHistoryManager.jsx';
 import AdminHelpSupport from '../ADMINDASHBOARDPANEL/AdminHelpSupport.jsx';
+import AdminAndCustomerOfferApp from '../ADMINDASHBOARDPANEL/AdminAndCustomerOfferApp.jsx';
+import HAPPYCLIENT from './Admin/HAPPYCLIENT.jsx';
 // import OfficeExecutivePanel from './Admin/OfficeExecutivePanel.jsx';
 // import AdminMedicineList from '../ADMIN LIST/AdminMedicineList.jsx';
 // import BankMasterList from '../ADMIN LIST/BankMasterList.jsx';
@@ -196,6 +198,10 @@ export default function Routerpage() {
 <Route path="/adminhistorymanagers" element={<AdminHistoryManager />} /> 
 <Route path="/adminhelpsupports" element={<AdminHelpSupport /> }/>
 
+<Route path="/adminandcustomerofferapps" element={<AdminAndCustomerOfferApp />} />
+
+{/* happy client react code  */}
+<Route path="/happyclients" element={<HAPPYCLIENT />} />  
 {/* <Route path="/officeexecutivepanels"  element={<OfficeExecutivePanel/> } /> */}
 
 

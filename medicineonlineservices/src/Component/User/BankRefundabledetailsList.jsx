@@ -255,6 +255,8 @@ export default function BankRefundabledetailsList() {
    
           <ul className="modern-nav-menu">
             <li>
+              <Link to="/dashboards"   className="modern-brand" style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingBottom: '20px', borderBottom: '1px solid #edf2f7', marginBottom: '20px', textDecoration: 'none' }} >
+              
               <button className={`modern-nav-item ${isActive("/dashboards") ? "active" : ""}`} onClick={() => setOpenDashboard(!openDashboard)}>
                 <div className="modern-link-content">
                   <i className="fa-solid fa-chart-pie"></i>
@@ -275,6 +277,7 @@ export default function BankRefundabledetailsList() {
                   <li><Link to="/settings">Settings</Link></li>
                 </ul>
               )}
+              </Link>
             </li>
    
             <li>

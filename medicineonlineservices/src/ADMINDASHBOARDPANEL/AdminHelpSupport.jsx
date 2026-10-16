@@ -826,6 +826,8 @@ export default function AdminHelpSupport() {
                 <Link to="/adminprescriptions" className={getSubLinkClass("/adminprescriptions")}>AdminPrescriptions</Link>
                 <Link to="/adminhistorymanagers" className={getSubLinkClass("/adminhistorymanagers")}>AdminHistoryManager</Link>
                 <Link to="/adminhelpsupports" className={getSubLinkClass("/adminhelpsupports")}>AdminHelpSupport</Link>
+                <Link to="/adminandcustomerofferapps" className={getSubLinkClass("/adminandcustomerofferapps")}>AdminLabTest</Link>
+
                 <Link to="/deshboardpanel" className={getSubLinkClass("/deshboardpanel")}>Dashboard</Link> 
                 <Link to="/customerlists" className={getSubLinkClass("/customerlists")}>CustomerLIST</Link>
                 <Link to="/adminFeedbackcustomerlists" className={getSubLinkClass("/adminFeedbackcustomerlists")}>Feedback List</Link>

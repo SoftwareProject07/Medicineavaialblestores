@@ -199,7 +199,28 @@ export default function Login() {
           <div className="social">
             <span>Sign in with</span>
             <div className="icons">
-              <FaFacebook /> <FaTwitter /> <FaGoogle /> <FaLinkedin /> <FaInstagram />
+              {/* <FaFacebook /> */}
+             <a href="https://facebook.com"  target="_blank"  className="text-primary" ><FaFacebook /></a>
+              <a href="https://twitter.com" target="_blank" rel="noreferrer" className="text-info"><FaTwitter /></a>
+              <a href="https://google.com" target="_blank" rel="noreferrer" className="text-danger"><FaGoogle /></a>
+              <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="text-primary"><FaLinkedin /></a>
+              <a href="https://instagram.com" target="_blank" rel="noreferrer" className="text-danger"><FaInstagram /></a>
+               {/* <FaTwitter /> 
+               <FaGoogle /> 
+               <FaLinkedin />
+                <FaInstagram /> */}
+
+                {/* <a href="" target="_blank"  className="text-primary"><i className="fab fa-facebook-f"></i></a>
+                <a href="" target="_blank" rel="noreferrer" className="text-info"><i className="fab fa-twitter"></i></a>
+                <a href="" target="_blank" rel="noreferrer" className="text-danger"><i className="fab fa-google"></i></a>
+                <a href="" target="_blank" rel="noreferrer" className="text-primary"><i className="fab fa-linkedin-in"></i></a>
+                <a href="" target="_blank" rel="noreferrer" className="text-danger"><i className="fab fa-instagram"></i></a>
+   */}
+               
+               {/* <a href="https://instagram.com" target="_blank" rel="noreferrer" className="text-primary"><i className="fab fa-instagram"></i></a>
+                <a href="https://facebook.com" target="_blank" rel="noreferrer" className="text-primary"><i className="fab fa-facebook-f"></i></a>
+               <a href="https://youtube.com" target="_blank" rel="noreferrer" className="text-danger"><i className="fab fa-youtube"></i></a>
+               <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="text-primary"><i className="fab fa-linkedin-in"></i></a> */}
             </div>
           </div>
 
