@@ -2706,6 +2706,730 @@
 //5.
 
 
+// import React, { useState, useEffect } from "react";
+// import { Link, useLocation, useNavigate } from "react-router-dom";
+// import { useCart } from "./CartContext";
+// import { QRCodeSVG } from "qrcode.react";
+// import Swal from "sweetalert2";
+// import axios from "axios";
+// import "../styles/CompletePayments.css";
+
+// export default function CompletePayment() {
+//   const location = useLocation();
+//   const navigate = useNavigate();
+  
+//   const { cartItems, setCartItems, clearCartState } = useCart();
+
+//   // --- STATE MANAGEMENT ---
+//   const [user, setUser] = useState(null);
+//   const [activeMethod, setActiveMethod] = useState("UPI");
+  
+//   // Sidebar Accordion States
+//   const [openDashboard, setOpenDashboard] = useState(false);
+//   const [openMasterUpdate, setOpenMasterUpdate] = useState(false);
+  
+//   // Validation States & Dynamic Data States
+//   const [upiId, setUpiId] = useState("");
+//   const [isUpiVerified, setIsUpiVerified] = useState(false);
+  
+//   const [cardData, setCardData] = useState({
+//     number: "",
+//     expiry: "",
+//     cvv: "",
+//     name: ""
+//   });
+//   const [isCardVerified, setIsCardVerified] = useState(false);
+
+//   // QR Code Payment State & Polling
+//   const [isQrPaid, setIsQrPaid] = useState(false);
+
+//   // Wallet States
+//   const [walletDropdownOpen, setWalletDropdownOpen] = useState(false);
+//   const [selectedWallet, setSelectedWallet] = useState("");
+//   const [walletBalance, setWalletBalance] = useState(null);
+//   const [medicineCoins, setMedicineCoins] = useState(150);
+
+//   // Net Banking States
+//   const [savedBanks, setSavedBanks] = useState([]);
+//   const [selectedBankName, setSelectedBankName] = useState("");
+
+//   // --- API BASE URL FOR LOCAL BACKEND ---
+//   const API_BASE_URL ="https://ecommerencesite.onrender.com/api/PaymentAPI";  
+//    //"http://localhost:5256/api/PaymentAPI";
+
+//   // --- RESTORE CART ITEMS ON UNMOUNT / NAVIGATION IF UNPAID ---
+//   useEffect(() => {
+//     const savedBackup = localStorage.getItem("pendingCartItems");
+//     if (savedBackup && cartItems.length === 0) {
+//       try {
+//         const parsed = JSON.parse(savedBackup);
+//         if (parsed && parsed.length > 0 && typeof setCartItems === "function") {
+//           setCartItems(parsed);
+//         }
+//       } catch (e) {
+//         console.error("Cart restore error", e);
+//       }
+//     }
+
+//     return () => {
+//       const isPaid = localStorage.getItem("payment_success_flag");
+//       if (!isPaid) {
+//         const backupCart = localStorage.getItem("pendingCartItems");
+//         if (backupCart && typeof setCartItems === "function") {
+//           try {
+//             setCartItems(JSON.parse(backupCart));
+//           } catch (e) {}
+//         }
+//       } else {
+//         localStorage.removeItem("payment_success_flag");
+//         localStorage.removeItem("pendingCartItems");
+//       }
+//     };
+//   }, []);
+
+//   // --- API DATA FETCHING & RAZORPAY SCRIPT ---
+//   useEffect(() => {
+//     fetch('https://ecommerencesite.onrender.com/api/bankselectmodelsAPI/GetAllBankSelect')
+//       .then(res => res.json())
+//       .then(data => {
+//         const uniqueNames = [...new Set(data.map(item => item.bankName).filter(name => name && name.trim() !== ""))];
+//         setSavedBanks(uniqueNames);
+//       })
+//       .catch(err => console.error('Error fetching bank select details:', err));
+
+//     const storedUser = localStorage.getItem("user");
+//     if (storedUser) setUser(JSON.parse(storedUser));
+
+//     if (!document.getElementById("razorpay-checkout-script")) {
+//       const script = document.createElement("script");
+//       script.id = "razorpay-checkout-script";
+//       script.src = "https://checkout.razorpay.com/v1/checkout.js";
+//       script.async = true;
+//       document.body.appendChild(script);
+//     }
+//   }, []);
+
+//   // --- EXACT SELLING PRICE AS MRP & FIXED DISCOUNT CALCULATION ---
+//   const platformFee = 7;
+//   const couponApplied = 10;
+
+//   // Cart ke items ka exact selling price total sum (Jaise ₹5)
+//   const totalSellingPriceSum = cartItems.reduce((acc, item) => {
+//     const qty = Number(item.quantity) || 1;
+//     const unitPrice = Number(item.unitPrice || item.price || item.sellingPrice || 5);
+//     return acc + (unitPrice * qty);
+//   }, 0);
+
+//   // Total MRP wahi exact sum hoga (jaise ₹5)
+//   const effectiveMRP = totalSellingPriceSum > 0 ? totalSellingPriceSum : 5;
+
+//   // Agar aapko 15% discount dikhana hai jo MRP me se minus hoga:
+//   const discount = Math.round((effectiveMRP * 0.15) * 100) / 100; // Jaise ₹0.75
+
+//   // Final Total Amount Calculation: (Total MRP - Discount + Platform Fee - Coupon)
+//   const rawTotal = effectiveMRP - discount + platformFee - couponApplied;
+//   const finalTotal = rawTotal > 0 ? Math.round(rawTotal * 100) / 100 : 1;
+//   // --- USER PROFILE HELPERS ---
+//   const fullName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : "Gautam Dev";
+//   const userInitial = fullName ? fullName.charAt(0).toUpperCase() : "G";
+
+//   // --- UPI VERIFY & API INTEGRATION ---
+//   const handleUpiVerify = async () => {
+//     if (!upiId.trim()) {
+//       Swal.fire({ icon: 'warning', title: 'Enter UPI ID', text: 'Kripya UPI ID daalein.' });
+//       return;
+//     }
+
+//     try {
+//       const response = await axios.post(`${API_BASE_URL}/validate-vpa`, JSON.stringify(upiId), {
+//         headers: { 'Content-Type': 'application/json' }
+//       });
+
+//       if (response.data && response.data.isValid) {
+//         setIsUpiVerified(true);
+//         Swal.fire({ icon: 'success', title: 'UPI Verified Successfully!', timer: 1500, showConfirmButton: false });
+//       } else {
+//         setIsUpiVerified(false);
+//         Swal.fire({ icon: 'error', title: 'Invalid UPI ID', text: response.data.message || 'Galt UPI ID! Kripya "devgautam07@ybl" enter karein.' });
+//       }
+//     } catch (error) {
+//       setIsUpiVerified(false);
+//       Swal.fire({ 
+//         icon: 'error', 
+//         title: 'Verification Failed', 
+//         text: error.response?.data?.message || 'Galt UPI ID! Sirf "devgautam07@ybl" hi valid hai.' 
+//       });
+//     }
+//   };
+
+//   // --- EXECUTE UPI / RAZORPAY PAYMENT ---
+//   const handleUpiPaymentSubmit = async () => {
+//     if (!isUpiVerified) {
+//       Swal.fire({ icon: 'warning', title: 'Verification Required', text: 'Pehle apna UPI ID verify karein.' });
+//       return;
+//     }
+
+//     localStorage.setItem("pendingCartItems", JSON.stringify(cartItems));
+
+//     Swal.fire({
+//       title: 'Connecting to Gateway...',
+//       text: 'Creating payment request...',
+//       allowOutsideClick: false,
+//       didOpen: () => Swal.showLoading(),
+//     });
+
+//     try {
+//       const payload = {
+//         vpa: upiId,
+//         amount: Number(finalTotal),
+//         customerName: fullName,
+//         customerContact: user?.contact || "9876543210"
+//       };
+
+//       const res = await axios.post(`${API_BASE_URL}/create-upi-payment`, payload);
+//       Swal.close();
+
+//       if (res.data && res.data.paymentUrl) {
+//         window.location.href = res.data.paymentUrl;
+//         return;
+//       }
+
+//       if (res.data && res.data.orderId && res.data.orderId.startsWith("order_")) {
+//         const options = {
+//           key: "rzp_test_TosL2AkQjRDFPZ", 
+//           amount: Number(finalTotal) * 100, 
+//           currency: "INR",
+//           name: "AK Medistore",
+//           description: "Medicine Order Payment",
+//           order_id: res.data.orderId, 
+//           prefill: {
+//             name: fullName,
+//             contact: user?.contact || "9876543210",
+//             method: "upi",
+//             vpa: upiId 
+//           },
+//           handler: async function (response) {
+//             localStorage.setItem("payment_success_flag", "true");
+            
+//             if (typeof clearCartState === 'function') {
+//               clearCartState();
+//             }
+//             localStorage.removeItem("pendingCartItems");
+//             setMedicineCoins(prev => prev + 15);
+            
+//             Swal.fire({
+//               icon: 'success',
+//               title: 'Payment Successful!',
+//               text: `Payment ID: ${response.razorpay_payment_id}`,
+//               timer: 2000,
+//               showConfirmButton: false
+//             }).then(() => {
+//               navigate("/Orderstatus", { 
+//                 state: { 
+//                   orderId: res.data.orderId,
+//                   cartItems: cartItems,
+//                   totalMRP: effectiveMRP,
+//                   totalDiscount: discount,
+//                   platformFee: platformFee,
+//                   couponDiscount: couponApplied,
+//                   finalPayableAmount: finalTotal,
+//                   paymentMode: "UPI",
+//                   paymentMethodUsed: "UPI" 
+//                 } 
+//               });
+//             });
+//           },
+//           modal: {
+//             ondismiss: function () {
+//               Swal.fire({
+//                 icon: 'info',
+//                 title: 'Payment Pending',
+//                 text: 'Aapne payment complete nahi ki hai. Items aapke Cart me surakshit hain.'
+//               });
+              
+//               const backupCart = localStorage.getItem("pendingCartItems");
+//               if (backupCart && typeof setCartItems === 'function') {
+//                 try {
+//                   setCartItems(JSON.parse(backupCart));
+//                 } catch(e) {}
+//               }
+//             }
+//           },
+//           theme: {
+//             color: "#0fa462"
+//           }
+//         };
+
+//         const rzp = new window.Razorpay(options);
+//         rzp.open();
+//       } else {
+//         throw new Error("Unable to initialize payment session.");
+//       }
+
+//     } catch (error) {
+//       Swal.fire({
+//         icon: 'error',
+//         title: 'Transaction Failed',
+//         text: error.response?.data?.message || 'Server connection error during UPI payment creation.'
+//       });
+//     }
+//   };
+
+//   const handleCardVerify = () => {
+//     if (cardData.number.length === 16 && cardData.expiry.includes("/")) {
+//       setIsCardVerified(true);
+//       Swal.fire({ icon: 'success', title: 'Card Validated' });
+//     } else {
+//       Swal.fire({ icon: 'warning', title: 'Error', text: 'Check card details again.' });
+//     }
+//   };
+
+//   const handleNetBankingLoginClick = () => {
+//     const generatedTxOtp = Math.floor(100000 + Math.random() * 900000).toString();
+
+//     Swal.fire({
+//       title: `<span style="color: #800020; font-size: 20px;">${selectedBankName} Internet Banking</span>`,
+//       html: `
+//         <div style="text-align: left; padding: 5px;">
+//           <div style="margin-bottom: 12px;">
+//             <label style="display: block; font-weight: bold; font-size: 13px;">User ID : *</label>
+//             <input type="text" id="swal-userid" class="swal2-input" placeholder="Enter User ID" style="margin: 0; width: 100%; height: 38px;" />
+//           </div>
+//           <div style="margin-bottom: 12px;">
+//             <label style="display: block; font-weight: bold; font-size: 13px;">Password : *</label>
+//             <input type="password" id="swal-password" class="swal2-input" placeholder="Enter Password" style="margin: 0; width: 100%; height: 38px;" />
+//           </div>
+//           <div style="background: #e8f7f0; color: #0fa462; padding: 8px; font-weight: bold; font-size: 12px; margin-bottom: 5px;">
+//             💬 Testing OTP: <b>${generatedTxOtp}</b>
+//           </div>
+//           <label style="font-weight: bold; font-size: 12px;">Enter OTP : *</label>
+//           <input type="text" id="swal-txotp" class="swal2-input" placeholder="Enter 6-digit OTP" maxLength="6" style="margin: 0; width: 100%; height: 35px;" />
+//         </div>
+//       `,
+//       showCancelButton: true,
+//       confirmButtonText: 'Verify & Pay',
+//       confirmButtonColor: '#0fa462',
+//       preConfirm: () => {
+//         const userId = document.getElementById('swal-userid').value.trim();
+//         const password = document.getElementById('swal-password').value.trim();
+//         const enteredTxOtp = document.getElementById('swal-txotp').value.trim();
+        
+//         if (!userId || !password) {
+//           Swal.showValidationMessage('⚠️ Enter both User ID and Password!');
+//           return false;
+//         }
+//         if (enteredTxOtp !== generatedTxOtp) {
+//           Swal.showValidationMessage(`❌ Invalid OTP! (Hint: ${generatedTxOtp})`);
+//           return false;
+//         }
+//         return userId;
+//       }
+//     }).then((paymentResult) => {
+//       if (paymentResult.isConfirmed) {
+//         executeOrderSaving(`NB_USER_${paymentResult.value}_PAID`);
+//       }
+//     });
+//   };
+
+//   const executeOrderSaving = async (cardNumberPayloadOverride) => {
+//     const isCod = activeMethod === "COD";
+
+//     Swal.fire({
+//       title: isCod ? 'Placing Order...' : 'Processing Payment...',
+//       text: isCod ? 'Confirming Cash on Delivery order...' : 'Placing order & updating systems...',
+//       allowOutsideClick: false,
+//       didOpen: () => Swal.showLoading(),
+//     });
+
+//     let cardNumberPayload = cardNumberPayloadOverride || `${activeMethod}_MODE`;
+//     let expiryPayload = "N/A";
+//     let cvvPayload = "000";
+//     let holderNamePayload = fullName;
+
+//     if (activeMethod === "CARD") {
+//       cardNumberPayload = cardData.number;
+//       expiryPayload = cardData.expiry;
+//       cvvPayload = cardData.cvv;
+//       holderNamePayload = cardData.name || holderNamePayload;
+//     } else if (activeMethod === "MEDICINE_WALLET") {
+//       cardNumberPayload = `${selectedWallet}_WALLET_PAID`;
+//     } else if (isCod) {
+//       cardNumberPayload = "COD_CASH_ON_DELIVERY";
+//     }
+
+//     const dynamicPaymentMethodName = activeMethod === "NB" 
+//       ? `Net Banking (${selectedBankName})` 
+//       : activeMethod === "MEDICINE_WALLET" 
+//         ? `${selectedWallet} Wallet` 
+//         : isCod
+//           ? "Cash on Delivery (COD)"
+//           : activeMethod;
+
+//     const orderPayload = {
+//       bankName: dynamicPaymentMethodName,
+//       cardNumber: cardNumberPayload,
+//       expiryDate: expiryPayload,
+//       cvv: cvvPayload,
+//       cardholderName: holderNamePayload
+//     };
+
+//     try {
+//       const response = await fetch('https://ecommerencesite.onrender.com/api/BankdetailsWebapi/AdminCreatBank', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify(orderPayload),
+//       });
+
+//       if (response.ok) {
+//         localStorage.setItem("payment_success_flag", "true");
+//         if (typeof clearCartState === 'function') {
+//           clearCartState();
+//         }
+//         localStorage.removeItem("pendingCartItems");
+
+//         setMedicineCoins(prev => prev + 15);
+        
+//         Swal.fire({
+//           icon: 'success',
+//           title: isCod ? 'Order Placed Successfully!' : 'Payment Successful & Order Placed!',
+//           text: isCod ? 'Your Cash on Delivery order has been placed. Pay on delivery.' : `Paid via ${dynamicPaymentMethodName}!`,
+//           timer: 2200,
+//           showConfirmButton: false
+//         }).then(() => {
+//           navigate("/Orderstatus", { 
+//             state: { 
+//               orderId: Math.floor(100000 + Math.random() * 900000),
+//               cartItems: cartItems,
+//               totalMRP: effectiveMRP,
+//               totalDiscount: discount,
+//               platformFee: platformFee,
+//               couponDiscount: couponApplied,
+//               finalPayableAmount: finalTotal,
+//               paymentMode: dynamicPaymentMethodName,
+//               paymentMethodUsed: dynamicPaymentMethodName 
+//             } 
+//           });
+//         });
+//       } else {
+//         throw new Error("Server Error");
+//       }
+//     } catch (error) {
+//       Swal.fire({
+//         icon: 'error',
+//         title: 'Transaction Failed',
+//         text: 'API connection error or server timeout. Your cart items are saved.',
+//       });
+//     }
+//   };
+
+//   return (
+//     <div className="app-container" style={{ display: "flex", width: "100%", minHeight: "100vh", backgroundColor: "#121212", margin: 0, padding: 0 }}>
+      
+//       {/* SIDEBAR NAVIGATION */}
+//       <div className="modern-sidebar" style={{ width: '280px', height: '100vh', background: '#fff', position: 'fixed', left: 0, top: 0, padding: '24px 16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflowY: 'auto', zIndex: 1000 }}>
+//         <div>
+//           <Link to="/dashboards" className="modern-brand" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', marginBottom: '20px' }}>
+//             <img src="/AKMedizostore.png" alt="logo" width="40" height="40" />
+//             <span style={{ fontWeight: '700', color: '#0fa462', fontSize: '1.25rem' }}>AK Medistore</span>
+//           </Link>
+
+//           <nav className="nav-menu" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+//             <div>
+//               <button 
+//                 className={`nav-item dropdown-toggle-btn ${openDashboard ? 'active' : ''}`} 
+//                 onClick={() => setOpenDashboard(!openDashboard)}
+//                 style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'transparent', border: 'none', padding: '10px', cursor: 'pointer', fontWeight: '600', color: '#2d3748' }}
+//               >
+//                 <div className="nav-link-left" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+//                   <i className="fa-solid fa-chart-pie"></i>
+//                   <span>Dashboard</span>
+//                 </div>
+//                 <i className={`fa-solid fa-chevron-${openDashboard ? 'down' : 'right'}`} style={{ fontSize: '0.75rem' }}></i>
+//               </button>
+
+//               {openDashboard && (
+//                 <div className="submenu-container" style={{ display: 'flex', flexDirection: 'column', paddingLeft: '20px', gap: '6px', marginTop: '6px' }}>
+//                   <Link to="/medication-tracker" className="submenu-item" style={{ textDecoration: 'none', color: '#4a5568', fontSize: '0.9rem' }}><i className="fa-solid fa-pills me-2"></i> Medication Tracker</Link>
+//                   <Link to="/test-reports" className="submenu-item" style={{ textDecoration: 'none', color: '#4a5568', fontSize: '0.9rem' }}><i className="fa-solid fa-file-medical me-2"></i> Test Reports</Link>
+//                   <Link to="/health-history" className="submenu-item" style={{ textDecoration: 'none', color: '#4a5568', fontSize: '0.9rem' }}><i className="fa-solid fa-heart-pulse me-2"></i> Health History</Link>
+//                   <Link to="/monthly-progress" className="submenu-item" style={{ textDecoration: 'none', color: '#4a5568', fontSize: '0.9rem' }}><i className="fa-solid fa-chart-line me-2"></i> Monthly Progress</Link>
+//                   <Link to="/prescriptions" className="submenu-item" style={{ textDecoration: 'none', color: '#4a5568', fontSize: '0.9rem' }}><i className="fa-solid fa-prescription me-2"></i> Prescriptions</Link>
+//                   <Link to="/history" className="submenu-item" style={{ textDecoration: 'none', color: '#4a5568', fontSize: '0.9rem' }}><i className="fa-solid fa-clock-rotate-left me-2"></i> History</Link>
+//                   <Link to="/support" className="submenu-item" style={{ textDecoration: 'none', color: '#4a5568', fontSize: '0.9rem' }}><i className="fa-solid fa-headset me-2"></i> Help & Support</Link>
+//                   <Link to="/settings" className="submenu-item" style={{ textDecoration: 'none', color: '#4a5568', fontSize: '0.9rem' }}><i className="fa-solid fa-gear me-2"></i> Settings</Link>
+//                 </div>
+//               )}
+//             </div>
+
+//             <div>
+//               <button 
+//                 className={`nav-item dropdown-toggle-btn ${openMasterUpdate ? 'active' : ''}`} 
+//                 onClick={() => setOpenMasterUpdate(!openMasterUpdate)}
+//                 style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'transparent', border: 'none', padding: '10px', cursor: 'pointer', fontWeight: '600', color: '#2d3748' }}
+//               >
+//                 <div className="nav-link-left" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+//                   <i className="fa-solid fa-pen-to-square"></i>
+//                   <span>Master Update</span>
+//                 </div>
+//                 <i className={`fa-solid fa-chevron-${openMasterUpdate ? 'down' : 'right'}`} style={{ fontSize: '0.75rem' }}></i>
+//               </button>
+
+//               {openMasterUpdate && (
+//                 <div className="submenu-container" style={{ display: 'flex', flexDirection: 'column', paddingLeft: '20px', gap: '6px', marginTop: '6px' }}>
+//                   <Link to="/deliveryaddress" className="submenu-item" style={{ textDecoration: 'none', color: '#4a5568', fontSize: '0.9rem' }}>
+//                     <i className="fa-solid fa-map-marker-alt me-2"></i> Delivery Address
+//                   </Link>
+//                   <Link to="/addbankrefundableamounts" className="submenu-item" style={{ textDecoration: 'none', color: '#4a5568', fontSize: '0.9rem' }}><i className="fas fa-undo me-2"></i>Refund Bank Details</Link>
+//                   <Link to="/bankdetailsrefundlist" className="submenu-item" style={{ textDecoration: 'none', color: '#0fa462', fontWeight: '600', fontSize: '0.9rem' }}><i className="fas fa-undo me-2"></i>Bankdetailsrefundlist</Link>
+//                 </div>
+//               )}
+//             </div>
+
+//             <Link to="/medicinedisplay" className="nav-item" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', textDecoration: 'none', color: '#2d3748', fontWeight: '600' }}>
+//               <i className="fa-solid fa-pills"></i>
+//               <span>Medicines</span>
+//             </Link>
+
+//             <Link to="/carts" className="modern-nav-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', color: '#2d3748', textDecoration: 'none', fontWeight: '600' }}>
+//               <span><i className="fa-solid fa-shopping-cart me-2"></i> My Cart</span>
+//             </Link>
+
+//             <Link to="/order" className="modern-nav-item" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', color: '#2d3748', textDecoration: 'none', fontWeight: '600' }}>
+//               <span><i className="fa-solid fa-truck me-2"></i> Orders</span>
+//             </Link>
+
+//             <Link to="/feedbackcustomers" className="nav-item" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', textDecoration: 'none', color: '#2d3748', fontWeight: '600' }}>
+//               <i className="fa-solid fa-comment-dots"></i>
+//               <span>Customer Feedback</span>
+//             </Link>
+
+//             <Link to="/customeraddmedicines" className="nav-item" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', textDecoration: 'none', color: '#2d3748', fontWeight: '600' }}>
+//               <i className="fa-solid fa-circle-exclamation"></i>
+//               <span>Unavailable Medicines</span>
+//             </Link>
+
+//             <Link to="/profile" className="nav-item" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', textDecoration: 'none', color: '#2d3748', fontWeight: '600' }}>
+//               <i className="fa-solid fa-user"></i>
+//               <span>Customer Profile</span>
+//             </Link>
+//           </nav>
+//         </div>
+
+//         <div className="sidebar-footer" style={{ borderTop: '1px solid #e2e8f0', paddingTop: '16px' }}>
+//           <div className="user-profile-card" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+//             <div className="user-avatar" style={{ width: '35px', height: '35px', borderRadius: '50%', backgroundColor: '#0fa462', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>{userInitial}</div>
+//             <div className="user-info" style={{ display: 'flex', flexDirection: 'column' }}>
+//               <span className="user-name" style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#2d3748' }}>{fullName}</span>
+//               <span className="user-role" style={{ fontSize: '0.75rem', color: '#718096' }}>Customer Account</span>
+//             </div>
+//           </div>
+
+//           <Link to="/header" className="logout-btn" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', color: '#e53e3e', fontWeight: '600', fontSize: '0.9rem' }}>
+//             <i className="fa-solid fa-right-from-bracket"></i>
+//             <span>Log Out</span>
+//           </Link>
+//         </div>
+//       </div>
+
+//       {/* CHECKOUT INTERFACE AREA */}
+//       <div style={{ marginLeft: '280px', width: 'calc(100% - 280px)', padding: '24px', boxSizing: 'border-box', backgroundColor: '#121212', color: '#fff' }}>
+//         <div className="bg-success text-center py-3 rounded mb-4">
+//           <h4 className="m-0">AK MEDICINE - CHECKOUT</h4>
+//         </div>
+
+//         <div className="d-flex gap-4 justify-content-between">
+//           {/* PAYMENT OPTIONS SELECTOR */}
+//           <div className="bg-secondary bg-opacity-25 rounded p-3" style={{ width: '240px' }}>
+//             <h6 className="mb-3">Select Method</h6>
+//             {["UPI", "CARD", "QRCODE"].map(m => (
+//               <div key={m} onClick={() => setActiveMethod(m)} 
+//                 className={`p-3 mb-2 rounded border ${activeMethod === m ? "bg-success border-white" : "bg-dark border-secondary"}`}
+//                 style={{ cursor: 'pointer' }}>
+//                 {m}
+//               </div>
+//             ))}
+
+//             <div className="mb-2">
+//               <div onClick={() => setWalletDropdownOpen(!walletDropdownOpen)}
+//                 className={`p-3 rounded border d-flex justify-content-between align-items-center ${activeMethod === "MEDICINE_WALLET" ? "bg-success border-white" : "bg-dark border-secondary"}`}
+//                 style={{ cursor: 'pointer' }}>
+//                 <span>MedicineWallet</span>
+//                 <i className={`fa-solid ${walletDropdownOpen ? "fa-chevron-down" : "fa-chevron-right"}`}></i>
+//               </div>
+
+//               {walletDropdownOpen && (
+//                 <div className="bg-dark p-2 mt-1 rounded border border-secondary d-flex flex-column gap-2">
+//                   {["Airtel", "Amazon", "Paytm"].map((wallet) => (
+//                     <div key={wallet} onClick={() => setSelectedWallet(wallet)}
+//                       className="p-2 rounded text-white bg-secondary bg-opacity-50"
+//                       style={{ cursor: 'pointer', fontSize: '13px' }}>
+//                       🔗 {wallet} Wallet
+//                     </div>
+//                   ))}
+//                 </div>
+//               )}
+//             </div>
+
+//             {["NB", "COD"].map(m => (
+//               <div key={m} onClick={() => setActiveMethod(m)} 
+//                 className={`p-3 mb-2 rounded border ${activeMethod === m ? "bg-success border-white" : "bg-dark border-secondary"}`}
+//                 style={{ cursor: 'pointer' }}>
+//                 {m}
+//               </div>
+//             ))}
+//           </div>
+
+//           {/* ACTIVE METHOD CONFIGURATION FORM */}
+//           <div className="bg-secondary bg-opacity-10 p-4 rounded border border-secondary flex-grow-1">
+//             {activeMethod === "UPI" && (
+//               <div>
+//                 <h5>UPI Payment</h5>
+//                 <div className="d-flex gap-2 mt-3">
+//                   <input 
+//                     type="text" 
+//                     className="form-control" 
+//                     placeholder="devgautam07@ybl" 
+//                     value={upiId}
+//                     onChange={(e) => {setUpiId(e.target.value); setIsUpiVerified(false);}} 
+//                   />
+//                   <button className="btn btn-warning" onClick={handleUpiVerify}>Verify</button>
+//                 </div>
+//                 <button 
+//                   className="btn btn-success w-100 mt-4 py-3" 
+//                   disabled={!isUpiVerified} 
+//                   onClick={handleUpiPaymentSubmit}
+//                 >
+//                   Pay ₹{Number(finalTotal).toFixed(2)} Now
+//                 </button>
+//               </div>
+//             )}
+
+//             {activeMethod === "CARD" && (
+//               <div>
+//                 <h5>Card Details</h5>
+//                 <input type="text" className="form-control mb-2" placeholder="Card Number (16 digits)" maxLength="16" onChange={(e) => setCardData({...cardData, number: e.target.value})} />
+//                 <div className="d-flex gap-2 mb-2">
+//                   <input type="text" className="form-control" placeholder="MM/YY" onChange={(e) => setCardData({...cardData, expiry: e.target.value})} />
+//                   <input type="password" className="form-control" placeholder="CVV" maxLength="3" onChange={(e) => setCardData({...cardData, cvv: e.target.value})} />
+//                 </div>
+//                 <input type="text" className="form-control mb-3" placeholder="Cardholder Name" onChange={(e) => setCardData({...cardData, name: e.target.value})} />
+//                 <button className="btn btn-success w-100 py-3" onClick={isCardVerified ? () => executeOrderSaving(null) : handleCardVerify}>
+//                   {isCardVerified ? "Complete Payment" : "Verify Card"}
+//                 </button>
+//               </div>
+//             )}
+
+//             {activeMethod === "QRCODE" && (
+//               <div className="text-center">
+//                 <h5>Scan & Pay via UPI QR Code</h5>
+//                 <p className="text-white-50">Scan this QR code with Google Pay, PhonePe, Paytm or any UPI app. Exact amount (₹{Number(finalTotal).toFixed(2)}) will pre-fill automatically.</p>
+                
+//                 <div className="bg-white p-3 rounded d-inline-block mb-3 shadow position-relative">
+//                   <QRCodeSVG 
+//                     value={`upi://pay?pa=akmedistore@oksbi&pn=AK%20Medistore&am=${Number(finalTotal).toFixed(2)}&cu=INR`}
+//                     size={180}
+//                     level={"M"}
+//                     includeMargin={true}
+//                   />
+//                   {isQrPaid && (
+//                     <div style={{
+//                       position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+//                       background: 'rgba(15, 164, 98, 0.9)', display: 'flex', flexDirection: 'column',
+//                       alignItems: 'center', justifyContent: 'center', color: '#fff', borderRadius: '4px'
+//                     }}>
+//                       <i className="fa-solid fa-circle-check fa-3x mb-2"></i>
+//                       <span className="fw-bold">Paid Successfully!</span>
+//                     </div>
+//                   )}
+//                 </div>
+
+//                 <div className="text-warning small mb-3 fw-bold">
+//                   {isQrPaid ? "✅ Payment verified! Redirecting to order status..." : "📱 Waiting for payment scan... Open GPay/PhonePe and scan above code."}
+//                 </div>
+//               </div>
+//             )}
+
+//             {activeMethod === "MEDICINE_WALLET" && (
+//               <div>
+//                 <h5>{selectedWallet} Wallet Checkout</h5>
+//                 <div className="p-3 mb-3 bg-dark rounded border border-success">
+//                   <p className="m-0"><strong>Connected:</strong> {selectedWallet}</p>
+//                   <p className="m-0 mt-2 text-warning"><strong>Available Wallet Balance:</strong> ₹{walletBalance || "0.00"}</p>
+//                 </div>
+//                 <button className="btn btn-success w-100 py-3" onClick={() => executeOrderSaving(null)}>
+//                   Pay ₹{Number(finalTotal).toFixed(2)} via Wallet
+//                 </button>
+//               </div>
+//             )}
+
+//             {activeMethod === "NB" && (
+//               <div>
+//                 <h5>Net Banking Selection</h5>
+//                 <div className="mt-3 mb-3">
+//                   <label className="form-label text-white-50">Select Your Bank</label>
+//                   <select className="form-select bg-dark text-white border-secondary" value={selectedBankName} onChange={(e) => setSelectedBankName(e.target.value)}>
+//                     <option value="">-- Choose Bank --</option>
+//                     {savedBanks.map((bank, idx) => (
+//                       <option key={idx} value={bank}>{bank}</option>
+//                     ))}
+//                   </select>
+//                 </div>
+//                 <button className="btn btn-success w-100 py-3" disabled={!selectedBankName} onClick={handleNetBankingLoginClick}>
+//                   Proceed to Net Banking Login
+//                 </button>
+//               </div>
+//             )}
+
+//             {activeMethod === "COD" && (
+//               <div className="text-center py-4">
+//                 <h5>Cash on Delivery (COD)</h5>
+//                 <p className="text-white-50 mt-2">Pay cash directly to the delivery partner upon arrival. No upfront payment required.</p>
+//                 <button className="btn btn-success w-100 py-3 mt-3" onClick={() => executeOrderSaving(null)}>Place COD Order</button>
+//               </div>
+//             )}
+//           </div>
+
+//           {/* DYNAMIC PRICE DETAILS WIDGET */}
+//           <div className="bg-dark p-3 rounded border border-secondary" style={{ width: '300px' }}>
+//             <h6 className="mb-3 opacity-75">PRICE DETAILS</h6>
+//             <hr className="border-secondary mb-3" />
+            
+//             <div className="d-flex justify-content-between mb-2">
+//               <span>Total MRP</span>
+//               <span>₹{Number(effectiveMRP).toFixed(2)}</span>
+//             </div>
+            
+//             <div className="d-flex justify-content-between mb-2 text-success">
+//               <span>Discount</span>
+//               <span>-₹{Number(discount).toFixed(2)}</span>
+//             </div>
+            
+//             <div className="d-flex justify-content-between mb-2">
+//               <span>Platform Fee</span>
+//               <span>₹{platformFee}</span>
+//             </div>
+            
+//             <div className="d-flex justify-content-between mb-3 text-success">
+//               <span>Coupon</span>
+//               <span>-₹{couponApplied}</span>
+//             </div>
+            
+//             <hr className="border-secondary mb-3" />
+            
+//             <div className="d-flex justify-content-between fw-bold mb-3">
+//               <span>Total Amount</span>
+//               <span>₹{Number(finalTotal).toFixed(2)}</span>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+//6//
+
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "./CartContext";
@@ -2754,8 +3478,7 @@ export default function CompletePayment() {
   const [selectedBankName, setSelectedBankName] = useState("");
 
   // --- API BASE URL FOR LOCAL BACKEND ---
-  const API_BASE_URL ="https://ecommerencesite.onrender.com/api/PaymentAPI";  
-   //"http://localhost:5256/api/PaymentAPI";
+  const API_BASE_URL = "https://ecommerencesite.onrender.com/api/PaymentAPI";  
 
   // --- RESTORE CART ITEMS ON UNMOUNT / NAVIGATION IF UNPAID ---
   useEffect(() => {
@@ -2813,27 +3536,22 @@ export default function CompletePayment() {
   const platformFee = 7;
   const couponApplied = 10;
 
-  // Cart ke items ka exact selling price total sum (Jaise ₹5)
   const totalSellingPriceSum = cartItems.reduce((acc, item) => {
     const qty = Number(item.quantity) || 1;
     const unitPrice = Number(item.unitPrice || item.price || item.sellingPrice || 5);
     return acc + (unitPrice * qty);
   }, 0);
 
-  // Total MRP wahi exact sum hoga (jaise ₹5)
   const effectiveMRP = totalSellingPriceSum > 0 ? totalSellingPriceSum : 5;
+  const discount = Math.round((effectiveMRP * 0.15) * 100) / 100;
 
-  // Agar aapko 15% discount dikhana hai jo MRP me se minus hoga:
-  const discount = Math.round((effectiveMRP * 0.15) * 100) / 100; // Jaise ₹0.75
-
-  // Final Total Amount Calculation: (Total MRP - Discount + Platform Fee - Coupon)
   const rawTotal = effectiveMRP - discount + platformFee - couponApplied;
   const finalTotal = rawTotal > 0 ? Math.round(rawTotal * 100) / 100 : 1;
-  // --- USER PROFILE HELPERS ---
+
   const fullName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : "Gautam Dev";
   const userInitial = fullName ? fullName.charAt(0).toUpperCase() : "G";
 
-  // --- UPI VERIFY & API INTEGRATION ---
+  // --- UPI VERIFY & API INTEGRATION (FIXED) ---
   const handleUpiVerify = async () => {
     if (!upiId.trim()) {
       Swal.fire({ icon: 'warning', title: 'Enter UPI ID', text: 'Kripya UPI ID daalein.' });
@@ -2841,23 +3559,25 @@ export default function CompletePayment() {
     }
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/validate-vpa`, JSON.stringify(upiId), {
-        headers: { 'Content-Type': 'application/json' }
-      });
+      // Fixed: Passing proper JSON body instead of JSON.stringify(upiId) string
+      const response = await axios.post(`${API_BASE_URL}/validate-vpa`, 
+        { upiId: upiId }, 
+        { headers: { 'Content-Type': 'application/json' } }
+      );
 
       if (response.data && response.data.isValid) {
         setIsUpiVerified(true);
         Swal.fire({ icon: 'success', title: 'UPI Verified Successfully!', timer: 1500, showConfirmButton: false });
       } else {
         setIsUpiVerified(false);
-        Swal.fire({ icon: 'error', title: 'Invalid UPI ID', text: response.data.message || 'Galt UPI ID! Kripya "devgautam07@ybl" enter karein.' });
+        Swal.fire({ icon: 'error', title: 'Invalid UPI ID', text: response.data.message || 'Galt UPI ID!' });
       }
     } catch (error) {
       setIsUpiVerified(false);
       Swal.fire({ 
         icon: 'error', 
         title: 'Verification Failed', 
-        text: error.response?.data?.message || 'Galt UPI ID! Sirf "devgautam07@ybl" hi valid hai.' 
+        text: error.response?.data?.message || 'Server connection error during UPI validation.' 
       });
     }
   };
@@ -3383,43 +4103,12 @@ export default function CompletePayment() {
             {activeMethod === "COD" && (
               <div className="text-center py-4">
                 <h5>Cash on Delivery (COD)</h5>
-                <p className="text-white-50 mt-2">Pay cash directly to the delivery partner upon arrival. No upfront payment required.</p>
-                <button className="btn btn-success w-100 py-3 mt-3" onClick={() => executeOrderSaving(null)}>Place COD Order</button>
+                <p className="text-white-50 mt-2">Pay cash directly to the delivery partner upon arrival.</p>
+                <button className="btn btn-success w-100 py-3 mt-3" onClick={() => executeOrderSaving(null)}>
+                  Confirm COD Order (₹{Number(finalTotal).toFixed(2)})
+                </button>
               </div>
             )}
-          </div>
-
-          {/* DYNAMIC PRICE DETAILS WIDGET */}
-          <div className="bg-dark p-3 rounded border border-secondary" style={{ width: '300px' }}>
-            <h6 className="mb-3 opacity-75">PRICE DETAILS</h6>
-            <hr className="border-secondary mb-3" />
-            
-            <div className="d-flex justify-content-between mb-2">
-              <span>Total MRP</span>
-              <span>₹{Number(effectiveMRP).toFixed(2)}</span>
-            </div>
-            
-            <div className="d-flex justify-content-between mb-2 text-success">
-              <span>Discount</span>
-              <span>-₹{Number(discount).toFixed(2)}</span>
-            </div>
-            
-            <div className="d-flex justify-content-between mb-2">
-              <span>Platform Fee</span>
-              <span>₹{platformFee}</span>
-            </div>
-            
-            <div className="d-flex justify-content-between mb-3 text-success">
-              <span>Coupon</span>
-              <span>-₹{couponApplied}</span>
-            </div>
-            
-            <hr className="border-secondary mb-3" />
-            
-            <div className="d-flex justify-content-between fw-bold mb-3">
-              <span>Total Amount</span>
-              <span>₹{Number(finalTotal).toFixed(2)}</span>
-            </div>
           </div>
         </div>
       </div>
