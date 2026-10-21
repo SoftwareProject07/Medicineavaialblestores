@@ -183,18 +183,32 @@ export default function GlobalErrorProvider({ children }) {
     window.addEventListener('offline', handleOffline);
 
     // Remote License / Kill-Switch Check (Aapka actual API URL yahan lag gaya hai)
-    fetch('https://ecommerencesite.onrender.com/api/License/ValidateClientLicenseS?clientId=0')
-      .then((res) => res.json())
-      .then((data) => {
-        setIsAllowed(data.isAllowed); // Server se true ya false milega
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("License check failed", err);
-        // Agar server down ho ya fetch fail ho aur aap app block karna chahte hain, toh yahan 'setIsAllowed(false)' kar sakte hain
-        setLoading(false);
-      });
+    // fetch('https://ecommerencesite.onrender.com/api/License/ValidateClientLicenseS?clientId=0')
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     setIsAllowed(data.isAllowed); // Server se true ya false milega
+    //     setLoading(false);
+    //   })
+    //   .catch((err) => {
+    //     console.error("License check failed", err);
+    //     // Agar server down ho ya fetch fail ho aur aap app block karna chahte hain, toh yahan 'setIsAllowed(false)' kar sakte hain
+    //     setLoading(false);
+    //   });
 
+
+
+    const clientId = localStorage.getItem('clientId') || '1'; // Agar na mile toh default 1 rahega
+
+fetch(`https://ecommerencesite.onrender.com/api/License/ValidateClientLicenseS?clientId=${clientId}`)
+  .then((res) => res.json())
+  .then((data) => {
+    setIsAllowed(data.isAllowed);
+    setLoading(false);
+  })
+  .catch((err) => {
+    console.error("License check failed", err);
+    setLoading(false);
+  });
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
