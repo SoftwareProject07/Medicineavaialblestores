@@ -2,7 +2,8 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 
 import { Routes, Route, Navigate } from "react-router-dom";
 // import GlobalErrorProvider from '../src/ErrorPageFOLDER/GlobalErrorProvider';
-import GlobalErrorProvider from "./ErrorPageFOLDER/GlobalErrorProvider.jsx";
+// Agar GlobalErrorProvider file seedha src folder ke andar hai:
+import GlobalErrorProvider from "./ErrorPageFOLDER/GlobalErrorProvider";
 import { CartProvider } from "./Component/User/CartContext.jsx";
 import Login from "./Component/Login.jsx";
 import Registeration from "./Component/Registeration.jsx";
