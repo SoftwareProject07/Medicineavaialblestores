@@ -1,6 +1,7 @@
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
 import { Routes, Route, Navigate } from "react-router-dom";
+import GlobalErrorProvider from '../src/ErrorPageFOLDER/GlobalErrorProvider.jsx';
 import { CartProvider } from "./Component/User/CartContext.jsx";
 import Login from "./Component/Login.jsx";
 import Registeration from "./Component/Registeration.jsx";
@@ -77,6 +78,10 @@ import AdminHistoryManager from "./ADMINDASHBOARDPANEL/AdminHistoryManager.jsx";
 import AdminHelpSupport from "./ADMINDASHBOARDPANEL/AdminHelpSupport.jsx";
 import AdminAndCustomerOfferApp from "./ADMINDASHBOARDPANEL/AdminAndCustomerOfferApp.jsx";
 import HAPPYCLIENT from "./Component/Admin/HAPPYCLIENT.jsx";
+
+
+
+//ERROR 
 // import OfficeExecutivePanel from "./Component/Admin/OfficeExecutivePanel.jsx";
 // import AdminMedicineList from "./ADMIN LIST/AdminMedicineList.jsx";
 // import BankMasterList from "./ADMIN LIST/BankMasterList.jsx";
@@ -99,7 +104,11 @@ if (loading) {
 
 
   return (
+
+    <GlobalErrorProvider>
+      <div className="App">
     <CartProvider >
+    
       <Routes>
 
         {/* DEFAULT */}
@@ -236,7 +245,11 @@ if (loading) {
 <Route path="/adminbanklists" element={<BankMasterList />}/> */}
         </Routes>
 
+
+
     </CartProvider>
+   </div>
+    </GlobalErrorProvider>
   );
 }
 
