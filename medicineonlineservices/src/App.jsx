@@ -107,8 +107,8 @@ if (loading) {
 
   return (
 
-    // <GlobalErrorProvider>
-    //   <div className="App">
+    <GlobalErrorProvider>
+     <div className="App">
     <CartProvider >
     
       <Routes>
@@ -250,8 +250,8 @@ if (loading) {
 
 
     </CartProvider>
-  //  </div>
-  //   </GlobalErrorProvider>
+  </div>
+  </GlobalErrorProvider>
   );
 }
 
