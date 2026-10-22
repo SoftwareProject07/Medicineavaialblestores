@@ -338,7 +338,7 @@
 //4.
 
 import React, { Component, useState, useEffect } from 'react';
-import ErrorPage from './ErrorPage';
+import ErrorPage from './ErrorPageFOlDER/ErrorPage';
 
 class ClassErrorBoundary extends Component {
   constructor(props) {
