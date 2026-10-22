@@ -157,6 +157,9 @@ export default function MedicineChartAI() {
                         >
                             {loading ? "..." : "Send"}
                         </button>
+                        <button onClick={() => window.location.href = "/header"} className="btn btn-secondary">
+                                     BackPage
+                                </button>
 
                     </div>
 
